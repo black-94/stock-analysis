@@ -9,6 +9,7 @@ public class TaskPo {
     String id;
     String type;
     String params;
+    Integer status;
     Long scheduleTime;
     Long createTime;
     Long updateTime;
