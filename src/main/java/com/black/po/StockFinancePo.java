@@ -10,6 +10,8 @@ public class StockFinancePo {
     @Id
     String id;
     String code;
+    String name;
+    String exchange;
     Long date;
     String tag;
     BigDecimal income;

@@ -10,6 +10,7 @@ public class StockPricePo {
     @Id
     String id;
     String code;
+    String name;
     String exchange;
     BigDecimal open;
     BigDecimal close;

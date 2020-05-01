@@ -10,5 +10,7 @@ public class Constants {
     public static final String FINANCE_PULL="finance_pull";
     public static final String HISTORY_PRICE_PULL="history_price_pull";
     public static final String HISTORY_FINANCE_PULL="history_finance_pull";
+    public static final String CHECK_NEW_STOCK="check_new_stock";
+    public static final String CHECK_INFO_COMPLETE="check_info_complete";
 
 }

@@ -96,7 +96,7 @@ public class DataOutputController {
         pricePullTask.setStatus(0);
 
         StockFinancePullParam financePullParam=new StockFinancePullParam();
-        pricePullParam.setExchange(Constants.CHINA_EXCHANGE);
+        financePullParam.setExchange(Constants.CHINA_EXCHANGE);
 
         TaskPo financePullTask=new TaskPo();
         financePullTask.setType(Constants.FINANCE_PULL);
