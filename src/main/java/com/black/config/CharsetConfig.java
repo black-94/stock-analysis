@@ -1,6 +1,8 @@
 package com.black.config;
 
 import com.google.common.base.Charsets;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.codec.json.Jackson2CodecSupport;
 import org.springframework.stereotype.Component;
 import org.springframework.util.MimeType;
@@ -32,10 +34,10 @@ public class CharsetConfig {
                                     new MimeType("application", "*+json", Charsets.UTF_8))));
             defaultMimeTypeField.setAccessible(false);
             modifiersField.setInt(defaultMimeTypeField, defaultMimeTypeField.getModifiers() | Modifier.FINAL);
-            System.out.println("Add Charset To Jackson");
+            LoggerFactory.getLogger(CharsetConfig.class).info("Add Charset To Jackson");
         }
         catch (NoSuchFieldException | IllegalAccessException e) {
-            e.printStackTrace();
+            LoggerFactory.getLogger(CharsetConfig.class).error("",e);
         }
     }
 }
