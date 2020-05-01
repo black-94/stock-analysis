@@ -3,8 +3,8 @@ package com.black.controller;
 import com.black.bean.BaseParam;
 import com.black.bean.BaseResp;
 import com.black.constant.Constants;
-import com.black.po.SEPo;
-import com.black.repository.SERepository;
+import com.black.po.*;
+import com.black.repository.*;
 import com.google.common.collect.ImmutableMap;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -25,6 +25,14 @@ public class DataOutputController {
     private WebClient webClient=WebClient.create("http://api.waditu.com");
     @Autowired
     SERepository seRepository;
+    @Autowired
+    TaskRepository taskRepository;
+    @Autowired
+    StockInfoRepository stockInfoRepository;
+    @Autowired
+    StockPriceRepository stockPriceRepository;
+    @Autowired
+    RequestRepository requestRepository;
 
     @GetMapping("/hello")
     public Mono<String> helloworld(){
@@ -53,11 +61,15 @@ public class DataOutputController {
         };
         List<SEPo> list = Arrays.stream(stockExchanges).map(e -> new SEPo(e[0], e[1], e[2])).collect(Collectors.toList());
         list.forEach(e-> seRepository.save(e));
-        return Flux.just(seRepository.findAll().toArray(new SEPo[0]));
+        taskRepository.save(new TaskPo());
+        stockInfoRepository.save(new StockInfoPo());
+        stockPriceRepository.save(new StockPricePo());
+        requestRepository.save(new RequestPo());
+        taskRepository.deleteAll();
+        stockInfoRepository.deleteAll();
+        stockPriceRepository.deleteAll();
+        requestRepository.deleteAll();
+        return Flux.just(list.toArray(new SEPo[0]));
     }
-
-
-
-
 
 }
