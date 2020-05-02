@@ -1,7 +1,6 @@
 package com.black.service;
 
 import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.black.po.ErrorPo;
 import com.black.po.StockFinancePo;
@@ -16,18 +15,18 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.io.InputStreamReader;
 import java.io.StringWriter;
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.net.URL;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
-import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -192,31 +191,83 @@ public class Finance163PullService {
                 }
             }
         }
+
+        stockInfoPo.setPriceComplete(1);
+        stockInfoPo.setUpdateTime(System.currentTimeMillis());
+        stockInfoRepository.save(stockInfoPo);
     }
 
     public void pullFinanceData(StockInfoPo stockInfoPo){
-//        List<StockFinancePo> list=new ArrayList<>();
-//        for (Object d : data) {
-//            String t = decode(d.toString(), mapping);
-//            JSONObject j= JSON.parseObject(t);
-//            long date = LocalDateTime.parse(j.getString("reportdate")).atZone(ZoneId.systemDefault()).toInstant().getEpochSecond() * 1000L;
-//
-//            StockFinancePo po=new StockFinancePo();
-//            po.setCode(j.getString("scode"));
-//            po.setName(j.getString("sname"));
-//            po.setExchange(j.getString("trademarket"));
-//            po.setIncome(decimalOf(j.getString("totaloperatereve")));
-//            po.setY2yIncome(decimalOf(j.getString("ystz")));
-//            po.setM2mIncome(decimalOf(j.getString("yshz")));
-//            po.setProfit(decimalOf(j.getString("parentnetprofit")));
-//            po.setY2yProfit(decimalOf(j.getString("sjltz")));
-//            po.setM2mProfit(decimalOf(j.getString("sjlhz")));
-//            po.setDate(date);
-//            po.setCreateTime(System.currentTimeMillis());
-//            po.setUpdateTime(System.currentTimeMillis());
-//            list.add(po);
-//        }
-//        return list;
+        String url=String.format("http://quotes.money.163.com/f10/zycwzb_%s,season.html",stockInfoPo.getCode());
+        String res = get(url);
+        Document doc = Jsoup.parse(res);
+        Elements elements = doc.select(".table_bg001 tr");
+        Elements dates = elements.get(0).select("td");
+        Elements incomes = elements.get(4).select("td");
+        Elements profits = elements.get(10).select("td");
+
+        if(dates.size()<2){
+            return;
+        }
+
+        List<StockFinancePo> pos=new ArrayList<>();
+        for (int i = 1; i < dates.size(); i++) {
+            StockFinancePo po=new StockFinancePo();
+            try {
+                BeanUtils.copyProperties(stockInfoPo,po);
+                String time=dates.get(i).text();
+                String income=incomes.get(i).text();
+                String profit=profits.get(i).text();
+                long date = LocalDate.parse(time, DateTimeFormatter.ofPattern("yyyy-MM-dd")).atStartOfDay(ZoneId.systemDefault()).toInstant().getEpochSecond() * 1000L;
+                po.setId(null);
+                po.setDate(date);
+                po.setIncome(decimalOf(income));
+                po.setProfit(decimalOf(profit));
+                po.setCreateTime(null);
+                po.setUpdateTime(System.currentTimeMillis());
+            } catch (Exception e) {
+                errorRepository.save(new ErrorPo(Helper.stack(e)));
+            }
+            pos.add(po);
+        }
+
+        for (int i = 0; i < pos.size(); i++) {
+            try {
+                BigDecimal income=pos.get(i).getIncome();
+                BigDecimal profit=pos.get(i).getProfit();
+                BigDecimal yincome=null;
+                BigDecimal yprofit=null;
+                BigDecimal mincome=null;
+                BigDecimal mprofit=null;
+                if(i+1<pos.size()){
+                    mincome=pos.get(i+1).getIncome();
+                    mprofit=pos.get(i+1).getProfit();
+                }
+                if(i+4<pos.size()){
+                    yincome=pos.get(i+4).getIncome();
+                    yprofit=pos.get(i+4).getProfit();
+                }
+
+                StockFinancePo po = pos.get(i);
+                po.setY2yIncome(calRatio(yincome,income));
+                po.setY2yProfit(calRatio(yprofit,profit));
+                po.setM2mIncome(calRatio(mincome,income));
+                po.setM2mProfit(calRatio(mprofit,profit));
+            } catch (Exception e) {
+                errorRepository.save(new ErrorPo(Helper.stack(e)));
+            }
+        }
+
+        for (StockFinancePo po : pos) {
+            StockFinancePo tmp = stockFinanceRepository.findByCodeAndDate(po.getCode(), po.getDate());
+            if(tmp==null){
+                stockFinanceRepository.save(po);
+            }
+        }
+
+        stockInfoPo.setFinanceComplete(1);
+        stockInfoPo.setUpdateTime(System.currentTimeMillis());
+        stockInfoRepository.save(stockInfoPo);
     }
 
     public String get(String str){
@@ -232,29 +283,16 @@ public class Finance163PullService {
         }
     }
 
-    public List<StockFinancePo> parse(JSONArray data, JSONArray mapping){
-        List<StockFinancePo> list=new ArrayList<>();
-        for (Object d : data) {
-            String t = d.toString();
-            JSONObject j= JSON.parseObject(t);
-            long date = LocalDateTime.parse(j.getString("reportdate")).atZone(ZoneId.systemDefault()).toInstant().getEpochSecond() * 1000L;
-
-            StockFinancePo po=new StockFinancePo();
-            po.setCode(j.getString("scode"));
-            po.setName(j.getString("sname"));
-            po.setExchange(j.getString("trademarket"));
-            po.setIncome(decimalOf(j.getString("totaloperatereve")));
-            po.setY2yIncome(decimalOf(j.getString("ystz")));
-            po.setM2mIncome(decimalOf(j.getString("yshz")));
-            po.setProfit(decimalOf(j.getString("parentnetprofit")));
-            po.setY2yProfit(decimalOf(j.getString("sjltz")));
-            po.setM2mProfit(decimalOf(j.getString("sjlhz")));
-            po.setDate(date);
-            po.setCreateTime(System.currentTimeMillis());
-            po.setUpdateTime(System.currentTimeMillis());
-            list.add(po);
+    public BigDecimal calRatio(BigDecimal base,BigDecimal change){
+        if(base==null||change==null){
+            return null;
         }
-        return list;
+
+        if(base.compareTo(BigDecimal.ZERO)==0){
+            return null;
+        }
+
+        return change.subtract(base).divide(base).setScale(5, RoundingMode.HALF_DOWN);
     }
 
     public BigDecimal decimalOf(String str){
@@ -263,17 +301,5 @@ public class Finance163PullService {
         } catch (Exception e) {
             return null;
         }
-    }
-
-    public String reportDate(){
-        int[] months={3,6,9,12};
-        int monthValue = LocalDate.now().getMonthValue();
-        int index = (monthValue - 1) / 3 -1;
-        if(index==-1){
-            index=3;
-        }
-        int month=months[index];
-        LocalDate date = LocalDate.of(LocalDate.now().getYear(), month + 1, 1).plus(-1, ChronoUnit.DAYS);
-        return date.toString();
     }
 }

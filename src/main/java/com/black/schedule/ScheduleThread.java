@@ -167,7 +167,7 @@ public class ScheduleThread extends Thread {
 
     private void pullHistoryFinanceData(){
         //是否拉取完成
-        List<StockInfoPo> all = stockInfoRepository.findAll(Example.of(StockInfoPo.builder().priceComplete(0).build()));
+        List<StockInfoPo> all = stockInfoRepository.findAll(Example.of(StockInfoPo.builder().financeComplete(0).build()));
         if(all.isEmpty()){
             return;
         }
