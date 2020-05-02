@@ -127,7 +127,7 @@ public class ScheduleThread extends Thread {
         PageRequest pageRequest=PageRequest.of(0,1,Sort.by("scheduleTime").descending());
         Page<TaskPo> recentTasks = taskRepository.findRecentTasks(endTime, Constants.FINANCE_PULL, pageRequest);
         TaskPo recentTask = recentTasks.getContent().stream().findFirst().orElse(null);
-        if(recentTask.getStatus()==0){
+        if(recentTask!=null&&recentTask.getStatus()==0){
             eastMoneyPullService.pullFinanceData();
             return;
         }
