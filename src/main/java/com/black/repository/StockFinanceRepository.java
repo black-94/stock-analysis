@@ -12,7 +12,8 @@ public class StockFinanceRepository extends BaseRepository{
 
     public StockFinancePo findByCodeAndDate(String code, Date date){
         String str = formatter.format(date);
-        return jdbcTemplate.queryForObject("select * from stock_finance where code=" + code + " and date='" + str + "'",StockFinancePo.class);
+        List<StockFinancePo> list = jdbcTemplate.queryForList("select * from stock_finance where code=" + code + " and date='" + str + "'", StockFinancePo.class);
+        return list.isEmpty()?null:list.get(0);
     }
 
     public List<String> queryCodes(){
@@ -20,7 +21,8 @@ public class StockFinanceRepository extends BaseRepository{
     }
 
     public StockFinancePo findByCode(String code){
-        return jdbcTemplate.queryForObject("select * from stock_finance where code='" + code + "' order by createTime desc limit 1",StockFinancePo.class);
+        List<StockFinancePo> list = jdbcTemplate.queryForList("select * from stock_finance where code='" + code + "' order by createTime desc limit 1", StockFinancePo.class);
+        return list.isEmpty()?null:list.get(0);
     }
 
     public void save(StockFinancePo financePo) {
