@@ -1,9 +1,9 @@
 package com.black.repository;
 
 import com.black.po.ErrorPo;
-import org.springframework.stereotype.Repository;
+import org.springframework.stereotype.Component;
 
-@Repository
+@Component
 public class ErrorRepository extends BaseRepository{
 
     public void save(ErrorPo po){

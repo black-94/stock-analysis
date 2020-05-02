@@ -1,11 +1,11 @@
 package com.black.repository;
 
 import com.black.po.SEPo;
-import org.springframework.stereotype.Repository;
+import org.springframework.stereotype.Component;
 
 import java.util.List;
 
-@Repository
+@Component
 public class SERepository extends BaseRepository{
 
     public int insert(List<SEPo> list){

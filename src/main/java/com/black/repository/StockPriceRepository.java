@@ -2,12 +2,12 @@ package com.black.repository;
 
 
 import com.black.po.StockPricePo;
-import org.springframework.stereotype.Repository;
+import org.springframework.stereotype.Component;
 
 import java.util.Date;
 import java.util.List;
 
-@Repository
+@Component
 public class StockPriceRepository extends BaseRepository{
     @Override
     protected Class getPoClass() {
