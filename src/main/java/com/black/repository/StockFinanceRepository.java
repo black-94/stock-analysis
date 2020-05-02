@@ -1,12 +1,34 @@
 package com.black.repository;
 
+
 import com.black.po.StockFinancePo;
-import org.springframework.data.mongodb.repository.MongoRepository;
-import org.springframework.data.mongodb.repository.Query;
 
-public interface StockFinanceRepository extends MongoRepository<StockFinancePo,String> {
+import java.util.Date;
+import java.util.List;
 
-    @Query("{'code':'?0','date':?1}")
-    StockFinancePo findByCodeAndDate(String code,Long date);
+public class StockFinanceRepository extends BaseRepository{
 
+    @Override
+    protected Class getPoClass() {
+        return StockFinancePo.class;
+    }
+
+    public StockFinancePo findByCodeAndDate(String code, Date date){
+        String str = formatter.format(date);
+        Object o = sqlSessionTemplate.selectOne("select * from stock_finance where code=" + code + " and date='" + str + "'");
+        return (StockFinancePo) toObject(o);
+    }
+
+    public List<String> queryCodes(){
+        return sqlSessionTemplate.selectList("select distinct(code) from stock_finance");
+    }
+
+    public StockFinancePo findByCode(String code){
+        Object o = sqlSessionTemplate.selectOne("select * from stock_finance where code='" + code + "' order by createTime desc limit 1");
+        return (StockFinancePo) toObject(o);
+    }
+
+    public void save(StockFinancePo financePo) {
+
+    }
 }

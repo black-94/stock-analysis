@@ -1,12 +1,9 @@
 package com.black.po;
 
-import lombok.AllArgsConstructor;
 import lombok.Data;
-import org.springframework.data.annotation.Id;
 
 @Data
 public class SEPo {
-    @Id
     String code;
     String name;
     String country;

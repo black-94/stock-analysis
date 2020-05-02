@@ -15,18 +15,12 @@ import com.black.util.Helper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Example;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Sort;
-import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.stereotype.Component;
-
 import javax.annotation.PostConstruct;
-import java.sql.Date;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.ZoneId;
+import java.util.Date;
 import java.util.List;
 
 @Component
@@ -43,8 +37,6 @@ public class ScheduleThread extends Thread {
     private StockInfoRepository stockInfoRepository;
     @Autowired
     ErrorRepository errorRepository;
-    @Autowired
-    MongoTemplate mongoTemplate;
     @Autowired
     Finance163PullService finance163PullService;
 
@@ -77,8 +69,7 @@ public class ScheduleThread extends Thread {
                 } catch (Exception e) {
                 }
             } catch (Throwable e) {
-                String msg = Helper.stack(e);
-                errorRepository.save(new ErrorPo(msg));
+                errorRepository.save(ErrorPo.builder().type(e.getClass().getName()).msg(e.getMessage()).stack(Helper.stack(e)).build());
             }
         }
     }
@@ -87,21 +78,14 @@ public class ScheduleThread extends Thread {
         //有未完成任务吗，没有就拉
         Long endTime=System.currentTimeMillis();
         Long hour16=Date.from(LocalTime.of(16, 0).atDate(LocalDate.now()).atZone(ZoneId.systemDefault()).toInstant()).getTime();
-        PageRequest pageRequest=PageRequest.of(0,1,Sort.by("scheduleTime").descending());
-        Page<TaskPo> recentTasks = taskRepository.findRecentTasks(endTime, Constants.PRICE_PULL, pageRequest);
-        TaskPo recentTask = recentTasks.getContent().stream().findFirst().orElse(null);
+        TaskPo recentTask = taskRepository.findRecentTasks(Constants.PRICE_PULL);
         if(recentTask!=null&&recentTask.getStatus()==0){
-            finance163PullService.pullPriceData();
-            recentTask.setStatus(1);
-            recentTask.setScheduleCompleteTime(System.currentTimeMillis());
-            taskRepository.save(recentTask);
+            eastMoneyPullService.pullFinanceData();
             return;
         }
         //四点之后有拉过数据吗，没有就拉
-        pageRequest=PageRequest.of(0,1,Sort.by("scheduleCompleteTime").descending());
-        Page<TaskPo> completeTasks = taskRepository.findCompleteTasks(endTime, Constants.PRICE_PULL, pageRequest);
-        TaskPo completeTask = completeTasks.getContent().stream().findFirst().orElse(null);
-        if(completeTask!=null&&completeTask.getScheduleCompleteTime()>hour16){
+        TaskPo completeTask = taskRepository.findCompleteTasks(Constants.PRICE_PULL);
+        if(completeTask!=null&&completeTask.getScheduleCompleteTime().getTime()>hour16){
             return;
         }
         //现在过了四点吗
@@ -109,13 +93,12 @@ public class ScheduleThread extends Thread {
             finance163PullService.pullPriceData();
             TaskPo po=new TaskPo();
             po.setType(Constants.PRICE_PULL);
-            po.setParams("{}");
             po.setStatus(1);
-            po.setScheduleTime(System.currentTimeMillis());
-            po.setScheduleCompleteTime(System.currentTimeMillis());
-            po.setCreateTime(System.currentTimeMillis());
-            po.setUpdateTime(System.currentTimeMillis());
-            taskRepository.save(po);
+            po.setScheduleTime(new Date());
+            po.setScheduleCompleteTime(new Date());
+            po.setCreateTime(new Date());
+            po.setUpdateTime(new Date());
+            taskRepository.insert(po);
             return;
         }
     }
@@ -124,18 +107,14 @@ public class ScheduleThread extends Thread {
         //有未完成任务吗，没有就拉
         Long endTime=System.currentTimeMillis();
         Long hour16=Date.from(LocalTime.of(16, 0).atDate(LocalDate.now()).atZone(ZoneId.systemDefault()).toInstant()).getTime();
-        PageRequest pageRequest=PageRequest.of(0,1,Sort.by("scheduleTime").descending());
-        Page<TaskPo> recentTasks = taskRepository.findRecentTasks(endTime, Constants.FINANCE_PULL, pageRequest);
-        TaskPo recentTask = recentTasks.getContent().stream().findFirst().orElse(null);
+        TaskPo recentTask = taskRepository.findRecentTasks(Constants.FINANCE_PULL);
         if(recentTask!=null&&recentTask.getStatus()==0){
             eastMoneyPullService.pullFinanceData();
             return;
         }
         //四点之后有拉过数据吗，没有就拉
-        pageRequest=PageRequest.of(0,1,Sort.by("scheduleCompleteTime").descending());
-        Page<TaskPo> completeTasks = taskRepository.findCompleteTasks(endTime, Constants.FINANCE_PULL, pageRequest);
-        TaskPo completeTask = completeTasks.getContent().stream().findFirst().orElse(null);
-        if(completeTask!=null&&completeTask.getScheduleCompleteTime()>hour16){
+        TaskPo completeTask = taskRepository.findCompleteTasks(Constants.FINANCE_PULL);
+        if(completeTask!=null&&completeTask.getScheduleCompleteTime().getTime()>hour16){
             return;
         }
         //现在过了四点吗
@@ -143,50 +122,47 @@ public class ScheduleThread extends Thread {
             eastMoneyPullService.pullFinanceData();
             TaskPo po=new TaskPo();
             po.setType(Constants.FINANCE_PULL);
-            po.setParams("{}");
             po.setStatus(1);
-            po.setScheduleTime(System.currentTimeMillis());
-            po.setScheduleCompleteTime(System.currentTimeMillis());
-            po.setCreateTime(System.currentTimeMillis());
-            po.setUpdateTime(System.currentTimeMillis());
-            taskRepository.save(po);
+            po.setScheduleTime(new Date());
+            po.setScheduleCompleteTime(new Date());
+            po.setCreateTime(new Date());
+            po.setUpdateTime(new Date());
+            taskRepository.insert(po);
             return;
         }
     }
 
     private void pullHistoryPriceData(){
         //是否拉取完成
-        List<StockInfoPo> all = stockInfoRepository.findAll(Example.of(StockInfoPo.builder().priceComplete(0).build()));
+        List<StockInfoPo> all = stockInfoRepository.queryByStatus("priceComplete");
         if(all.isEmpty()){
             return;
         }
-        for (StockInfoPo stockInfoPo : all) {
-            finance163PullService.pullHistoryPriceData(stockInfoPo);
-        }
+
+        all.parallelStream().forEach(finance163PullService::pullHistoryPriceData);
     }
 
     private void pullHistoryFinanceData(){
         //是否拉取完成
-        List<StockInfoPo> all = stockInfoRepository.findAll(Example.of(StockInfoPo.builder().financeComplete(0).build()));
+        List<StockInfoPo> all = stockInfoRepository.queryByStatus("financeComplete");
         if(all.isEmpty()){
             return;
         }
-        for (StockInfoPo stockInfoPo : all) {
-            finance163PullService.pullFinanceData(stockInfoPo);
-        }
+
+        all.parallelStream().forEach(finance163PullService::pullFinanceData);
     }
 
     private void checkNewStock(){
-        List<String> financeCodes=mongoTemplate.findDistinct("code", StockFinancePo.class,String.class);
-        List<String> stockCodes=mongoTemplate.findDistinct("code", StockInfoPo.class,String.class);
+        List<String> financeCodes=stockFinanceRepository.queryCodes();
+        List<String> stockCodes=stockInfoRepository.queryCodes();
         financeCodes.removeAll(stockCodes);
         if(financeCodes.isEmpty()){
             return;
         }
-        for (String financeCode : financeCodes) {
-            Example<StockFinancePo> example = Example.of(StockFinancePo.builder().code(financeCode).build());
-            StockFinancePo po = stockFinanceRepository.findOne(example).get();
-            finance163PullService.pullStockInfo(financeCode,po==null?"":po.getExchange());
-        }
+
+        financeCodes.parallelStream().forEach(e->{
+            StockFinancePo po = stockFinanceRepository.findByCode(e);
+            finance163PullService.pullStockInfo(e,po==null?"":po.getExchange());
+        });
     }
 }

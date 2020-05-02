@@ -24,10 +24,12 @@ import java.io.StringWriter;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.net.URL;
+import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 @Service
@@ -74,12 +76,12 @@ public class Finance163PullService {
             po.setInfoInit(1);
             po.setPriceComplete(0);
             po.setFinanceComplete(0);
-            po.setCreateTime(System.currentTimeMillis());
-            po.setUpdateTime(System.currentTimeMillis());
+            po.setCreateTime(new Date());
+            po.setUpdateTime(new Date());
 
             stockInfoRepository.save(po);
         } catch (Exception e) {
-            errorRepository.save(new ErrorPo(Helper.stack(e)));
+            errorRepository.save(ErrorPo.builder().type(e.getClass().getName()).msg(e.getMessage()).stack(Helper.stack(e)).build());
         }
     }
 
@@ -104,7 +106,7 @@ public class Finance163PullService {
                 String volumn = json.getString("volumn");
                 String turnover = json.getString("turnover");
                 String time = json.getString("time");
-                long date = LocalDate.parse(time.substring(0, 10), DateTimeFormatter.ofPattern("yyyy/MM/dd")).atStartOfDay(ZoneId.systemDefault()).toInstant().getEpochSecond() * 1000L;
+                Instant date = LocalDate.parse(time.substring(0, 10), DateTimeFormatter.ofPattern("yyyy/MM/dd")).atStartOfDay(ZoneId.systemDefault()).toInstant();
 
                 StockPricePo stockPricePo=new StockPricePo();
                 stockPricePo.setCode(stock.getCode());
@@ -118,9 +120,9 @@ public class Finance163PullService {
                 stockPricePo.setLow(decimalOf(low));
                 stockPricePo.setVolumn(decimalOf(volumn));
                 stockPricePo.setTurnover(decimalOf(turnover));
-                stockPricePo.setDate(date);
-                stockPricePo.setCreateTime(System.currentTimeMillis());
-                stockPricePo.setUpdateTime(System.currentTimeMillis());
+                stockPricePo.setDate(Date.from(date));
+                stockPricePo.setCreateTime(new Date());
+                stockPricePo.setUpdateTime(new Date());
 
                 if(stockPricePo.getCur().compareTo(stockPricePo.getLastClose())<0){
                     stockPricePo.getPercent().negate();
@@ -133,7 +135,7 @@ public class Finance163PullService {
 
                 stockPriceRepository.save(stockPricePo);
             } catch (Exception e) {
-                errorRepository.save(new ErrorPo(Helper.stack(e)));
+                 errorRepository.save(ErrorPo.builder().type(e.getClass().getName()).msg(e.getMessage()).stack(Helper.stack(e)).build());
             }
         }
     }
@@ -162,7 +164,7 @@ public class Finance163PullService {
                         String volumn = tds.get(7).text();
                         String turnover = tds.get(8).text();
                         String time = tds.get(0).text();
-                        long date = LocalDate.parse(time, DateTimeFormatter.ofPattern("yyyy-MM-dd")).atStartOfDay(ZoneId.systemDefault()).toInstant().getEpochSecond() * 1000L;
+                        Instant date = LocalDate.parse(time, DateTimeFormatter.ofPattern("yyyy-MM-dd")).atStartOfDay(ZoneId.systemDefault()).toInstant();
 
                         StockPricePo stockPricePo=new StockPricePo();
                         stockPricePo.setCode(stockInfoPo.getCode());
@@ -175,9 +177,9 @@ public class Finance163PullService {
                         stockPricePo.setLow(decimalOf(low));
                         stockPricePo.setVolumn(decimalOf(volumn));
                         stockPricePo.setTurnover(decimalOf(turnover));
-                        stockPricePo.setDate(date);
-                        stockPricePo.setCreateTime(System.currentTimeMillis());
-                        stockPricePo.setUpdateTime(System.currentTimeMillis());
+                        stockPricePo.setDate(Date.from(date));
+                        stockPricePo.setCreateTime(new Date());
+                        stockPricePo.setUpdateTime(new Date());
 
                         List<StockPricePo> po = stockPriceRepository.findByCodeAndDate(stockPricePo.getCode(), stockPricePo.getDate());
                         if(!po.isEmpty()){
@@ -186,14 +188,14 @@ public class Finance163PullService {
 
                         stockPriceRepository.save(stockPricePo);
                     } catch (Exception e) {
-                        errorRepository.save(new ErrorPo(Helper.stack(e)));
+                         errorRepository.save(ErrorPo.builder().type(e.getClass().getName()).msg(e.getMessage()).stack(Helper.stack(e)).build());
                     }
                 }
             }
         }
 
         stockInfoPo.setPriceComplete(1);
-        stockInfoPo.setUpdateTime(System.currentTimeMillis());
+        stockInfoPo.setUpdateTime(new Date());
         stockInfoRepository.save(stockInfoPo);
     }
 
@@ -218,15 +220,15 @@ public class Finance163PullService {
                 String time=dates.get(i).text();
                 String income=incomes.get(i).text();
                 String profit=profits.get(i).text();
-                long date = LocalDate.parse(time, DateTimeFormatter.ofPattern("yyyy-MM-dd")).atStartOfDay(ZoneId.systemDefault()).toInstant().getEpochSecond() * 1000L;
+                Instant date = LocalDate.parse(time, DateTimeFormatter.ofPattern("yyyy-MM-dd")).atStartOfDay(ZoneId.systemDefault()).toInstant();
                 po.setId(null);
-                po.setDate(date);
+                po.setDate(Date.from(date));
                 po.setIncome(decimalOf(income));
                 po.setProfit(decimalOf(profit));
                 po.setCreateTime(null);
-                po.setUpdateTime(System.currentTimeMillis());
+                po.setUpdateTime(new Date());
             } catch (Exception e) {
-                errorRepository.save(new ErrorPo(Helper.stack(e)));
+                errorRepository.save(ErrorPo.builder().type(e.getClass().getName()).msg(e.getMessage()).stack(Helper.stack(e)).build());
             }
             pos.add(po);
         }
@@ -254,7 +256,7 @@ public class Finance163PullService {
                 po.setM2mIncome(calRatio(mincome,income));
                 po.setM2mProfit(calRatio(mprofit,profit));
             } catch (Exception e) {
-                errorRepository.save(new ErrorPo(Helper.stack(e)));
+                 errorRepository.save(ErrorPo.builder().type(e.getClass().getName()).msg(e.getMessage()).stack(Helper.stack(e)).build());
             }
         }
 
@@ -266,7 +268,7 @@ public class Finance163PullService {
         }
 
         stockInfoPo.setFinanceComplete(1);
-        stockInfoPo.setUpdateTime(System.currentTimeMillis());
+        stockInfoPo.setUpdateTime(new Date());
         stockInfoRepository.save(stockInfoPo);
     }
 
@@ -278,7 +280,7 @@ public class Finance163PullService {
             reader.transferTo(writer);
             return writer.toString();
         } catch (Exception e) {
-            errorRepository.save(ErrorPo.builder().error("解析数据错误,url:"+str+",exception:"+ Helper.stack(e)).build());
+            errorRepository.save(ErrorPo.builder().type(e.getClass().getName()).msg(e.getMessage()).stack(Helper.stack(e)).build());
             return null;
         }
     }

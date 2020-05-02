@@ -3,23 +3,25 @@ package com.black.po;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
-import org.springframework.data.annotation.Id;
+
+import java.util.Date;
 
 @AllArgsConstructor
 @Builder
 @Data
 public class StockInfoPo {
-    @Id
+    long id;
     String code;
-    String exchange;
     String name;
+    String exchange;
     String business;
     String openDay;
-    Integer infoInit;
-    Integer priceComplete;
-    Integer financeComplete;
-    Long createTime;
-    Long updateTime;
+    String marketDay;
+    int infoInit;
+    int priceComplete;
+    int financeComplete;
+    Date createTime;
+    Date updateTime;
 
     public StockInfoPo(){}
 }

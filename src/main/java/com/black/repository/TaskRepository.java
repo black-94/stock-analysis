@@ -1,17 +1,26 @@
 package com.black.repository;
 
 import com.black.po.TaskPo;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.mongodb.repository.MongoRepository;
-import org.springframework.data.mongodb.repository.Query;
 
-public interface TaskRepository extends MongoRepository<TaskPo,String> {
+public class TaskRepository extends BaseRepository{
 
-    @Query("{'scheduleTime':{ '$lt':?0 }, 'type':?1, 'status':0 }")
-    Page<TaskPo> findRecentTasks(Long endTime,String type, Pageable pageable);
+    @Override
+    protected Class getPoClass() {
+        return TaskPo.class;
+    }
 
-    @Query("{'scheduleCompleteTime':{ '$lt':?0 }, 'type':?1 , 'status':1 }")
-    Page<TaskPo> findCompleteTasks(Long endTime,String type, Pageable pageable);
+    public TaskPo findRecentTasks(String type){
+        Object o = sqlSessionTemplate.selectOne("select * from tb_task where scheduleTime < now() and status=0 and type='" + type + "' order by scheduleTime desc limit 1");
+        return (TaskPo) toObject(o);
+    }
+
+    public TaskPo findCompleteTasks(String type) {
+        Object o = sqlSessionTemplate.selectOne("select * from tb_task where status=1 and type='" + type + "' order by scheduleCompleteTime desc limit 1");
+        return (TaskPo) toObject(o);
+    }
+
+    public void insert(TaskPo po){
+        sqlSessionTemplate.insert("insert into tb_task(type,status,scheduleTime,scheduleCompleteTime) values (#{type},#{status},#{scheduleTime},#{scheduleCompleteTime})",po);
+    }
 
 }

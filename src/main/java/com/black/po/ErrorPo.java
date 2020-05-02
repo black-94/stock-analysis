@@ -3,7 +3,6 @@ package com.black.po;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
-import org.springframework.data.annotation.Id;
 
 import java.util.Date;
 
@@ -11,10 +10,10 @@ import java.util.Date;
 @Builder
 @Data
 public class ErrorPo {
-    @Id
-    String id;
-    String error;
-    String createTime=new Date().toString();
+    long id;
+    String type;
+    String msg;
+    String stack;
+    Date createTime;
     public ErrorPo(){}
-    public ErrorPo(String msg){this.error=msg;}
 }

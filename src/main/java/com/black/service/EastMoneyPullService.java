@@ -15,11 +15,13 @@ import java.io.InputStreamReader;
 import java.io.StringWriter;
 import java.math.BigDecimal;
 import java.net.URL;
+import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Random;
 import java.util.regex.Matcher;
@@ -45,7 +47,8 @@ public class EastMoneyPullService {
                     .replace("{pageSize}", "50");
         }
         if(dataurl==null){
-            errorRepository.save(ErrorPo.builder().error("解析数据错误,url:"+url+",resp:"+resp).build());
+            RuntimeException e=new RuntimeException("解析数据错误,url:"+url+",resp:"+resp);
+            errorRepository.save(ErrorPo.builder().type(e.getClass().getName()).msg(e.getMessage()).stack(Helper.stack(e)).build());
             return;
         }
 
@@ -76,8 +79,7 @@ public class EastMoneyPullService {
                     try {
                         json=JSON.parseObject(data);
                     } catch (Exception e) {
-                        String msg = Helper.stack(e);
-                        errorRepository.save(new ErrorPo(msg));
+                        errorRepository.save(ErrorPo.builder().type(e.getClass().getName()).msg(e.getMessage()).stack(Helper.stack(e)).build());
                     }
 
                     int pages = json.getIntValue("pages");
@@ -99,7 +101,7 @@ public class EastMoneyPullService {
 
                     Thread.sleep(1000L);
                 } catch (Exception e) {
-                    errorRepository.save(ErrorPo.builder().error("解析数据错误,url:"+url+",resp:"+resp).build());
+                    errorRepository.save(ErrorPo.builder().type(e.getClass().getName()).msg(e.getMessage()).stack(Helper.stack(e)).build());
                 }
             }while (true);
         }
@@ -113,7 +115,7 @@ public class EastMoneyPullService {
             reader.transferTo(writer);
             return writer.toString();
         } catch (Exception e) {
-            errorRepository.save(ErrorPo.builder().error("exception:"+ Helper.stack(e)).build());
+            errorRepository.save(ErrorPo.builder().type(e.getClass().getName()).msg(e.getMessage()).stack(Helper.stack(e)).build());
             return null;
         }
     }
@@ -123,7 +125,7 @@ public class EastMoneyPullService {
         for (Object d : data) {
             String t = decode(d.toString(), mapping);
             JSONObject j= JSON.parseObject(t);
-            long date = LocalDateTime.parse(j.getString("reportdate")).atZone(ZoneId.systemDefault()).toInstant().getEpochSecond() * 1000L;
+            Instant reportdate = LocalDateTime.parse(j.getString("reportdate")).atZone(ZoneId.systemDefault()).toInstant();
 
             StockFinancePo po=new StockFinancePo();
             po.setCode(j.getString("scode"));
@@ -135,9 +137,9 @@ public class EastMoneyPullService {
             po.setProfit(decimalOf(j.getString("parentnetprofit")));
             po.setY2yProfit(decimalOf(j.getString("sjltz")));
             po.setM2mProfit(decimalOf(j.getString("sjlhz")));
-            po.setDate(date);
-            po.setCreateTime(System.currentTimeMillis());
-            po.setUpdateTime(System.currentTimeMillis());
+            po.setDate(Date.from(reportdate));
+            po.setCreateTime(new Date());
+            po.setUpdateTime(new Date());
             list.add(po);
         }
         return list;

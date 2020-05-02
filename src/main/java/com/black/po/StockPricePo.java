@@ -1,14 +1,13 @@
 package com.black.po;
 
 import lombok.Data;
-import org.springframework.data.annotation.Id;
 
 import java.math.BigDecimal;
+import java.util.Date;
 
 @Data
 public class StockPricePo {
-    @Id
-    String id;
+    long id;
     String code;
     String name;
     String exchange;
@@ -20,7 +19,7 @@ public class StockPricePo {
     BigDecimal volumn;
     BigDecimal turnover;
     BigDecimal percent;
-    Long date;
-    Long createTime;
-    Long updateTime;
+    Date date;
+    Date createTime;
+    Date updateTime;
 }
