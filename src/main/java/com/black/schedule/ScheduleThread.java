@@ -1,16 +1,23 @@
 package com.black.schedule;
 
 import com.black.constant.Constants;
+import com.black.po.StockFinancePo;
+import com.black.po.StockInfoPo;
 import com.black.po.TaskPo;
+import com.black.repository.StockFinanceRepository;
+import com.black.repository.StockInfoRepository;
 import com.black.repository.TaskRepository;
 import com.black.service.EastMoneyPullService;
+import com.black.service.Finance163PullService;
 import com.black.util.Helper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Example;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
@@ -18,6 +25,8 @@ import java.sql.Date;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.ZoneId;
+import java.util.List;
+import java.util.Optional;
 
 @Component
 public class ScheduleThread extends Thread {
@@ -27,6 +36,14 @@ public class ScheduleThread extends Thread {
     private TaskRepository taskRepository;
     @Autowired
     private EastMoneyPullService eastMoneyPullService;
+    @Autowired
+    private StockFinanceRepository stockFinanceRepository;
+    @Autowired
+    private StockInfoRepository stockInfoRepository;
+    @Autowired
+    MongoTemplate mongoTemplate;
+    @Autowired
+    Finance163PullService finance163PullService;
 
     public ScheduleThread(){
         super("ScheduleThread-0");
@@ -42,17 +59,16 @@ public class ScheduleThread extends Thread {
     public void run() {
         while (true){
             try {
-                //股票数据每天四点一次
-                pullPriceData();
                 //财报数据每天四点一次
                 pullFinanceData();
+                //信息补全每分钟一次
+                checkNewStock();
+                //股票数据每天四点一次
+                pullPriceData();
                 //历史股票数据每分钟一次
                 pullHistoryPriceData();
                 //历史财报数据每分钟一次
                 pullHistoryFinanceData();
-                //信息补全每分钟一次
-                checkNewStock();
-
                 try {
                     Thread.sleep(1000L);
                 } catch (Exception e) {
@@ -126,10 +142,23 @@ public class ScheduleThread extends Thread {
     }
 
     private void checkNewStock(){
-
+        List<String> financeCodes=mongoTemplate.findDistinct("code", StockFinancePo.class,String.class);
+        List<String> stockCodes=mongoTemplate.findDistinct("code", StockInfoPo.class,String.class);
+        financeCodes.removeAll(stockCodes);
+        if(financeCodes.isEmpty()){
+            return;
+        }
+        for (String financeCode : financeCodes) {
+            Example<StockFinancePo> example = Example.of(StockFinancePo.builder().code(financeCode).build());
+            StockFinancePo po = stockFinanceRepository.findOne(example).get();
+            finance163PullService.pullStockInfo(financeCode,po==null?"":po.getExchange());
+        }
     }
 
     private void checkInfoComplete(){
+
+
+
 
     }
 }

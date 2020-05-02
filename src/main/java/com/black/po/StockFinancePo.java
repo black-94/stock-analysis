@@ -1,10 +1,12 @@
 package com.black.po;
 
+import lombok.Builder;
 import lombok.Data;
 import org.springframework.data.annotation.Id;
 
 import java.math.BigDecimal;
 
+@Builder
 @Data
 public class StockFinancePo {
     @Id
@@ -22,4 +24,6 @@ public class StockFinancePo {
     BigDecimal m2mProfit;
     Long createTime;
     Long updateTime;
+
+    public StockFinancePo(){}
 }
