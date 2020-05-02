@@ -76,8 +76,9 @@ public class ScheduleThread extends Thread {
 
     private void pullPriceData(){
         //有未完成任务吗，没有就拉
-        Long endTime=System.currentTimeMillis();
+        Long now=System.currentTimeMillis();
         Long hour16=Date.from(LocalTime.of(16, 0).atDate(LocalDate.now()).atZone(ZoneId.systemDefault()).toInstant()).getTime();
+        Long hour8=Date.from(LocalTime.of(8, 0).atDate(LocalDate.now()).atZone(ZoneId.systemDefault()).toInstant()).getTime();
         TaskPo recentTask = taskRepository.findRecentTasks(Constants.PRICE_PULL);
         if(recentTask!=null&&recentTask.getStatus()==0){
             eastMoneyPullService.pullFinanceData();
@@ -89,7 +90,7 @@ public class ScheduleThread extends Thread {
             return;
         }
         //现在过了四点吗
-        if(endTime>hour16){
+        if(now>hour16||now<hour8){
             finance163PullService.pullPriceData();
             TaskPo po=new TaskPo();
             po.setType(Constants.PRICE_PULL);
@@ -105,8 +106,9 @@ public class ScheduleThread extends Thread {
 
     private void pullFinanceData(){
         //有未完成任务吗，没有就拉
-        Long endTime=System.currentTimeMillis();
+        Long now=System.currentTimeMillis();
         Long hour16=Date.from(LocalTime.of(16, 0).atDate(LocalDate.now()).atZone(ZoneId.systemDefault()).toInstant()).getTime();
+        Long hour8=Date.from(LocalTime.of(8, 0).atDate(LocalDate.now()).atZone(ZoneId.systemDefault()).toInstant()).getTime();
         TaskPo recentTask = taskRepository.findRecentTasks(Constants.FINANCE_PULL);
         if(recentTask!=null&&recentTask.getStatus()==0){
             eastMoneyPullService.pullFinanceData();
@@ -118,7 +120,7 @@ public class ScheduleThread extends Thread {
             return;
         }
         //现在过了四点吗
-        if(endTime>hour16){
+        if(now>hour16||now<hour8){
             eastMoneyPullService.pullFinanceData();
             TaskPo po=new TaskPo();
             po.setType(Constants.FINANCE_PULL);
