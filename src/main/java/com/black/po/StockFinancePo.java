@@ -1,5 +1,6 @@
 package com.black.po;
 
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import org.springframework.data.annotation.Id;
@@ -7,6 +8,7 @@ import org.springframework.data.annotation.Id;
 import java.math.BigDecimal;
 
 @Builder
+@AllArgsConstructor
 @Data
 public class StockFinancePo {
     @Id
