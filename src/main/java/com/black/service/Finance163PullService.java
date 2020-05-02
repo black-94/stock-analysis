@@ -6,9 +6,11 @@ import com.alibaba.fastjson.JSONObject;
 import com.black.po.ErrorPo;
 import com.black.po.StockFinancePo;
 import com.black.po.StockInfoPo;
+import com.black.po.StockPricePo;
 import com.black.repository.ErrorRepository;
 import com.black.repository.StockFinanceRepository;
 import com.black.repository.StockInfoRepository;
+import com.black.repository.StockPriceRepository;
 import com.black.util.Helper;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -24,12 +26,10 @@ import java.net.URL;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 @Service
 public class Finance163PullService {
@@ -39,18 +39,21 @@ public class Finance163PullService {
     StockFinanceRepository stockFinanceRepository;
     @Autowired
     StockInfoRepository stockInfoRepository;
+    @Autowired
+    StockPriceRepository stockPriceRepository;
 
     public void pullStockInfo(String code,String market){
-        String key=market.contains("深")?"1":"0"+code;
         String url=String.format("http://quotes.money.163.com/f10/gszl_%s.html",code);
         String res = get(url);
+        if(res==null){
+            return;
+        }
         Document doc = Jsoup.parse(res);
         Elements elements = doc.select(".table_bg001 .dbrow .td_label");
         StockInfoPo po=new StockInfoPo();
         String name="";
         String business="";
         String openDay="";
-
 
         for (Element e : elements) {
             String text = e.text();
@@ -77,79 +80,61 @@ public class Finance163PullService {
         stockInfoRepository.save(po);
     }
 
-
-
     public void pullPriceData() {
+        List<StockInfoPo> all = stockInfoRepository.findAll();
+        for (StockInfoPo stock : all) {
+            String key=(stock.getName().contains("深")?1:0)+stock.getCode();
+            String url=String.format("http://api.money.126.net/data/feed/%s,money.api?callback=a",key);
+            String res = get(url);
+            if(res==null){
+                continue;
+            }
+            res=res.substring(2,res.length()-2);
+            JSONObject json=JSON.parseObject(res).getJSONObject(key);
+            String percent = json.getString("percent");
+            String yestclose = json.getString("yestclose");
+            String open = json.getString("open");
+            String price = json.getString("price");
+            String high = json.getString("high");
+            String low = json.getString("low");
+            String volumn = json.getString("volumn");
+            String turnover = json.getString("turnover");
+            String time = json.getString("time");
+            long date = LocalDate.parse(time.substring(0, 10), DateTimeFormatter.ofPattern("yyyy/MM/dd")).atStartOfDay(ZoneId.systemDefault()).toInstant().getEpochSecond() * 1000L;
+
+            StockPricePo stockPricePo=new StockPricePo();
+            stockPricePo.setCode(stock.getCode());
+            stockPricePo.setName(stock.getName());
+            stockPricePo.setExchange(stock.getExchange());
+            stockPricePo.setPercent(decimalOf(percent));
+            stockPricePo.setOpen(decimalOf(open));
+            stockPricePo.setCur(decimalOf(price));
+            stockPricePo.setLastClose(decimalOf(yestclose));
+            stockPricePo.setHigh(decimalOf(high));
+            stockPricePo.setLow(decimalOf(low));
+            stockPricePo.setVolumn(decimalOf(volumn));
+            stockPricePo.setTurnover(decimalOf(turnover));
+            stockPricePo.setDate(date);
+            stockPricePo.setCreateTime(System.currentTimeMillis());
+            stockPricePo.setUpdateTime(System.currentTimeMillis());
+
+            if(stockPricePo.getCur().compareTo(stockPricePo.getLastClose())<0){
+                stockPricePo.getPercent().negate();
+            }
+
+            stockPriceRepository.save(stockPricePo);
+        }
+    }
+
+    public void pullHistoryPriceData(StockInfoPo stockInfoPo){
+
+
+
+
 
     }
 
-    public void pullFinanceData(){
-        String url="http://data.eastmoney.com/bbsj/201912/yjbb.html";
-        String resp = get(url);
-        Pattern compile = Pattern.compile("dataurl: \"(.+)\"");
-        Matcher matcher = compile.matcher(resp);
-        String dataurl=null;
-        if(matcher.find()){
-            String group = matcher.group(1);
-            dataurl = group.replace("{sortType}", "latestnoticedate")
-                    .replace("{sortRule}", "-1")
-                    .replace("{pageSize}", "50");
-        }
-        if(dataurl==null){
-            errorRepository.save(ErrorPo.builder().error("解析数据错误,url:"+url+",resp:"+resp).build());
-            return;
-        }
-
-        String reportDate = reportDate();
-        String[] marketCodes={"058001001","058001002"};
-        for (int i = 0; i < marketCodes.length; i++) {
-            String marketCode=marketCodes[i];
-            String params="&filter=(securitytypecode=%27{marketCode}%27)(reportdate=^{reportDate}^)".replace("{marketCode}",marketCode).replace("{reportDate}",reportDate);
-            int page=1;
-            do{
-                String tmpUrl=dataurl;
-                String jsname="a"+(new Random().nextInt(100));
-                String origin="var {jsname}={pages:(tp),data: (x),font:(font)}";
-                String jsparam=origin.replace("{jsname}",jsname).replace(" ","%20");
-                tmpUrl=tmpUrl.replace(origin,jsparam).replace("{param}",params);
-                String str = tmpUrl.replace("{page}", ""+page);
-                String res = get(str);
-                if(res==null){
-                    break;
-                }
-                String data = res.replace("pages:", "\"pages\":")
-                        .replace("data:", "\"data\":")
-                        .replace("font:", "\"font\":")
-                        .replace("var "+jsname+"=","");
-                JSONObject json = null;
-                try {
-                    json=JSON.parseObject(data);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-
-
-                int pages = json.getIntValue("pages");
-                JSONArray fontMapping = json.getJSONObject("font").getJSONArray("FontMapping");
-                JSONArray dataArr = json.getJSONArray("data");
-                List<StockFinancePo> financePos = parse(dataArr, fontMapping);
-                for (StockFinancePo financePo : financePos) {
-                    StockFinancePo po = stockFinanceRepository.findByCodeAndDate(financePo.getCode(), financePo.getDate());
-                    if(po!=null){
-                        financePo.setId(po.getId());
-                    }
-                    stockFinanceRepository.save(financePo);
-                }
-
-                if(page>=pages){
-                    break;
-                }
-                ++page;
-                try {
-                    Thread.sleep(1000L);
-                } catch (Exception e) {}
-            }while (true);
-        }
+    public void pullFinanceData(StockInfoPo stockInfoPo){
     }
 
     public String get(String str){
@@ -197,7 +182,6 @@ public class Finance163PullService {
             return null;
         }
     }
-
 
     public String reportDate(){
         int[] months={3,6,9,12};

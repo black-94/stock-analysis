@@ -13,10 +13,13 @@ public class StockPricePo {
     String name;
     String exchange;
     BigDecimal open;
-    BigDecimal close;
+    BigDecimal cur;
+    BigDecimal lastClose;
     BigDecimal high;
     BigDecimal low;
-    Long volumn;
+    BigDecimal volumn;
+    BigDecimal turnover;
+    BigDecimal percent;
     Long date;
     Long createTime;
     Long updateTime;

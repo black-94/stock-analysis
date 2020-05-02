@@ -91,7 +91,7 @@ public class ScheduleThread extends Thread {
         Page<TaskPo> recentTasks = taskRepository.findRecentTasks(endTime, Constants.PRICE_PULL, pageRequest);
         TaskPo recentTask = recentTasks.getContent().stream().findFirst().orElse(null);
         if(recentTask!=null&&recentTask.getStatus()==0){
-            eastMoneyPullService.pullPriceData();
+            finance163PullService.pullPriceData();
             recentTask.setStatus(1);
             recentTask.setScheduleCompleteTime(System.currentTimeMillis());
             taskRepository.save(recentTask);
@@ -106,7 +106,7 @@ public class ScheduleThread extends Thread {
         }
         //现在过了四点吗
         if(endTime>hour16){
-            eastMoneyPullService.pullPriceData();
+            finance163PullService.pullPriceData();
             return;
         }
     }
@@ -138,11 +138,24 @@ public class ScheduleThread extends Thread {
 
     private void pullHistoryPriceData(){
         //是否拉取完成
+        List<StockInfoPo> all = stockInfoRepository.findAll(Example.of(StockInfoPo.builder().priceComplete(0).build()));
+        if(all.isEmpty()){
+            return;
+        }
+        for (StockInfoPo stockInfoPo : all) {
+            finance163PullService.pullHistoryPriceData(stockInfoPo);
+        }
     }
 
     private void pullHistoryFinanceData(){
         //是否拉取完成
-
+        List<StockInfoPo> all = stockInfoRepository.findAll(Example.of(StockInfoPo.builder().priceComplete(0).build()));
+        if(all.isEmpty()){
+            return;
+        }
+        for (StockInfoPo stockInfoPo : all) {
+            finance163PullService.pullFinanceData(stockInfoPo);
+        }
     }
 
     private void checkNewStock(){
@@ -157,12 +170,5 @@ public class ScheduleThread extends Thread {
             StockFinancePo po = stockFinanceRepository.findOne(example).get();
             finance163PullService.pullStockInfo(financeCode,po==null?"":po.getExchange());
         }
-    }
-
-    private void checkInfoComplete(){
-
-
-
-
     }
 }

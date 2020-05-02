@@ -1,8 +1,12 @@
 package com.black.po;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import org.springframework.data.annotation.Id;
 
+@AllArgsConstructor
+@Builder
 @Data
 public class StockInfoPo {
     @Id
@@ -16,4 +20,6 @@ public class StockInfoPo {
     Integer financeComplete;
     Long createTime;
     Long updateTime;
+
+    public StockInfoPo(){}
 }
