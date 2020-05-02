@@ -107,6 +107,15 @@ public class ScheduleThread extends Thread {
         //现在过了四点吗
         if(endTime>hour16){
             finance163PullService.pullPriceData();
+            TaskPo po=new TaskPo();
+            po.setType(Constants.PRICE_PULL);
+            po.setParams("{}");
+            po.setStatus(1);
+            po.setScheduleTime(System.currentTimeMillis());
+            po.setScheduleCompleteTime(System.currentTimeMillis());
+            po.setCreateTime(System.currentTimeMillis());
+            po.setUpdateTime(System.currentTimeMillis());
+            taskRepository.save(po);
             return;
         }
     }
@@ -132,6 +141,15 @@ public class ScheduleThread extends Thread {
         //现在过了四点吗
         if(endTime>hour16){
             eastMoneyPullService.pullFinanceData();
+            TaskPo po=new TaskPo();
+            po.setType(Constants.FINANCE_PULL);
+            po.setParams("{}");
+            po.setStatus(1);
+            po.setScheduleTime(System.currentTimeMillis());
+            po.setScheduleCompleteTime(System.currentTimeMillis());
+            po.setCreateTime(System.currentTimeMillis());
+            po.setUpdateTime(System.currentTimeMillis());
+            taskRepository.save(po);
             return;
         }
     }

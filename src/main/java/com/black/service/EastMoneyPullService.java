@@ -56,48 +56,51 @@ public class EastMoneyPullService {
             String params="&filter=(securitytypecode=%27{marketCode}%27)(reportdate=^{reportDate}^)".replace("{marketCode}",marketCode).replace("{reportDate}",reportDate);
             int page=1;
             do{
-                String tmpUrl=dataurl;
-                String jsname="a"+(new Random().nextInt(100));
-                String origin="var {jsname}={pages:(tp),data: (x),font:(font)}";
-                String jsparam=origin.replace("{jsname}",jsname).replace(" ","%20");
-                tmpUrl=tmpUrl.replace(origin,jsparam).replace("{param}",params);
-                String str = tmpUrl.replace("{page}", ""+page);
-                String res = get(str);
-                if(res==null){
-                    break;
-                }
-                String data = res.replace("pages:", "\"pages\":")
-                        .replace("data:", "\"data\":")
-                        .replace("font:", "\"font\":")
-                        .replace("var "+jsname+"=","");
-                JSONObject json = null;
                 try {
-                    json=JSON.parseObject(data);
-                } catch (Exception e) {
-                    String msg = Helper.stack(e);
-                    errorRepository.save(new ErrorPo(msg));
-                }
+                    String tmpUrl=dataurl;
+                    String jsname="a"+(new Random().nextInt(100));
+                    String origin="var {jsname}={pages:(tp),data: (x),font:(font)}";
+                    String jsparam=origin.replace("{jsname}",jsname).replace(" ","%20");
+                    tmpUrl=tmpUrl.replace(origin,jsparam).replace("{param}",params);
+                    String str = tmpUrl.replace("{page}", ""+page);
+                    String res = get(str);
 
-
-                int pages = json.getIntValue("pages");
-                JSONArray fontMapping = json.getJSONObject("font").getJSONArray("FontMapping");
-                JSONArray dataArr = json.getJSONArray("data");
-                List<StockFinancePo> financePos = parse(dataArr, fontMapping);
-                for (StockFinancePo financePo : financePos) {
-                    StockFinancePo po = stockFinanceRepository.findByCodeAndDate(financePo.getCode(), financePo.getDate());
-                    if(po!=null){
-                        financePo.setId(po.getId());
+                    if(res==null){
+                        break;
                     }
-                    stockFinanceRepository.save(financePo);
-                }
+                    String data = res.replace("pages:", "\"pages\":")
+                            .replace("data:", "\"data\":")
+                            .replace("font:", "\"font\":")
+                            .replace("var "+jsname+"=","");
+                    JSONObject json = null;
+                    try {
+                        json=JSON.parseObject(data);
+                    } catch (Exception e) {
+                        String msg = Helper.stack(e);
+                        errorRepository.save(new ErrorPo(msg));
+                    }
 
-                if(page>=pages){
-                    break;
-                }
-                ++page;
-                try {
+                    int pages = json.getIntValue("pages");
+                    JSONArray fontMapping = json.getJSONObject("font").getJSONArray("FontMapping");
+                    JSONArray dataArr = json.getJSONArray("data");
+                    List<StockFinancePo> financePos = parse(dataArr, fontMapping);
+                    for (StockFinancePo financePo : financePos) {
+                        StockFinancePo po = stockFinanceRepository.findByCodeAndDate(financePo.getCode(), financePo.getDate());
+                        if(po!=null){
+                            financePo.setId(po.getId());
+                        }
+                        stockFinanceRepository.save(financePo);
+                    }
+
+                    if(page>=pages){
+                        break;
+                    }
+                    ++page;
+
                     Thread.sleep(1000L);
-                } catch (Exception e) {}
+                } catch (Exception e) {
+                    errorRepository.save(ErrorPo.builder().error("解析数据错误,url:"+url+",resp:"+resp).build());
+                }
             }while (true);
         }
     }
@@ -110,7 +113,7 @@ public class EastMoneyPullService {
             reader.transferTo(writer);
             return writer.toString();
         } catch (Exception e) {
-            errorRepository.save(ErrorPo.builder().error("解析数据错误,url:"+str+",exception:"+ Helper.stack(e)).build());
+            errorRepository.save(ErrorPo.builder().error("exception:"+ Helper.stack(e)).build());
             return null;
         }
     }
