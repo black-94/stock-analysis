@@ -29,6 +29,6 @@ public class StockFinanceRepository extends BaseRepository{
     }
 
     public void save(StockFinancePo financePo) {
-
+        sqlSessionTemplate.insert("insert into stock_finance(code,name,exchange,date,income,y2yIncome,m2mIncome,profit,y2yProfit,m2mProfit) values(#{code},#{name},#{exchange},#{date},#{income},#{y2yIncome},#{m2mIncome},#{profit},#{y2yProfit},#{m2mProfit})",financePo);
     }
 }

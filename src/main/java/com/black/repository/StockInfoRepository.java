@@ -3,6 +3,7 @@ package com.black.repository;
 
 import com.black.po.StockInfoPo;
 
+import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -22,9 +23,11 @@ public class StockInfoRepository extends BaseRepository{
     }
 
     public List<StockInfoPo> findAll() {
-        return null;
+        List<Object> objects = sqlSessionTemplate.selectList("select * from stock_info");
+        return objects.stream().map(this::toObject).map(e->(StockInfoPo)e).collect(Collectors.toList());
     }
 
     public void save(StockInfoPo po) {
+        sqlSessionTemplate.insert("insert into stock_info(code,name,exchange,business,openDay,marketDay,infoInit,priceComplete,financeComplete) values (#{code},#{name},#{exchange},#{business},#{openDay},#{marketDay},#{infoInit},#{priceComplete},#{financeComplete})",po);
     }
 }
