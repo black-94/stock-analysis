@@ -201,17 +201,17 @@ public class Finance163PullService {
         String url=String.format("http://quotes.money.163.com/f10/zycwzb_%s,season.html",stockInfoPo.getCode());
         String res = get(url);
         Document doc = Jsoup.parse(res);
-        Elements elements = doc.select(".table_bg001 tr");
-        Elements dates = elements.get(0).select("td");
+        Elements elements = doc.select(".table_bg001.border_box.limit_sale.scr_table tr");
+        Elements dates = elements.get(0).select("th");
         Elements incomes = elements.get(4).select("td");
         Elements profits = elements.get(10).select("td");
 
-        if(dates.size()<2){
+        if(dates.size()<1){
             return;
         }
 
         List<StockFinancePo> pos=new ArrayList<>();
-        for (int i = 1; i < dates.size(); i++) {
+        for (int i = 0; i < dates.size(); i++) {
             StockFinancePo po=new StockFinancePo();
             try {
                 BeanUtils.copyProperties(stockInfoPo,po);
@@ -297,6 +297,9 @@ public class Finance163PullService {
 
     public BigDecimal decimalOf(String str){
         try {
+            if(str!=null){
+                str=str.replace(",","").replace(" ","").replace("-","");
+            }
             return new BigDecimal(str);
         } catch (Exception e) {
             return null;
