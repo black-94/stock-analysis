@@ -6,23 +6,17 @@ import org.springframework.stereotype.Component;
 @Component
 public class TaskRepository extends BaseRepository{
 
-    @Override
-    protected Class getPoClass() {
-        return TaskPo.class;
-    }
-
     public TaskPo findRecentTasks(String type){
-        Object o = sqlSessionTemplate.selectOne("select * from tb_task where scheduleTime < now() and status=0 and type='" + type + "' order by scheduleTime desc limit 1");
-        return (TaskPo) toObject(o);
+        return jdbcTemplate.queryForObject("select * from tb_task where scheduleTime < now() and status=0 and type='" + type + "' order by scheduleTime desc limit 1",TaskPo.class);
     }
 
     public TaskPo findCompleteTasks(String type) {
-        Object o = sqlSessionTemplate.selectOne("select * from tb_task where status=1 and type='" + type + "' order by scheduleCompleteTime desc limit 1");
-        return (TaskPo) toObject(o);
+        return jdbcTemplate.queryForObject("select * from tb_task where status=1 and type='" + type + "' order by scheduleCompleteTime desc limit 1",TaskPo.class);
     }
 
     public void insert(TaskPo po){
-        sqlSessionTemplate.insert("insert into tb_task(type,status,scheduleTime,scheduleCompleteTime) values (#{type},#{status},#{scheduleTime},#{scheduleCompleteTime})",po);
+        String sql="insert into tb_task(type,status,scheduleTime,scheduleCompleteTime) values (?,?,?,?)";
+        jdbcTemplate.update(sql,po.getType(),po.getStatus(),po.getScheduleTime(),po.getScheduleCompleteTime());
     }
 
 }

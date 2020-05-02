@@ -7,11 +7,7 @@ import org.springframework.stereotype.Component;
 public class ErrorRepository extends BaseRepository{
 
     public void save(ErrorPo po){
-        sqlSessionTemplate.insert("insert into tb_error_log(type,msg,stack)values(#{type},#{msg},#{stack})",po);
-    }
-
-    @Override
-    protected Class getPoClass() {
-        return ErrorPo.class;
+        String sql="insert into tb_error_log(type,msg,stack)values('%s','%s','%s')";
+        jdbcTemplate.execute(String.format(sql,po.getType(),po.getMsg(),po.getStack()));
     }
 }

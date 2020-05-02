@@ -10,27 +10,21 @@ import java.util.List;
 @Component
 public class StockFinanceRepository extends BaseRepository{
 
-    @Override
-    protected Class getPoClass() {
-        return StockFinancePo.class;
-    }
-
     public StockFinancePo findByCodeAndDate(String code, Date date){
         String str = formatter.format(date);
-        Object o = sqlSessionTemplate.selectOne("select * from stock_finance where code=" + code + " and date='" + str + "'");
-        return (StockFinancePo) toObject(o);
+        return jdbcTemplate.queryForObject("select * from stock_finance where code=" + code + " and date='" + str + "'",StockFinancePo.class);
     }
 
     public List<String> queryCodes(){
-        return sqlSessionTemplate.selectList("select distinct(code) from stock_finance");
+        return jdbcTemplate.queryForList("select distinct(code) from stock_finance",String.class);
     }
 
     public StockFinancePo findByCode(String code){
-        Object o = sqlSessionTemplate.selectOne("select * from stock_finance where code='" + code + "' order by createTime desc limit 1");
-        return (StockFinancePo) toObject(o);
+        return jdbcTemplate.queryForObject("select * from stock_finance where code='" + code + "' order by createTime desc limit 1",StockFinancePo.class);
     }
 
     public void save(StockFinancePo financePo) {
-        sqlSessionTemplate.insert("insert into stock_finance(code,name,exchange,date,income,y2yIncome,m2mIncome,profit,y2yProfit,m2mProfit) values(#{code},#{name},#{exchange},#{date},#{income},#{y2yIncome},#{m2mIncome},#{profit},#{y2yProfit},#{m2mProfit})",financePo);
+        String sql="insert into stock_finance(code,name,exchange,date,income,y2yIncome,m2mIncome,profit,y2yProfit,m2mProfit) values(?,?,?,?,?,?,?,?,?,?)";
+        jdbcTemplate.update(sql,financePo.getCode(),financePo.getName(),financePo.getExchange(),financePo.getDate(),financePo.getIncome(),financePo.getY2yIncome(),financePo.getM2mIncome(),financePo.getProfit(),financePo.getY2yProfit(),financePo.getM2mProfit());
     }
 }
