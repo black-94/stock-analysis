@@ -78,7 +78,8 @@ public class EastMoneyPullService {
                 try {
                     json=JSON.parseObject(data);
                 } catch (Exception e) {
-                    e.printStackTrace();
+                    String msg = Helper.stack(e);
+                    errorRepository.save(new ErrorPo(msg));
                 }
 
 

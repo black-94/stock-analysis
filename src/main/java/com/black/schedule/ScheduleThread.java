@@ -1,9 +1,11 @@
 package com.black.schedule;
 
 import com.black.constant.Constants;
+import com.black.po.ErrorPo;
 import com.black.po.StockFinancePo;
 import com.black.po.StockInfoPo;
 import com.black.po.TaskPo;
+import com.black.repository.ErrorRepository;
 import com.black.repository.StockFinanceRepository;
 import com.black.repository.StockInfoRepository;
 import com.black.repository.TaskRepository;
@@ -26,7 +28,6 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.ZoneId;
 import java.util.List;
-import java.util.Optional;
 
 @Component
 public class ScheduleThread extends Thread {
@@ -40,6 +41,8 @@ public class ScheduleThread extends Thread {
     private StockFinanceRepository stockFinanceRepository;
     @Autowired
     private StockInfoRepository stockInfoRepository;
+    @Autowired
+    ErrorRepository errorRepository;
     @Autowired
     MongoTemplate mongoTemplate;
     @Autowired
@@ -74,7 +77,8 @@ public class ScheduleThread extends Thread {
                 } catch (Exception e) {
                 }
             } catch (Throwable e) {
-                Helper.stack(e);
+                String msg = Helper.stack(e);
+                errorRepository.save(new ErrorPo(msg));
             }
         }
     }
