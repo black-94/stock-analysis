@@ -2,10 +2,12 @@ package com.black.repository;
 
 
 import com.black.po.StockFinancePo;
+import org.springframework.stereotype.Repository;
 
 import java.util.Date;
 import java.util.List;
 
+@Repository
 public class StockFinanceRepository extends BaseRepository{
 
     @Override

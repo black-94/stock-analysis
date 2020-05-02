@@ -1,7 +1,9 @@
 package com.black.repository;
 
 import com.black.po.TaskPo;
+import org.springframework.stereotype.Repository;
 
+@Repository
 public class TaskRepository extends BaseRepository{
 
     @Override
