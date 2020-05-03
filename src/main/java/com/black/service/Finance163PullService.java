@@ -91,13 +91,13 @@ public class Finance163PullService {
     public void pullPriceData() {
         List<StockInfoPo> all = stockInfoRepository.findAll();
         all.parallelStream().forEach(stock->{
+            String key=(stock.getExchange().contains("深")?1:0)+stock.getCode();
+            String url=String.format("http://api.money.126.net/data/feed/%s,money.api?callback=a",key);
+            String res = get(url);
+            if(res==null){
+                return;
+            }
             try {
-                String key=(stock.getExchange().contains("深")?1:0)+stock.getCode();
-                String url=String.format("http://api.money.126.net/data/feed/%s,money.api?callback=a",key);
-                String res = get(url);
-                if(res==null){
-                    return;
-                }
                 res=res.substring(2,res.length()-2);
                 JSONObject json=JSON.parseObject(res).getJSONObject(key);
                 String percent = json.getString("percent");
@@ -137,7 +137,8 @@ public class Finance163PullService {
                 }
 
                 stockPriceRepository.save(stockPricePo);
-            } catch (Exception e) {
+            } catch (Exception ex) {
+                RuntimeException e=new RuntimeException("url:"+url+",res:"+res,ex);
                 errorRepository.save(ErrorPo.builder().type(e.getClass().getName()).msg(e.getMessage()).stack(Helper.stack(e)).build());
             }
         });
