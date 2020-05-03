@@ -90,13 +90,13 @@ public class Finance163PullService {
 
     public void pullPriceData() {
         List<StockInfoPo> all = stockInfoRepository.findAll();
-        for (StockInfoPo stock : all) {
+        all.parallelStream().forEach(stock->{
             try {
                 String key=(stock.getExchange().contains("深")?1:0)+stock.getCode();
                 String url=String.format("http://api.money.126.net/data/feed/%s,money.api?callback=a",key);
                 String res = get(url);
                 if(res==null){
-                    continue;
+                    return;
                 }
                 res=res.substring(2,res.length()-2);
                 JSONObject json=JSON.parseObject(res).getJSONObject(key);
@@ -138,9 +138,9 @@ public class Finance163PullService {
 
                 stockPriceRepository.save(stockPricePo);
             } catch (Exception e) {
-                 errorRepository.save(ErrorPo.builder().type(e.getClass().getName()).msg(e.getMessage()).stack(Helper.stack(e)).build());
+                errorRepository.save(ErrorPo.builder().type(e.getClass().getName()).msg(e.getMessage()).stack(Helper.stack(e)).build());
             }
-        }
+        });
     }
 
     public void pullHistoryPriceData(StockInfoPo stockInfoPo){
