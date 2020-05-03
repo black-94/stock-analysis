@@ -54,24 +54,26 @@ public class ScheduleThread extends Thread {
     public void run() {
         while (true){
             try {
-                //财报数据每天四点一次
-                pullFinanceData();
-                //信息补全每分钟一次
-                checkNewStock();
-                //股票数据每天四点一次
-                pullPriceData();
-                //历史股票数据每分钟一次
-                pullHistoryPriceData();
-                //历史财报数据每分钟一次
-                pullHistoryFinanceData();
+                try {
+                    //财报数据每天四点一次
+                    pullFinanceData();
+                    //信息补全每分钟一次
+                    checkNewStock();
+                    //股票数据每天四点一次
+                    pullPriceData();
+                    //历史股票数据每分钟一次
+                    pullHistoryPriceData();
+                    //历史财报数据每分钟一次
+                    pullHistoryFinanceData();
+                } catch (Throwable e) {
+                    errorRepository.save(ErrorPo.builder().type(e.getClass().getName()).msg(e.getMessage()).stack(Helper.stack(e)).build());
+                }
+                try {
+                    Thread.sleep(1000L);
+                } catch (Exception e) {
+                }
             } catch (Exception e) {
-                errorRepository.save(ErrorPo.builder().type(e.getClass().getName()).msg(e.getMessage()).stack(Helper.stack(e)).build());
-            } catch (Throwable e) {
-                errorRepository.save(ErrorPo.builder().type(e.getClass().getName()).msg(e.getMessage()).stack(Helper.stack(e)).build());
-            }
-            try {
-                Thread.sleep(1000L);
-            } catch (Exception e) {
+                log.error("",e);
             }
         }
     }
