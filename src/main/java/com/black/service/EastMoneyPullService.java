@@ -19,6 +19,7 @@ import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Date;
@@ -124,7 +125,6 @@ public class EastMoneyPullService {
         for (Object d : data) {
             String t = decode(d.toString(), mapping);
             JSONObject j= JSON.parseObject(t);
-            Instant reportdate = LocalDate.parse(j.getString("reportdate")).atStartOfDay().atZone(ZoneId.systemDefault()).toInstant();
 
             StockFinancePo po=new StockFinancePo();
             po.setCode(j.getString("scode"));
@@ -136,7 +136,7 @@ public class EastMoneyPullService {
             po.setProfit(decimalOf(j.getString("parentnetprofit")));
             po.setY2yProfit(decimalOf(j.getString("sjltz")));
             po.setM2mProfit(decimalOf(j.getString("sjlhz")));
-            po.setDate(Date.from(reportdate));
+            po.setDate(parseDate(j));
             po.setCreateTime(new Date());
             po.setUpdateTime(new Date());
             list.add(po);
@@ -160,6 +160,18 @@ public class EastMoneyPullService {
             str=str.replace(code,value+"");
         }
         return str;
+    }
+
+    public Date parseDate(JSONObject j){
+        try {
+            String str = j.getString("reportdate");
+            str = str.substring(0, 10);
+            LocalDate date = LocalDate.parse(str, DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+            Instant reportdate = date.atStartOfDay(ZoneId.systemDefault()).toInstant();
+            return Date.from(reportdate);
+        } catch (Exception e) {
+            return new Date();
+        }
     }
 
     public String reportDate(){
