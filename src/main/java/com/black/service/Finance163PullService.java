@@ -273,16 +273,18 @@ public class Finance163PullService {
     }
 
     public String get(String str){
-        try {
-            URL url=new URL(str);
-            InputStreamReader reader = new InputStreamReader(url.openConnection().getInputStream());
-            StringWriter writer=new StringWriter();
-            reader.transferTo(writer);
-            return writer.toString();
-        } catch (Exception e) {
-            errorRepository.save(ErrorPo.builder().type(e.getClass().getName()).msg(e.getMessage()).stack(Helper.stack(e)).build());
-            return null;
+        for (int i = 0; i < 3; i++) {
+            try {
+                URL url=new URL(str);
+                InputStreamReader reader = new InputStreamReader(url.openConnection().getInputStream());
+                StringWriter writer=new StringWriter();
+                reader.transferTo(writer);
+                return writer.toString();
+            } catch (Exception e) {
+                errorRepository.save(ErrorPo.builder().type(e.getClass().getName()).msg(e.getMessage()).stack(Helper.stack(e)).build());
+            }
         }
+        return null;
     }
 
     public BigDecimal calRatio(BigDecimal base,BigDecimal change){
