@@ -56,7 +56,7 @@ public class ScheduleThread extends Thread {
             try {
                 try {
                     //财报数据每天四点一次
-                    pullFinanceData();
+//                    pullFinanceData();
                     //信息补全每分钟一次
                     checkNewStock();
                     //股票数据每天四点一次
