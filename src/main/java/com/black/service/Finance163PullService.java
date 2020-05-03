@@ -56,6 +56,7 @@ public class Finance163PullService {
             String name="";
             String business="";
             String openDay="";
+            String marketDay="";
 
             for (Element e : elements) {
                 String text = e.text();
@@ -63,7 +64,8 @@ public class Finance163PullService {
                 switch (text){
                     case "中文简称":name=value;break;
                     case "经营范围":business=value;break;
-                    case "上市日期":openDay=value;break;
+                    case "上市日期":marketDay=value;break;
+                    case "成立日期":openDay=value;break;
                     default:break;
                 }
             }
@@ -73,6 +75,7 @@ public class Finance163PullService {
             po.setName(name);
             po.setBusiness(business);
             po.setOpenDay(openDay);
+            po.setMarketDay(marketDay);
             po.setInfoInit(1);
             po.setPriceComplete(0);
             po.setFinanceComplete(0);
@@ -142,7 +145,7 @@ public class Finance163PullService {
 
     public void pullHistoryPriceData(StockInfoPo stockInfoPo){
         int year=LocalDate.now().getYear();
-        int openDay=Integer.valueOf(stockInfoPo.getOpenDay().substring(0,4));
+        int openDay=Integer.valueOf(stockInfoPo.getMarketDay().substring(0,4));
         for (int i = openDay; i <= year; i++) {
             for (int j = 1; j < 5; j++) {
                 String url=String.format("http://quotes.money.163.com/trade/lsjysj_%s.html?year=%d&season=%d",stockInfoPo.getCode(),i,j);
