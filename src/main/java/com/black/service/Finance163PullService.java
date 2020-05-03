@@ -92,7 +92,7 @@ public class Finance163PullService {
         List<StockInfoPo> all = stockInfoRepository.findAll();
         for (StockInfoPo stock : all) {
             try {
-                String key=(stock.getName().contains("深")?1:0)+stock.getCode();
+                String key=(stock.getExchange().contains("深")?1:0)+stock.getCode();
                 String url=String.format("http://api.money.126.net/data/feed/%s,money.api?callback=a",key);
                 String res = get(url);
                 if(res==null){
