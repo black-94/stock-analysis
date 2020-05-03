@@ -97,12 +97,11 @@ public class EastMoneyPullService {
                     if(page>=pages){
                         break;
                     }
-                    ++page;
-
                     Thread.sleep(1000L);
                 } catch (Exception e) {
                     errorRepository.save(ErrorPo.builder().type(e.getClass().getName()).msg(e.getMessage()).stack(Helper.stack(e)).build());
                 }
+                ++page;
             }while (true);
         }
     }
