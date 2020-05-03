@@ -124,7 +124,7 @@ public class EastMoneyPullService {
         for (Object d : data) {
             String t = decode(d.toString(), mapping);
             JSONObject j= JSON.parseObject(t);
-            Instant reportdate = LocalDateTime.parse(j.getString("reportdate")).atZone(ZoneId.systemDefault()).toInstant();
+            Instant reportdate = LocalDate.parse(j.getString("reportdate")).atStartOfDay().atZone(ZoneId.systemDefault()).toInstant();
 
             StockFinancePo po=new StockFinancePo();
             po.setCode(j.getString("scode"));
