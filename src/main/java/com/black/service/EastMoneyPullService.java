@@ -34,6 +34,13 @@ public class EastMoneyPullService {
     @Autowired
     StockFinanceRepository stockFinanceRepository;
 
+    public void codes(){
+        //#quotesearch ul
+        //ul li a
+
+
+    }
+
     public void pullFinanceData(){
         String url="http://data.eastmoney.com/bbsj/201912/yjbb.html";
         String resp = get(url);
