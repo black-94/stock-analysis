@@ -24,4 +24,9 @@ public class TaskRepository extends BaseRepository{
         jdbcTemplate.update(sql,po.getType(),po.getStatus(),po.getScheduleTime(),po.getScheduleCompleteTime());
     }
 
+    public void update(TaskPo po){
+        String sql="update tb_task set status=1 where id="+po.getId();
+        jdbcTemplate.update(sql);
+    }
+
 }

@@ -81,7 +81,8 @@ public class ScheduleThread extends Thread {
         Long hour8=Date.from(LocalTime.of(8, 0).atDate(LocalDate.now()).atZone(ZoneId.systemDefault()).toInstant()).getTime();
         TaskPo recentTask = taskRepository.findRecentTasks(Constants.PRICE_PULL);
         if(recentTask!=null&&recentTask.getStatus()==0){
-            eastMoneyPullService.pullFinanceData();
+            finance163PullService.pullPriceData();
+            taskRepository.update(recentTask);
             return;
         }
         //四点之后有拉过数据吗，没有就拉
@@ -112,6 +113,7 @@ public class ScheduleThread extends Thread {
         TaskPo recentTask = taskRepository.findRecentTasks(Constants.FINANCE_PULL);
         if(recentTask!=null&&recentTask.getStatus()==0){
             eastMoneyPullService.pullFinanceData();
+            taskRepository.update(recentTask);
             return;
         }
         //四点之后有拉过数据吗，没有就拉
