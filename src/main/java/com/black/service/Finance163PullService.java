@@ -298,7 +298,7 @@ public class Finance163PullService {
             return null;
         }
 
-        return change.subtract(base).divide(base).setScale(5, RoundingMode.HALF_DOWN);
+        return change.subtract(base).divide(base,5, RoundingMode.HALF_DOWN);
     }
 
     public BigDecimal decimalOf(String str){
