@@ -64,6 +64,8 @@ public class ScheduleThread extends Thread {
                 pullHistoryPriceData();
                 //历史财报数据每分钟一次
                 pullHistoryFinanceData();
+            } catch (Exception e) {
+                errorRepository.save(ErrorPo.builder().type(e.getClass().getName()).msg(e.getMessage()).stack(Helper.stack(e)).build());
             } catch (Throwable e) {
                 errorRepository.save(ErrorPo.builder().type(e.getClass().getName()).msg(e.getMessage()).stack(Helper.stack(e)).build());
             }
