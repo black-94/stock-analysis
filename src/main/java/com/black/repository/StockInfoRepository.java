@@ -24,6 +24,11 @@ public class StockInfoRepository extends BaseRepository{
         return toList(list,StockInfoPo.class);
     }
 
+    public void updateStatus(String field,long id){
+        String sql="update stock_info set "+field+"=1 where id=?";
+        jdbcTemplate.update(sql,id);
+    }
+
     public void save(StockInfoPo po) {
         String sql="insert into stock_info(code,name,exchange,business,openDay,marketDay,infoInit,priceComplete,financeComplete) values (?,?,?,?,?,?,?,?,?)";
         jdbcTemplate.update(sql,po.getCode(),po.getName(),

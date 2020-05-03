@@ -200,9 +200,7 @@ public class Finance163PullService {
             }
         }
 
-        stockInfoPo.setPriceComplete(1);
-        stockInfoPo.setUpdateTime(new Date());
-        stockInfoRepository.save(stockInfoPo);
+        stockInfoRepository.updateStatus("priceComplete",stockInfoPo.getId());
     }
 
     public void pullFinanceData(StockInfoPo stockInfoPo){
@@ -273,9 +271,7 @@ public class Finance163PullService {
             }
         }
 
-        stockInfoPo.setFinanceComplete(1);
-        stockInfoPo.setUpdateTime(new Date());
-        stockInfoRepository.save(stockInfoPo);
+        stockInfoRepository.updateStatus("financeComplete",stockInfoPo.getId());
     }
 
     public String get(String str){
