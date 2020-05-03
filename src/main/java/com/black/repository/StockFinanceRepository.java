@@ -6,14 +6,15 @@ import org.springframework.stereotype.Component;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 @Component
 public class StockFinanceRepository extends BaseRepository{
 
     public StockFinancePo findByCodeAndDate(String code, Date date){
         String str = formatter.format(date);
-        List<StockFinancePo> list = jdbcTemplate.queryForList("select * from stock_finance where code=" + code + " and date='" + str + "'", StockFinancePo.class);
-        return list.isEmpty()?null:list.get(0);
+        List<Map<String, Object>> list = jdbcTemplate.queryForList("select * from stock_finance where code=" + code + " and date='" + str + "'");
+        return toObject(list, StockFinancePo.class);
     }
 
     public List<String> queryCodes(){
@@ -21,8 +22,8 @@ public class StockFinanceRepository extends BaseRepository{
     }
 
     public StockFinancePo findByCode(String code){
-        List<StockFinancePo> list = jdbcTemplate.queryForList("select * from stock_finance where code='" + code + "' order by createTime desc limit 1", StockFinancePo.class);
-        return list.isEmpty()?null:list.get(0);
+        List<Map<String, Object>> list = jdbcTemplate.queryForList("select * from stock_finance where code='" + code + "' order by createTime desc limit 1");
+        return toObject(list,StockFinancePo.class);
     }
 
     public void save(StockFinancePo financePo) {

@@ -8,13 +8,15 @@ import org.springframework.stereotype.Component;
 import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 @Component
 public class StockPriceRepository extends BaseRepository{
 
     public List<StockPricePo> findByCodeAndDate(String code, Date date){
         String sql="select * from stock_price where code=? and date=?";
-        return jdbcTemplate.queryForList(sql,new Object[]{code,date}, StockPricePo.class);
+        List<Map<String, Object>> list = jdbcTemplate.queryForList(sql, new Object[]{code, date});
+        return toList(list, StockPricePo.class);
     }
 
     public void save(StockPricePo stockPricePo) {

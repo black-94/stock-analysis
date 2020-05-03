@@ -5,7 +5,7 @@ import com.black.po.StockInfoPo;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
-import java.util.stream.Collectors;
+import java.util.Map;
 
 @Component
 public class StockInfoRepository extends BaseRepository{
@@ -15,11 +15,13 @@ public class StockInfoRepository extends BaseRepository{
     }
 
     public List<StockInfoPo> queryByStatus(String field){
-        return jdbcTemplate.queryForList("select * from stock_info where " + field + "=0",StockInfoPo.class);
+        List<Map<String, Object>> list = jdbcTemplate.queryForList("select * from stock_info where " + field + "=0");
+        return toList(list,StockInfoPo.class);
     }
 
     public List<StockInfoPo> findAll() {
-        return jdbcTemplate.queryForList("select * from stock_info",StockInfoPo.class);
+        List<Map<String, Object>> list = jdbcTemplate.queryForList("select * from stock_info");
+        return toList(list,StockInfoPo.class);
     }
 
     public void save(StockInfoPo po) {
