@@ -27,7 +27,12 @@ public class StockFinanceRepository extends BaseRepository{
     }
 
     public void save(StockFinancePo financePo) {
-        String sql="insert into stock_finance(code,name,exchange,date,income,y2yIncome,m2mIncome,profit,y2yProfit,m2mProfit) values(?,?,?,?,?,?,?,?,?,?)";
-        jdbcTemplate.update(sql,financePo.getCode(),financePo.getName(),financePo.getExchange(),financePo.getDate(),financePo.getIncome(),financePo.getY2yIncome(),financePo.getM2mIncome(),financePo.getProfit(),financePo.getY2yProfit(),financePo.getM2mProfit());
+        if(financePo.getId()<=0){
+            String sql="insert into stock_finance(code,name,exchange,date,income,y2yIncome,m2mIncome,profit,y2yProfit,m2mProfit) values(?,?,?,?,?,?,?,?,?,?)";
+            jdbcTemplate.update(sql,financePo.getCode(),financePo.getName(),financePo.getExchange(),financePo.getDate(),financePo.getIncome(),financePo.getY2yIncome(),financePo.getM2mIncome(),financePo.getProfit(),financePo.getY2yProfit(),financePo.getM2mProfit());
+        }else{
+            String sql="update stock_finance set name=?,exchange=?,income=?,y2yIncome=?,m2mIncome=?,profit=?,y2yProfit=?,m2mProfit=? where id=?";
+            jdbcTemplate.update(sql,financePo.getName(),financePo.getExchange(),financePo.getIncome(),financePo.getY2yIncome(),financePo.getM2mIncome(),financePo.getProfit(),financePo.getY2yProfit(),financePo.getM2mProfit(),financePo.getId());
+        }
     }
 }

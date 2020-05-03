@@ -11,7 +11,7 @@ import java.util.Date;
 @AllArgsConstructor
 @Data
 public class StockFinancePo {
-    String id;
+    long id;
     String code;
     String name;
     String exchange;

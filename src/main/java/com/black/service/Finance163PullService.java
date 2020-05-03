@@ -227,7 +227,7 @@ public class Finance163PullService {
                 String income=incomes.get(i).text();
                 String profit=profits.get(i).text();
                 Instant date = LocalDate.parse(time, DateTimeFormatter.ofPattern("yyyy-MM-dd")).atStartOfDay(ZoneId.systemDefault()).toInstant();
-                po.setId(null);
+                po.setId(0);
                 po.setDate(Date.from(date));
                 po.setIncome(decimalOf(income));
                 po.setProfit(decimalOf(profit));
