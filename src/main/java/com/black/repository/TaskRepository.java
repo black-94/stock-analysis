@@ -3,6 +3,7 @@ package com.black.repository;
 import com.black.po.TaskPo;
 import org.springframework.stereotype.Component;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -25,8 +26,8 @@ public class TaskRepository extends BaseRepository{
     }
 
     public void update(TaskPo po){
-        String sql="update tb_task set status=1 where id="+po.getId();
-        jdbcTemplate.update(sql);
+        String sql="update tb_task set status=1,scheduleCompleteTime=? where id="+po.getId();
+        jdbcTemplate.update(sql,new Date());
     }
 
 }
