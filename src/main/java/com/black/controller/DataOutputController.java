@@ -69,6 +69,9 @@ public class DataOutputController {
         financePullTask.setUpdateTime(now);
         financePullTask.setStatus(0);
 
+        taskRepository.insert(pricePullTask);
+        taskRepository.insert(financePullTask);
+
         return "ok";
     }
 
