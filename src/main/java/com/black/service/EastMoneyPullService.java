@@ -3,10 +3,8 @@ package com.black.service;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
-import com.black.po.ErrorPo;
-import com.black.po.StockFinancePo;
-import com.black.repository.ErrorRepository;
-import com.black.repository.StockFinanceRepository;
+import com.black.po.StockHistoryFinancePo;
+import com.black.repository.StockHistoryFinanceRepository;
 import com.black.util.Helper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -30,9 +28,7 @@ import java.util.regex.Pattern;
 @Service
 public class EastMoneyPullService {
     @Autowired
-    ErrorRepository errorRepository;
-    @Autowired
-    StockFinanceRepository stockFinanceRepository;
+    StockHistoryFinanceRepository stockHistoryFinanceRepository;
 
     public void codes(){
         //#quotesearch ul
@@ -55,7 +51,7 @@ public class EastMoneyPullService {
         }
         if(dataurl==null){
             RuntimeException e=new RuntimeException("解析数据错误,url:"+url+",resp:"+resp);
-            errorRepository.save(ErrorPo.builder().type(e.getClass().getName()).msg(e.getMessage()).stack(Helper.stack(e)).build());
+//            errorRepository.save(ErrorPo.builder().type(e.getClass().getName()).msg(e.getMessage()).stack(Helper.stack(e)).build());
             return;
         }
 
@@ -86,19 +82,19 @@ public class EastMoneyPullService {
                     try {
                         json=JSON.parseObject(data);
                     } catch (Exception e) {
-                        errorRepository.save(ErrorPo.builder().type(e.getClass().getName()).msg(e.getMessage()).stack(Helper.stack(e)).build());
+//                        errorRepository.save(ErrorPo.builder().type(e.getClass().getName()).msg(e.getMessage()).stack(Helper.stack(e)).build());
                     }
 
                     int pages = json.getIntValue("pages");
                     JSONArray fontMapping = json.getJSONObject("font").getJSONArray("FontMapping");
                     JSONArray dataArr = json.getJSONArray("data");
-                    List<StockFinancePo> financePos = parse(dataArr, fontMapping);
-                    for (StockFinancePo financePo : financePos) {
-                        StockFinancePo po = stockFinanceRepository.findByCodeAndDate(financePo.getCode(), financePo.getDate());
+                    List<StockHistoryFinancePo> financePos = parse(dataArr, fontMapping);
+                    for (StockHistoryFinancePo financePo : financePos) {
+                        StockHistoryFinancePo po = stockHistoryFinanceRepository.findByCodeAndDate(financePo.getCode(), financePo.getDate());
                         if(po!=null){
                             financePo.setId(po.getId());
                         }
-                        stockFinanceRepository.save(financePo);
+                        stockHistoryFinanceRepository.save(financePo);
                     }
 
                     if(page>=pages){
@@ -106,7 +102,7 @@ public class EastMoneyPullService {
                     }
                     Thread.sleep(1000L);
                 } catch (Exception e) {
-                    errorRepository.save(ErrorPo.builder().type(e.getClass().getName()).msg(e.getMessage()).stack(Helper.stack(e)).build());
+//                    errorRepository.save(ErrorPo.builder().type(e.getClass().getName()).msg(e.getMessage()).stack(Helper.stack(e)).build());
                 }
                 ++page;
             }while (true);
@@ -121,18 +117,18 @@ public class EastMoneyPullService {
             reader.transferTo(writer);
             return writer.toString();
         } catch (Exception e) {
-            errorRepository.save(ErrorPo.builder().type(e.getClass().getName()).msg(e.getMessage()).stack(Helper.stack(e)).build());
+//            errorRepository.save(ErrorPo.builder().type(e.getClass().getName()).msg(e.getMessage()).stack(Helper.stack(e)).build());
             return null;
         }
     }
 
-    public List<StockFinancePo> parse(JSONArray data, JSONArray mapping){
-        List<StockFinancePo> list=new ArrayList<>();
+    public List<StockHistoryFinancePo> parse(JSONArray data, JSONArray mapping){
+        List<StockHistoryFinancePo> list=new ArrayList<>();
         for (Object d : data) {
             String t = decode(d.toString(), mapping);
             JSONObject j= JSON.parseObject(t);
 
-            StockFinancePo po=new StockFinancePo();
+            StockHistoryFinancePo po=new StockHistoryFinancePo();
             po.setCode(j.getString("scode"));
             po.setName(j.getString("sname"));
             po.setExchange(j.getString("trademarket"));

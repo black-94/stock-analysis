@@ -13,7 +13,7 @@ public class StockInfoPo {
     long id;
     String code;
     String name;
-    String exchange;
+    String exchanger;
     String business;
     String openDay;
     String marketDay;

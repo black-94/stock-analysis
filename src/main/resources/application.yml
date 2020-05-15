@@ -4,3 +4,10 @@ spring:
     driverClassName: com.mysql.jdbc.Driver
     username: root
     password:
+logging:
+  file: ./logs
+  pattern:
+    console: "%d %-5level %logger : %msg%n"
+    file: "%d %-5level %logger : %msg%n"
+  level:
+    root: INFO

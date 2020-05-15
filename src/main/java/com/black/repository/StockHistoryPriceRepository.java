@@ -9,7 +9,7 @@ import java.util.List;
 import java.util.Map;
 
 @Component
-public class StockPriceRepository{
+public class StockHistoryPriceRepository{
 
     public List<StockPricePo> findByCodeAndDate(String code, Date date){
         return null;
@@ -39,6 +39,5 @@ public class StockPriceRepository{
     }
 
     public void insert(StockPricePo stockPricePo) {
-
     }
 }

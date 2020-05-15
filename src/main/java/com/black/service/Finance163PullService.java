@@ -2,12 +2,10 @@ package com.black.service;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
-import com.black.po.ErrorPo;
-import com.black.po.StockFinancePo;
+import com.black.po.StockHistoryFinancePo;
 import com.black.po.StockInfoPo;
 import com.black.po.StockPricePo;
-import com.black.repository.ErrorRepository;
-import com.black.repository.StockFinanceRepository;
+import com.black.repository.StockHistoryFinanceRepository;
 import com.black.repository.StockInfoRepository;
 import com.black.repository.StockPriceRepository;
 import com.black.util.Helper;
@@ -35,9 +33,7 @@ import java.util.List;
 @Service
 public class Finance163PullService {
     @Autowired
-    ErrorRepository errorRepository;
-    @Autowired
-    StockFinanceRepository stockFinanceRepository;
+    StockHistoryFinanceRepository stockHistoryFinanceRepository;
     @Autowired
     StockInfoRepository stockInfoRepository;
     @Autowired
@@ -71,7 +67,7 @@ public class Finance163PullService {
             }
 
             po.setCode(code);
-            po.setExchange(market);
+            po.setExchanger(market);
             po.setName(name);
             po.setBusiness(business);
             po.setOpenDay(openDay);
@@ -84,14 +80,14 @@ public class Finance163PullService {
 
             stockInfoRepository.save(po);
         } catch (Exception e) {
-            errorRepository.save(ErrorPo.builder().type(e.getClass().getName()).msg(e.getMessage()).stack(Helper.stack(e)).build());
+//            errorRepository.save(ErrorPo.builder().type(e.getClass().getName()).msg(e.getMessage()).stack(Helper.stack(e)).build());
         }
     }
 
     public void pullPriceData() {
         List<StockInfoPo> all = stockInfoRepository.findAll();
         all.parallelStream().forEach(stock->{
-            String key=(stock.getExchange().contains("深")?1:0)+stock.getCode();
+            String key=(stock.getExchanger().contains("深")?1:0)+stock.getCode();
             String url=String.format("http://api.money.126.net/data/feed/%s,money.api?callback=a",key);
             String res = get(url);
             if(res==null){
@@ -114,7 +110,7 @@ public class Finance163PullService {
                 StockPricePo stockPricePo=new StockPricePo();
                 stockPricePo.setCode(stock.getCode());
                 stockPricePo.setName(stock.getName());
-                stockPricePo.setExchange(stock.getExchange());
+                stockPricePo.setExchange(stock.getExchanger());
                 stockPricePo.setPercent(decimalOf(percent));
                 stockPricePo.setOpen(decimalOf(open));
                 stockPricePo.setCur(decimalOf(price));
@@ -139,7 +135,7 @@ public class Finance163PullService {
                 stockPriceRepository.save(stockPricePo);
             } catch (Exception ex) {
                 RuntimeException e=new RuntimeException("url:"+url+",res:"+res,ex);
-                errorRepository.save(ErrorPo.builder().type(e.getClass().getName()).msg(e.getMessage()).stack(Helper.stack(e)).build());
+//                errorRepository.save(ErrorPo.builder().type(e.getClass().getName()).msg(e.getMessage()).stack(Helper.stack(e)).build());
             }
         });
     }
@@ -176,7 +172,7 @@ public class Finance163PullService {
                         StockPricePo stockPricePo=new StockPricePo();
                         stockPricePo.setCode(stockInfoPo.getCode());
                         stockPricePo.setName(stockInfoPo.getName());
-                        stockPricePo.setExchange(stockInfoPo.getExchange());
+                        stockPricePo.setExchange(stockInfoPo.getExchanger());
                         stockPricePo.setPercent(decimalOf(percent));
                         stockPricePo.setOpen(decimalOf(open));
                         stockPricePo.setCur(decimalOf(close));
@@ -195,7 +191,7 @@ public class Finance163PullService {
 
                         stockPriceRepository.save(stockPricePo);
                     } catch (Exception e) {
-                         errorRepository.save(ErrorPo.builder().type(e.getClass().getName()).msg(e.getMessage()).stack(Helper.stack(e)).build());
+//                         errorRepository.save(ErrorPo.builder().type(e.getClass().getName()).msg(e.getMessage()).stack(Helper.stack(e)).build());
                     }
                 }
             }
@@ -217,9 +213,9 @@ public class Finance163PullService {
             return;
         }
 
-        List<StockFinancePo> pos=new ArrayList<>();
+        List<StockHistoryFinancePo> pos=new ArrayList<>();
         for (int i = 0; i < dates.size(); i++) {
-            StockFinancePo po=new StockFinancePo();
+            StockHistoryFinancePo po=new StockHistoryFinancePo();
             try {
                 BeanUtils.copyProperties(stockInfoPo,po);
                 String time=dates.get(i).text();
@@ -233,7 +229,7 @@ public class Finance163PullService {
                 po.setCreateTime(null);
                 po.setUpdateTime(new Date());
             } catch (Exception e) {
-                errorRepository.save(ErrorPo.builder().type(e.getClass().getName()).msg(e.getMessage()).stack(Helper.stack(e)).build());
+//                errorRepository.save(ErrorPo.builder().type(e.getClass().getName()).msg(e.getMessage()).stack(Helper.stack(e)).build());
             }
             pos.add(po);
         }
@@ -255,20 +251,20 @@ public class Finance163PullService {
                     yprofit=pos.get(i+4).getProfit();
                 }
 
-                StockFinancePo po = pos.get(i);
+                StockHistoryFinancePo po = pos.get(i);
                 po.setY2yIncome(calRatio(yincome,income));
                 po.setY2yProfit(calRatio(yprofit,profit));
                 po.setM2mIncome(calRatio(mincome,income));
                 po.setM2mProfit(calRatio(mprofit,profit));
             } catch (Exception e) {
-                 errorRepository.save(ErrorPo.builder().type(e.getClass().getName()).msg(e.getMessage()).stack(Helper.stack(e)).build());
+//                 errorRepository.save(ErrorPo.builder().type(e.getClass().getName()).msg(e.getMessage()).stack(Helper.stack(e)).build());
             }
         }
 
-        for (StockFinancePo po : pos) {
-            StockFinancePo tmp = stockFinanceRepository.findByCodeAndDate(po.getCode(), po.getDate());
+        for (StockHistoryFinancePo po : pos) {
+            StockHistoryFinancePo tmp = stockHistoryFinanceRepository.findByCodeAndDate(po.getCode(), po.getDate());
             if(tmp==null){
-                stockFinanceRepository.save(po);
+                stockHistoryFinanceRepository.save(po);
             }
         }
 
@@ -284,7 +280,7 @@ public class Finance163PullService {
                 reader.transferTo(writer);
                 return writer.toString();
             } catch (Exception e) {
-                errorRepository.save(ErrorPo.builder().type(e.getClass().getName()).msg(e.getMessage()).stack(Helper.stack(e)).build());
+//                errorRepository.save(ErrorPo.builder().type(e.getClass().getName()).msg(e.getMessage()).stack(Helper.stack(e)).build());
             }
         }
         return null;
