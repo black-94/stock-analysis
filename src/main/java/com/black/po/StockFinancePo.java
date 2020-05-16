@@ -10,7 +10,10 @@ import java.util.Date;
 @Builder
 @AllArgsConstructor
 @Data
-public class StockHistoryFinancePo {
+public class StockFinancePo {
+
+    public StockFinancePo(){}
+
     long id;
     String code;
     String name;
@@ -25,5 +28,4 @@ public class StockHistoryFinancePo {
     Date createTime;
     Date updateTime;
 
-    public StockHistoryFinancePo(){}
 }

@@ -2,13 +2,12 @@ package com.black.service;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
-import com.black.po.StockHistoryFinancePo;
+import com.black.po.StockFinancePo;
 import com.black.po.StockInfoPo;
 import com.black.po.StockPricePo;
 import com.black.repository.StockHistoryFinanceRepository;
 import com.black.repository.StockInfoRepository;
 import com.black.repository.StockPriceRepository;
-import com.black.util.Helper;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -69,7 +68,7 @@ public class Finance163PullService {
             po.setCode(code);
             po.setExchanger(market);
             po.setName(name);
-            po.setBusiness(business);
+            po.setBiz(business);
             po.setOpenDay(openDay);
             po.setMarketDay(marketDay);
             po.setInfoInit(1);
@@ -78,14 +77,14 @@ public class Finance163PullService {
             po.setCreateTime(new Date());
             po.setUpdateTime(new Date());
 
-            stockInfoRepository.save(po);
+//            stockInfoRepository.save(po);
         } catch (Exception e) {
 //            errorRepository.save(ErrorPo.builder().type(e.getClass().getName()).msg(e.getMessage()).stack(Helper.stack(e)).build());
         }
     }
 
     public void pullPriceData() {
-        List<StockInfoPo> all = stockInfoRepository.findAll();
+        List<StockInfoPo> all = null;//stockInfoRepository.findAll();
         all.parallelStream().forEach(stock->{
             String key=(stock.getExchanger().contains("深")?1:0)+stock.getCode();
             String url=String.format("http://api.money.126.net/data/feed/%s,money.api?callback=a",key);
@@ -197,7 +196,7 @@ public class Finance163PullService {
             }
         }
 
-        stockInfoRepository.updateStatus("priceComplete",stockInfoPo.getId());
+//        stockInfoRepository.updateStatus("priceComplete",stockInfoPo.getId());
     }
 
     public void pullFinanceData(StockInfoPo stockInfoPo){
@@ -213,9 +212,9 @@ public class Finance163PullService {
             return;
         }
 
-        List<StockHistoryFinancePo> pos=new ArrayList<>();
+        List<StockFinancePo> pos=new ArrayList<>();
         for (int i = 0; i < dates.size(); i++) {
-            StockHistoryFinancePo po=new StockHistoryFinancePo();
+            StockFinancePo po=new StockFinancePo();
             try {
                 BeanUtils.copyProperties(stockInfoPo,po);
                 String time=dates.get(i).text();
@@ -251,7 +250,7 @@ public class Finance163PullService {
                     yprofit=pos.get(i+4).getProfit();
                 }
 
-                StockHistoryFinancePo po = pos.get(i);
+                StockFinancePo po = pos.get(i);
                 po.setY2yIncome(calRatio(yincome,income));
                 po.setY2yProfit(calRatio(yprofit,profit));
                 po.setM2mIncome(calRatio(mincome,income));
@@ -261,14 +260,14 @@ public class Finance163PullService {
             }
         }
 
-        for (StockHistoryFinancePo po : pos) {
-            StockHistoryFinancePo tmp = stockHistoryFinanceRepository.findByCodeAndDate(po.getCode(), po.getDate());
+        for (StockFinancePo po : pos) {
+            StockFinancePo tmp = stockHistoryFinanceRepository.findByCodeAndDate(po.getCode(), po.getDate());
             if(tmp==null){
                 stockHistoryFinanceRepository.save(po);
             }
         }
 
-        stockInfoRepository.updateStatus("financeComplete",stockInfoPo.getId());
+//        stockInfoRepository.updateStatus("financeComplete",stockInfoPo.getId());
     }
 
     public String get(String str){

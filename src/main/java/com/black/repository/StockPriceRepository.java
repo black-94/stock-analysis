@@ -11,7 +11,7 @@ import java.util.Map;
 @Component
 public class StockPriceRepository{
 
-    public List<StockPricePo> findByCodeAndDate(String code, Date date){
+    public StockPricePo findByCodeAndDate(String code, Date date){
         return null;
 //        String sql="select * from stock_price where code=? and date=?";
 //        List<Map<String, Object>> list = jdbcTemplate.queryForList(sql, new Object[]{code, date});

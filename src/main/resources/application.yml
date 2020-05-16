@@ -11,3 +11,6 @@ logging:
     file: "%d %-5level %logger : %msg%n"
   level:
     root: INFO
+mybatis:
+  configuration:
+    map-underscore-to-camel-case: true

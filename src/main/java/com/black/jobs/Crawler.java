@@ -23,6 +23,8 @@ public class Crawler {
     StockPriceRepository stockPriceRepository;
     @Autowired
     StockHistoryFinanceRepository stockHistoryFinanceRepository;
+    @Autowired
+    StockHistoryPriceRepository stockHistoryPriceRepository;
 
     @Scheduled(cron = "0 0 16 * * ?")
     public void pullStockCodes(){
@@ -57,13 +59,14 @@ public class Crawler {
         List<StockInfoPo> stockInfoPos = stockInfoRepository.queryAllStocks();
         stockInfoPos=stockInfoPos.stream().filter(e->e.getPriceComplete()==0).collect(Collectors.toList());
         stockInfoPos.parallelStream().forEach(e->{
-
-
+            List<Finance163StockHistoryPricePO> prices = finance163Repository.queryHistoryPrice(e.getCode(), e.getExchanger());
+            List<StockHistoryPricePo> list = prices.parallelStream().map(PoBuildUtils::buildStockHistoryPrice).collect(Collectors.toList());
         });
     }
 
     @Scheduled(cron = "0 0 17 * * ?")
     public void pullStockFinance(){
+
 
     }
 
@@ -73,10 +76,10 @@ public class Crawler {
         stockInfoPos=stockInfoPos.stream().filter(e->e.getFinanceComplete()==0).collect(Collectors.toList());
         stockInfoPos.parallelStream().forEach(e->{
             List<Finance163StockHistoryFinancePO> finances = finance163Repository.queryHistoryFinance(e.getCode(), e.getExchanger());
-            List<StockHistoryFinancePo> stockHistoryFinancePos = finances.parallelStream().map(PoBuildUtils::buildStockFinance).collect(Collectors.toList());
+            List<StockFinancePo> stockFinancePos = finances.parallelStream().map(PoBuildUtils::buildStockFinance).collect(Collectors.toList());
             List<Date> dates = stockHistoryFinanceRepository.queryDateByCode(e.getCode());
-            stockHistoryFinancePos = stockHistoryFinancePos.stream().filter(shfp -> !dates.contains(shfp.getDate())).collect(Collectors.toList());
-            stockHistoryFinanceRepository.batchInsert(stockHistoryFinancePos);
+            stockFinancePos = stockFinancePos.stream().filter(shfp -> !dates.contains(shfp.getDate())).collect(Collectors.toList());
+            stockHistoryFinanceRepository.batchInsert(stockFinancePos);
         });
     }
 

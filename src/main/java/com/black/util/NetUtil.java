@@ -12,6 +12,10 @@ public class NetUtil {
 
     public static Logger root= LoggerFactory.getLogger(NetUtil.class);
 
+    public static String get(String link,Object... params){
+        return get(e->e,link,params);
+    }
+
     public static String get(Function<String,String> fun,String link,Object... params){
         String u=String.format(link,params);
         for (int i = 0; i < 3; i++) {

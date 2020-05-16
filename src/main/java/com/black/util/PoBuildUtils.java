@@ -13,7 +13,11 @@ public class PoBuildUtils {
         return null;
     }
 
-    public static StockHistoryFinancePo buildStockFinance(Finance163StockHistoryFinancePO financePO) {
+    public static StockHistoryPricePo buildStockHistoryPrice(Finance163StockHistoryPricePO price) {
+        return null;
+    }
+
+    public static StockFinancePo buildStockFinance(Finance163StockHistoryFinancePO financePO) {
         return null;
     }
 }
