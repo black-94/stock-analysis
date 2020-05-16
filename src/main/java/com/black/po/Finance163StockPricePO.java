@@ -18,7 +18,7 @@ public class Finance163StockPricePO {
     String cur;
     String high;
     String low;
-    String volumn;
+    String volume;
     String amount;
     String updown;
     String change;

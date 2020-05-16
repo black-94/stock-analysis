@@ -8,23 +8,19 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Repository;
 
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import static com.black.util.Helper.decimalOf;
-
 @Repository
 public class Finance163Repository {
-
-    @Autowired
-    StockPriceRepository stockPriceRepository;
 
     public Finance163StockInfoPO queryInfo(String code, String exchanger){
         String url="http://quotes.money.163.com/f10/gszl_%s.html";
@@ -51,7 +47,6 @@ public class Finance163Repository {
         Finance163StockInfoPO po=new Finance163StockInfoPO();
         po.setCode(code);
         po.setName(name);
-        po.setExchanger(exchanger);
         po.setBiz(biz);
         po.setOpenDay(openDay);
         po.setMarketDay(marketDay);
@@ -69,38 +64,112 @@ public class Finance163Repository {
         String price = json.getString("price");
         String high = json.getString("high");
         String low = json.getString("low");
-        String volumn = json.getString("volumn");
+        String volume = json.getString("volume");
         String turnover = json.getString("turnover");
         String time = json.getString("time");
-        Instant date = LocalDate.parse(time.substring(0, 10), DateTimeFormatter.ofPattern("yyyy/MM/dd")).atStartOfDay(ZoneId.systemDefault()).toInstant();
+        String updown = json.getString("updown");
+        String date = time.substring(0, 10);
 
         Finance163StockPricePO stockPricePo=new Finance163StockPricePO();
         stockPricePo.setCode(code);
-        stockPricePo.setExchanger(exchanger);
-        stockPricePo.setPercent(decimalOf(percent));
-        stockPricePo.setOpen(decimalOf(open));
-        stockPricePo.setCur(decimalOf(price));
-        stockPricePo.setLastClose(decimalOf(yestclose));
-        stockPricePo.setHigh(decimalOf(high));
-        stockPricePo.setLow(decimalOf(low));
-        stockPricePo.setVolumn(decimalOf(volumn));
-        stockPricePo.setTurnover(decimalOf(turnover));
-        stockPricePo.setDate(Date.from(date));
-
-        if(stockPricePo.getCur().compareTo(stockPricePo.getLastClose())<0){
-            stockPricePo.getPercent().negate();
-        }
+        stockPricePo.setOpen(open);
+        stockPricePo.setLastClose(yestclose);
+        stockPricePo.setCur(price);
+        stockPricePo.setHigh(high);
+        stockPricePo.setLow(low);
+        stockPricePo.setVolume(volume);
+        stockPricePo.setAmount(turnover);
+        stockPricePo.setUpdown(percent);
+        stockPricePo.setChange(updown);
+//        stockPricePo.setAmplitude();
+        stockPricePo.setDate(date);
 
         return stockPricePo;
     }
 
+    public List<Finance163StockHistoryPricePO> queryHistoryPrice(String code, String exchanger){
+        String marketDay = queryInfo(code, exchanger).getMarketDay();
+        int year=LocalDate.now().getYear();
+        int marketYear=year-1;
+        try {
+            marketYear=Integer.valueOf(marketDay.substring(0,4));
+        } catch (Exception e) {}
 
-    public List<Finance163StockHistoryPricePO> queryHistoryPrice(String code, String market){
-        return null;
+        List<Finance163StockHistoryPricePO> list=new ArrayList<>();
+        for (int i = marketYear; i <= year; i++) {
+            for (int j = 1; j < 5; j++) {
+                String url="http://quotes.money.163.com/trade/lsjysj_%s.html?year=%d&season=%d";
+                String res = NetUtil.get(url,code,i,j);
+                Document doc = Jsoup.parse(res);
+                Elements elements = doc.select(".table_bg001 tr");
+                if(elements.size()<2){
+                    continue;
+                }
+                for (int k = 1; k < elements.size(); k++) {
+                    Element e = elements.get(k);
+                    Elements tds = e.select("td");
+                    String updown = tds.get(6).text();
+                    String open = tds.get(1).text();
+                    String close = tds.get(4).text();
+                    String high = tds.get(2).text();
+                    String low = tds.get(3).text();
+                    String volume = tds.get(7).text();
+                    String amount = tds.get(8).text();
+                    String time = tds.get(0).text();
+                    String change = tds.get(5).text();
+                    String exchange = tds.get(10).text();
+                    String amplitude = tds.get(9).text();
+
+                    Finance163StockHistoryPricePO stockPricePo=new Finance163StockHistoryPricePO();
+                    stockPricePo.setCode(code);
+                    stockPricePo.setOpen(open);
+                    stockPricePo.setHigh(high);
+                    stockPricePo.setLow(low);
+                    stockPricePo.setClose(close);
+                    stockPricePo.setChange(change);
+                    stockPricePo.setUpdown(updown);
+                    stockPricePo.setVolume(volume);
+                    stockPricePo.setAmount(amount);
+                    stockPricePo.setAmplitude(amplitude);
+                    stockPricePo.setExchange(exchange);
+                    stockPricePo.setDate(time);
+
+                    list.add(stockPricePo);
+                }
+            }
+        }
+
+        return list;
     }
 
-    public List<Finance163StockHistoryFinancePO> queryHistoryFinance(String code, String market){
-        return null;
+    public List<Finance163StockHistoryFinancePO> queryHistoryFinance(String code, String exchanger){
+        String url="http://quotes.money.163.com/f10/zycwzb_%s,season.html";
+        String res = NetUtil.get(url,code);
+        Document doc = Jsoup.parse(res);
+        Elements elements = doc.select(".table_bg001.border_box.limit_sale.scr_table tr");
+        Elements dates = elements.get(0).select("th");
+        Elements incomes = elements.get(4).select("td");
+        Elements profits = elements.get(10).select("td");
+
+        if(dates.size()<1){
+            return new ArrayList<>();
+        }
+
+        List<Finance163StockHistoryFinancePO> pos=new ArrayList<>();
+        for (int i = 0; i < dates.size(); i++) {
+            String time=dates.get(i).text();
+            String income=incomes.get(i).text();
+            String profit=profits.get(i).text();
+
+            Finance163StockHistoryFinancePO po=new Finance163StockHistoryFinancePO();
+            po.setDate(time);
+            po.setIncome(income);
+            po.setProfit(profit);
+
+            pos.add(po);
+        }
+
+        return pos;
     }
 
 }
