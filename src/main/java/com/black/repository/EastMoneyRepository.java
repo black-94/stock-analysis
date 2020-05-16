@@ -4,7 +4,6 @@ import com.black.po.StockInfoPo;
 import com.black.util.NetUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.jsoup.Jsoup;
-import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import org.springframework.stereotype.Repository;
@@ -22,19 +21,18 @@ public class EastMoneyRepository {
         Elements uls = Jsoup.parse(res).select("#quotesearch ul");
         List<StockInfoPo> list=new ArrayList<>();
         for (Element e : uls) {
-            String exchanger=e.child(0).nodeName();
+            String exchanger = e.previousElementSibling().selectFirst("a").attr("name");
             List<String> codes = e.select("ul li a").stream().map(a -> a.text()).filter(StringUtils::isNoneBlank)
                     .distinct().collect(Collectors.toList());
-            codes.forEach(c->list.add(buildStockInfoPo(exchanger,c)));
+            codes.forEach(c->list.add(buildStockInfoPo(c,exchanger)));
         }
         return list;
     }
 
-    private StockInfoPo buildStockInfoPo(String exchanger,String codeStr){
+    private StockInfoPo buildStockInfoPo(String codeStr, String exchanger){
         String[] arr = StringUtils.split(codeStr, '(');
-        String name=arr[0];
-        String code=StringUtils.replace(arr[1],")","");
-        return StockInfoPo.builder().exchanger(exchanger).name(name).code(code).build();
+        String code=StringUtils.remove(arr[1],')');
+        return StockInfoPo.builder().code(code).name(arr[0]).exchanger(exchanger).build();
     }
 
 }

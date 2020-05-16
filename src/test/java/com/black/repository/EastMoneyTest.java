@@ -1,6 +1,6 @@
 package com.black.repository;
 
-import com.black.po.*;
+import com.black.po.StockInfoPo;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -13,7 +13,7 @@ public class EastMoneyTest {
     EastMoneyRepository eastMoneyRepository;
 
     @Test
-    public void queryStockInfo(){
+    public void queryAllStocks(){
         List<StockInfoPo> stockInfoPos = eastMoneyRepository.queryAllStockCode();
         System.out.println(stockInfoPos);
     }

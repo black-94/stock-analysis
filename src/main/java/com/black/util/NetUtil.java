@@ -5,6 +5,7 @@ import org.slf4j.LoggerFactory;
 
 import java.io.InputStreamReader;
 import java.io.StringWriter;
+import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.function.Function;
 
@@ -21,8 +22,10 @@ public class NetUtil {
         for (int i = 0; i < 3; i++) {
             try {
                 URL url=new URL(u);
+                HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+                conn.setRequestProperty("Content-Type","charset=utf-8");
                 StringWriter writer=new StringWriter();
-                try(InputStreamReader reader = new InputStreamReader(url.openConnection().getInputStream())){
+                try(InputStreamReader reader = new InputStreamReader(conn.getInputStream())){
                     reader.transferTo(writer);
                 }
                 String res = writer.toString();
