@@ -13,9 +13,9 @@ public interface StockInfoRepository{
     public List<String> queryAllCodes();
 
     @Insert("""
-            insert into stock_info(code,name,exchanger,biz,openDay,marketDay) values
+            insert into stock_info(code,exchanger) values
             <foreach item="item" index="index" collection="param1" open="" separator="," close="">
-                (#{item.code},#{item.name},#{item.exchanger},#{item.biz},#{item.openDay},#{item.marketDay})
+                (#{item.code},#{item.exchanger})
             </foreach>            
             """)
     @Options(useGeneratedKeys = true)
@@ -24,7 +24,11 @@ public interface StockInfoRepository{
     @Select("select * from stock_info where infoInit=0")
     public List<StockInfoPo> queryUninitStock();
 
-    @Update("update stock_info set biz=#{biz},openDay=#{openDay},marketDay=#{marketDay} where id=#{id}")
+    @Update("""
+            update stock_info set name=#{name}, biz=#{biz}, openDay=#{openDay}, marketDay=#{marketDay}, infoInit=1
+            where id=#{id}
+            """
+            )
     public void fillInfo(StockInfoPo stockInfoPo);
 
     @Select("select * from stock_info")
