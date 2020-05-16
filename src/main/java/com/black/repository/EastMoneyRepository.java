@@ -22,17 +22,18 @@ public class EastMoneyRepository {
         List<StockInfoPo> list=new ArrayList<>();
         for (Element e : uls) {
             String exchanger = e.previousElementSibling().selectFirst("a").attr("name");
-            List<String> codes = e.select("ul li a").stream().map(a -> a.text()).filter(StringUtils::isNoneBlank)
+            List<String> codes = e.select("ul li a").stream().map(a -> a.attr("href")).filter(StringUtils::isNoneBlank)
                     .distinct().collect(Collectors.toList());
             codes.forEach(c->list.add(buildStockInfoPo(c,exchanger)));
         }
         return list;
     }
 
-    private StockInfoPo buildStockInfoPo(String codeStr, String exchanger){
-        String[] arr = StringUtils.split(codeStr, '(');
-        String code=StringUtils.remove(arr[1],')');
-        return StockInfoPo.builder().code(code).name(arr[0]).exchanger(exchanger).build();
+    private StockInfoPo buildStockInfoPo(String link, String exchanger){
+        link=StringUtils.remove(link,"http://quote.eastmoney.com/");
+        link=StringUtils.remove(link,".html");
+        link=link.substring(2);
+        return StockInfoPo.builder().code(link).exchanger(exchanger).build();
     }
 
 }
