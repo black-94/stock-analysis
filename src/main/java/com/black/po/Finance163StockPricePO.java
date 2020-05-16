@@ -4,9 +4,6 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 
-import java.math.BigDecimal;
-import java.util.Date;
-
 @Data
 @Builder
 @AllArgsConstructor
@@ -16,15 +13,16 @@ public class Finance163StockPricePO {
     }
 
     String code;
-    String exchanger;
-    BigDecimal open;
-    BigDecimal cur;
-    BigDecimal lastClose;
-    BigDecimal high;
-    BigDecimal low;
-    BigDecimal volumn;
-    BigDecimal turnover;
-    BigDecimal percent;
-    Date date;
+    String open;
+    String lastClose;
+    String cur;
+    String high;
+    String low;
+    String volumn;
+    String amount;
+    String updown;
+    String change;
+    String amplitude;
+    String date;
 
 }

@@ -1,8 +1,12 @@
 package com.black.po;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 
+@AllArgsConstructor
 @Data
+@Builder
 public class StockExchangerPo {
     String code;
     String name;
@@ -10,9 +14,4 @@ public class StockExchangerPo {
 
     public StockExchangerPo(){}
 
-    public StockExchangerPo(String code, String name, String country) {
-        this.code = code;
-        this.name = name;
-        this.country = country;
-    }
 }

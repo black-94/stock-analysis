@@ -9,4 +9,12 @@ import lombok.Data;
 @AllArgsConstructor
 public class Finance163StockHistoryFinancePO {
 
+    public Finance163StockHistoryFinancePO() {
+    }
+
+    String code;
+    String income;
+    String profit;
+    String date;
+
 }
