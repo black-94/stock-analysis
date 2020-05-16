@@ -13,7 +13,6 @@ public class Finance163StockInfoPO {
 
     String code;
     String name;
-    String exchanger;
     String biz;
     String openDay;
     String marketDay;

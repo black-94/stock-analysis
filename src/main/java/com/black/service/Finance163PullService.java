@@ -126,7 +126,7 @@ public class Finance163PullService {
                     stockPricePo.getPercent().negate();
                 }
 
-                List<StockPricePo> po = stockPriceRepository.findByCodeAndDate(stockPricePo.getCode(), stockPricePo.getDate());
+                List<StockPricePo> po = null;//stockPriceRepository.findByCodeAndDate(stockPricePo.getCode(), stockPricePo.getDate());
                 if(!po.isEmpty()){
                     stockPricePo.setId(po.get(0).getId());
                 }
@@ -183,7 +183,7 @@ public class Finance163PullService {
                         stockPricePo.setCreateTime(new Date());
                         stockPricePo.setUpdateTime(new Date());
 
-                        List<StockPricePo> po = stockPriceRepository.findByCodeAndDate(stockPricePo.getCode(), stockPricePo.getDate());
+                        List<StockPricePo> po = null;//stockPriceRepository.findByCodeAndDate(stockPricePo.getCode(), stockPricePo.getDate());
                         if(!po.isEmpty()){
                             stockPricePo.setId(po.get(0).getId());
                         }
