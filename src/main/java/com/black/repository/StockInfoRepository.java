@@ -33,4 +33,7 @@ public interface StockInfoRepository{
 
     @Select("select * from stock_info")
     public List<StockInfoPo> queryAllStocks();
+
+    @Update("update stock_info set ${param1}=#{param2} where id=#{param3}")
+    public void updateField(String name,String value,long id);
 }
