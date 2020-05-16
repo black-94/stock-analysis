@@ -1,5 +1,6 @@
 package com.black.repository;
 
+import com.black.po.Finance163StockHistoryFinancePO;
 import com.black.po.Finance163StockHistoryPricePO;
 import com.black.po.Finance163StockInfoPO;
 import com.black.po.Finance163StockPricePO;
@@ -29,6 +30,12 @@ public class Finance163Test {
     @Test
     public void queryStockHistoryPrice(){
         List<Finance163StockHistoryPricePO> pos = finance163Repository.queryHistoryPrice("600036", "sh");
+        System.out.println(pos);
+    }
+
+    @Test
+    public void queryStockHistoryFinance(){
+        List<Finance163StockHistoryFinancePO> pos = finance163Repository.queryHistoryFinance("600036", "sh");
         System.out.println(pos);
     }
 }

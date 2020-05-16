@@ -2,21 +2,19 @@ package com.black.repository;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
-import com.black.po.*;
+import com.black.po.Finance163StockHistoryFinancePO;
+import com.black.po.Finance163StockHistoryPricePO;
+import com.black.po.Finance163StockInfoPO;
+import com.black.po.Finance163StockPricePO;
 import com.black.util.NetUtil;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
-import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Repository;
 
-import java.time.Instant;
 import java.time.LocalDate;
-import java.time.ZoneId;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 @Repository
@@ -162,6 +160,7 @@ public class Finance163Repository {
             String profit=profits.get(i).text();
 
             Finance163StockHistoryFinancePO po=new Finance163StockHistoryFinancePO();
+            po.setCode(code);
             po.setDate(time);
             po.setIncome(income);
             po.setProfit(profit);
