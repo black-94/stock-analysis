@@ -2,11 +2,10 @@ package com.black.repository;
 
 
 import com.black.po.StockPricePo;
+import org.apache.ibatis.annotations.Insert;
 import org.springframework.stereotype.Component;
 
 import java.util.Date;
-import java.util.List;
-import java.util.Map;
 
 @Component
 public class StockPriceRepository{
@@ -38,6 +37,10 @@ public class StockPriceRepository{
 //        }
     }
 
+    @Insert("""
+            insert into stock_price(code,open,cur,lastClose,high,low,volume,amount,updown,change,amplitude,date)
+            values (#{code},#{open},#{cur},#{lastClose},#{high},#{low},#{volume},#{amount},#{updown},#{change},#{amplitude},#{date})
+            """)
     public void insert(StockPricePo stockPricePo) {
 
     }

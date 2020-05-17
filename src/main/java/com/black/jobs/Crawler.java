@@ -61,6 +61,9 @@ public class Crawler {
         stockInfoPos.parallelStream().forEach(e->{
             List<Finance163StockHistoryPricePO> prices = finance163Repository.queryHistoryPrice(e.getCode(), e.getExchanger());
             List<StockHistoryPricePo> list = prices.parallelStream().map(PoBuildUtils::buildStockHistoryPrice).collect(Collectors.toList());
+            List<Date> dates = stockHistoryPriceRepository.queryDatesByCode(e.getCode());
+            list=list.stream().filter(p->!dates.contains(p.getDate())).collect(Collectors.toList());
+            stockHistoryPriceRepository.batchInsert(list);
         });
     }
 

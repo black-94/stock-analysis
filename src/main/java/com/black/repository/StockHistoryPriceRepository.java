@@ -1,6 +1,7 @@
 package com.black.repository;
 
 
+import com.black.po.StockHistoryPricePo;
 import com.black.po.StockPricePo;
 import org.springframework.stereotype.Component;
 
@@ -10,6 +11,10 @@ import java.util.Map;
 
 @Component
 public class StockHistoryPriceRepository{
+
+    public List<Date> queryDatesByCode(String code){
+        return null;
+    }
 
     public List<StockPricePo> findByCodeAndDate(String code, Date date){
         return null;
@@ -39,5 +44,9 @@ public class StockHistoryPriceRepository{
     }
 
     public void insert(StockPricePo stockPricePo) {
+    }
+
+    public void batchInsert(List<StockHistoryPricePo> list){
+
     }
 }

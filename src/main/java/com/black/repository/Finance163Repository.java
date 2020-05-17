@@ -7,6 +7,7 @@ import com.black.po.Finance163StockHistoryPricePO;
 import com.black.po.Finance163StockInfoPO;
 import com.black.po.Finance163StockPricePO;
 import com.black.util.NetUtil;
+import org.apache.commons.lang3.StringUtils;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -67,6 +68,7 @@ public class Finance163Repository {
         String time = json.getString("time");
         String updown = json.getString("updown");
         String date = time.substring(0, 10);
+        date=StringUtils.replace(date,"/","-");
 
         Finance163StockPricePO stockPricePo=new Finance163StockPricePO();
         stockPricePo.setCode(code);
