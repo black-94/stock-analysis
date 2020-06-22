@@ -69,8 +69,7 @@ public class Crawler {
 
     @Scheduled(cron = "0 0 17 * * ?")
     public void pullStockFinance(){
-
-
+        //do nothing
     }
 
     @Scheduled(cron = "0 0 22 * * ?")
@@ -88,6 +87,7 @@ public class Crawler {
 
     @Scheduled(cron = "0 0 22 * * ?")
     public void fillFinanceCalRes(){
+        //使用股价*流通计算涨跌
 
     }
 

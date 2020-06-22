@@ -2,6 +2,8 @@ package com.black.repository;
 
 
 import com.black.po.StockFinancePo;
+import org.apache.ibatis.annotations.Insert;
+import org.apache.ibatis.annotations.Select;
 import org.springframework.stereotype.Component;
 
 import java.util.Date;
@@ -38,10 +40,18 @@ public class StockHistoryFinanceRepository{
 //        }
     }
 
+    @Select("select date from stock_finance where code = #{code}")
     public List<Date> queryDateByCode(String code) {
+
+
+
+
         return null;
     }
 
+    @Insert("""
+
+            """)
     public void batchInsert(List<StockFinancePo> stockFinancePos) {
         
     }
