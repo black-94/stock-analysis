@@ -13,9 +13,9 @@ public interface StockInfoRepository{
     public List<String> queryAllCodes();
 
     @Insert("""
-            insert into stock_info(code,exchanger) values
+            insert into stock_info(code,exchanger,subExchanger) values
             <foreach item="item" index="index" collection="param1" open="" separator="," close="">
-                (#{item.code},#{item.exchanger})
+                (#{item.code},#{item.exchanger},#{item.subExchanger})
             </foreach>            
             """)
     @Options(useGeneratedKeys = true)

@@ -1,6 +1,7 @@
 package com.black.repository;
 
 import com.black.po.StockInfoPo;
+import com.black.util.MarketParser;
 import com.black.util.NetUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.jsoup.Jsoup;
@@ -33,7 +34,8 @@ public class EastMoneyRepository {
         link=StringUtils.remove(link,"http://quote.eastmoney.com/");
         link=StringUtils.remove(link,".html");
         link=link.substring(2);
-        return StockInfoPo.builder().code(link).exchanger(exchanger).build();
+        String sub = MarketParser.parse(exchanger, link);
+        return StockInfoPo.builder().code(link).exchanger(exchanger).subExchanger(sub).build();
     }
 
 }

@@ -19,4 +19,10 @@ public class MarketParser {
         map.put("sh.688","沪科创");
         code2Market=Collections.unmodifiableMap(map);
     }
+
+    public static String parse(String exchanger,String stockCode){
+        String str = exchanger + "." + stockCode;
+        str=str.substring(0,6);
+        return code2Market.get(str);
+    }
 }
