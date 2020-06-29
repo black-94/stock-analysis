@@ -3,56 +3,23 @@ package com.black.repository;
 
 import com.black.po.StockFinancePo;
 import org.apache.ibatis.annotations.Insert;
+import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Select;
-import org.springframework.stereotype.Component;
 
 import java.util.Date;
 import java.util.List;
 
-@Component
-public class StockHistoryFinanceRepository{
-
-    public StockFinancePo findByCodeAndDate(String code, Date date){
-        return null;
-//        String str = formatter.format(date);
-//        List<Map<String, Object>> list = jdbcTemplate.queryForList("select * from stock_finance where code=" + code + " and date='" + str + "'");
-    }
-
-    public List<String> queryCodes(){
-        return null;
-//        return jdbcTemplate.queryForList("select distinct(code) from stock_finance",String.class);
-    }
-
-    public StockFinancePo findByCode(String code){
-        return null;
-//        List<Map<String, Object>> list = jdbcTemplate.queryForList("select * from stock_finance where code='" + code + "' order by createTime desc limit 1");
-//        return toObject(list, StockHistoryFinancePo.class);
-    }
-
-    public void save(StockFinancePo financePo) {
-
-//        if(financePo.getId()<=0){
-//            String sql="insert into stock_finance(code,name,exchange,date,income,y2yIncome,m2mIncome,profit,y2yProfit,m2mProfit) values(?,?,?,?,?,?,?,?,?,?)";
-//            jdbcTemplate.update(sql,financePo.getCode(),financePo.getName(),financePo.getExchange(),financePo.getDate(),financePo.getIncome(),financePo.getY2yIncome(),financePo.getM2mIncome(),financePo.getProfit(),financePo.getY2yProfit(),financePo.getM2mProfit());
-//        }else{
-//            String sql="update stock_finance set name=?,exchange=?,income=?,y2yIncome=?,m2mIncome=?,profit=?,y2yProfit=?,m2mProfit=? where id=?";
-//            jdbcTemplate.update(sql,financePo.getName(),financePo.getExchange(),financePo.getIncome(),financePo.getY2yIncome(),financePo.getM2mIncome(),financePo.getProfit(),financePo.getY2yProfit(),financePo.getM2mProfit(),financePo.getId());
-//        }
-    }
+@Mapper
+public interface StockHistoryFinanceRepository{
 
     @Select("select date from stock_finance where code = #{code}")
-    public List<Date> queryDateByCode(String code) {
-
-
-
-
-        return null;
-    }
+    List<Date> queryDateByCode(String code);
 
     @Insert("""
-
+                insert into stock_finance(code,date,income,profit) values
+                <foreach item="item" index="index" collection="param1" open="" separator="," close="">
+                    (#{item.code},#{item.date},#{item.income},#{item.profit})
+                </foreach>
             """)
-    public void batchInsert(List<StockFinancePo> stockFinancePos) {
-        
-    }
+    void batchInsert(List<StockFinancePo> stockFinancePos);
 }
