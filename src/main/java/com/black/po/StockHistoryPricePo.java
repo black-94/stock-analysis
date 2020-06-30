@@ -16,7 +16,7 @@ public class StockHistoryPricePo {
     BigDecimal lastClose;
     BigDecimal high;
     BigDecimal low;
-    BigDecimal volumn;
+    BigDecimal volume;
     BigDecimal turnover;
     BigDecimal percent;
     Date date;
