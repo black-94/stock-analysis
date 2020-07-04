@@ -46,7 +46,8 @@ public class PoBuildUtils {
         po.setLow(decimalOf(price.getLow()));
         po.setVolume(decimalOf(price.getVolume()));
         po.setTurnover(decimalOf(price.getAmount()));
-        po.setUpdown(decimalOf(price.getUpdown()));
+        po.setPercent(decimalOf(price.getUpdown()));
+        po.setUpdown(decimalOf(price.getChange()));
         po.setAmplitude(decimalOf(price.getAmplitude()));
         po.setDate(parseDate(price.getDate()));
         return po;
