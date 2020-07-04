@@ -15,9 +15,6 @@ import java.util.stream.Collectors;
 @RequestMapping("/")
 public class DataOutputController {
 
-    @Autowired
-    SERepository seRepository;
-
     @GetMapping("/test")
     public String test(){
         return "中文测试";
@@ -33,7 +30,6 @@ public class DataOutputController {
                 {"SZSE","深圳证券交易所","china"}
         };
         List<StockExchangerPo> list = Arrays.stream(stockExchanges).map(e -> new StockExchangerPo(e[0], e[1], e[2])).collect(Collectors.toList());
-        seRepository.insert(list);
         return "ok";
     }
 
