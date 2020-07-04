@@ -22,7 +22,7 @@ public class Finance163StockPricePO {
     String amount;
     String updown;
     String change;
-    String amplitude;
+    String capital;
     String date;
 
 }

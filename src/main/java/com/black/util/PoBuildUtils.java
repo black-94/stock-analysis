@@ -25,15 +25,14 @@ public class PoBuildUtils {
         StockPricePo po=new StockPricePo();
         po.setCode(price.getCode());
         po.setOpen(decimalOf(price.getOpen()));
-        po.setCur(decimalOf(price.getCur()));
-        po.setLastClose(decimalOf(price.getLastClose()));
+        po.setClose(decimalOf(price.getCur()));
         po.setHigh(decimalOf(price.getHigh()));
         po.setLow(decimalOf(price.getLow()));
         po.setVolume(decimalOf(price.getVolume()));
         po.setAmount(decimalOf(price.getAmount()));
         po.setUpdown(decimalOf(price.getUpdown()));
         po.setChange(decimalOf(price.getChange()));
-        po.setAmplitude(decimalOf(price.getAmplitude()));
+        po.setCapital(decimalOf(price.getCapital()));
         po.setDate(parseDate(price.getDate()));
         return po;
     }
@@ -41,12 +40,14 @@ public class PoBuildUtils {
     public static StockHistoryPricePo buildStockHistoryPrice(Finance163StockHistoryPricePO price) {
         StockHistoryPricePo po=new StockHistoryPricePo();
         po.setCode(price.getCode());
-        po.setExchange(price.getExchange());
         po.setOpen(decimalOf(price.getOpen()));
-        po.setLastClose(decimalOf(price.getClose()));
+        po.setClose(decimalOf(price.getClose()));
         po.setHigh(decimalOf(price.getHigh()));
         po.setLow(decimalOf(price.getLow()));
-        po.setVolumn(decimalOf(price.getVolume()));
+        po.setVolume(decimalOf(price.getVolume()));
+        po.setTurnover(decimalOf(price.getAmount()));
+        po.setUpdown(decimalOf(price.getUpdown()));
+        po.setAmplitude(decimalOf(price.getAmplitude()));
         po.setDate(parseDate(price.getDate()));
         return po;
     }

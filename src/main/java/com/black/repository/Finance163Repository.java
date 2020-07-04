@@ -81,7 +81,7 @@ public class Finance163Repository {
         stockPricePo.setAmount(turnover);
         stockPricePo.setUpdown(percent);
         stockPricePo.setChange(updown);
-//        stockPricePo.setAmplitude();
+//        stockPricePo.setCapital();
         stockPricePo.setDate(date);
 
         return stockPricePo;
@@ -117,7 +117,6 @@ public class Finance163Repository {
                     String amount = tds.get(8).text();
                     String time = tds.get(0).text();
                     String change = tds.get(5).text();
-                    String exchange = tds.get(10).text();
                     String amplitude = tds.get(9).text();
 
                     Finance163StockHistoryPricePO stockPricePo=new Finance163StockHistoryPricePO();
@@ -131,7 +130,6 @@ public class Finance163Repository {
                     stockPricePo.setVolume(volume);
                     stockPricePo.setAmount(amount);
                     stockPricePo.setAmplitude(amplitude);
-                    stockPricePo.setExchange(exchange);
                     stockPricePo.setDate(time);
 
                     list.add(stockPricePo);

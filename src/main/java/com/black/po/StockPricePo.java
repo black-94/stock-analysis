@@ -10,15 +10,14 @@ public class StockPricePo {
     long id;
     String code;
     BigDecimal open;
-    BigDecimal cur;
-    BigDecimal lastClose;
+    BigDecimal close;
     BigDecimal high;
     BigDecimal low;
     BigDecimal volume;
     BigDecimal amount;
     BigDecimal updown;
     BigDecimal change;
-    BigDecimal amplitude;
+    BigDecimal capital;
     Date date;
     Date createTime;
     Date updateTime;

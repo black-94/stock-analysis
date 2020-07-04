@@ -1,16 +1,15 @@
 package com.black.repository;
 
-
 import com.black.po.StockInfoPo;
 import org.apache.ibatis.annotations.*;
 
 import java.util.List;
 
 @Mapper
-public interface StockInfoRepository{
+public interface StockInfoRepository {
 
     @Select("select distinct(code) from stock_info")
-    public List<String> queryAllCodes();
+    List<String> queryAllCodes();
 
     @Insert("""
             insert into stock_info(code,exchanger,subExchanger) values
@@ -19,21 +18,21 @@ public interface StockInfoRepository{
             </foreach>            
             """)
     @Options(useGeneratedKeys = true)
-    public void batchInsert(List<StockInfoPo> list);
+    void batchInsert(List<StockInfoPo> list);
 
     @Select("select * from stock_info where infoInit=0")
-    public List<StockInfoPo> queryUninitStock();
+    List<StockInfoPo> queryUninitStock();
 
     @Update("""
             update stock_info set name=#{name}, biz=#{biz}, openDay=#{openDay}, marketDay=#{marketDay}, infoInit=1
             where id=#{id}
             """
-            )
-    public void fillInfo(StockInfoPo stockInfoPo);
+    )
+    void fillInfo(StockInfoPo stockInfoPo);
 
     @Select("select * from stock_info")
-    public List<StockInfoPo> queryAllStocks();
+    List<StockInfoPo> queryAllStocks();
 
     @Update("update stock_info set ${param1}=#{param2} where id=#{param3}")
-    public void updateField(String name,String value,long id);
+    void updateField(String name, String value, long id);
 }

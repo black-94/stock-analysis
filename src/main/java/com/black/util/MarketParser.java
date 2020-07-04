@@ -23,6 +23,6 @@ public class MarketParser {
     public static String parse(String exchanger,String stockCode){
         String str = exchanger + "." + stockCode;
         str=str.substring(0,6);
-        return code2Market.get(str);
+        return code2Market.getOrDefault(str,"-");
     }
 }
