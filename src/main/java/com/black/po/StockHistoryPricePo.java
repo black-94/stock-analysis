@@ -18,6 +18,8 @@ public class StockHistoryPricePo {
     BigDecimal percent;
     BigDecimal updown;
     BigDecimal amplitude;
+    BigDecimal exchange;
+    BigDecimal capital;
     Date date;
     Date createTime;
     Date updateTime;

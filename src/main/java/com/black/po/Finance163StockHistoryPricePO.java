@@ -22,6 +22,7 @@ public class Finance163StockHistoryPricePO {
     String volume;
     String amount;
     String amplitude;
+    String exchange;
     String date;
 
 }

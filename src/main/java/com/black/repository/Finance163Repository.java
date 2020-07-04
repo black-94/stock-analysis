@@ -81,6 +81,7 @@ public class Finance163Repository {
         stockPricePo.setAmount(turnover);
         stockPricePo.setUpdown(percent);
         stockPricePo.setChange(updown);
+//        stockPricePo.setAmplitude();
 //        stockPricePo.setCapital();
         stockPricePo.setDate(date);
 
@@ -130,6 +131,7 @@ public class Finance163Repository {
                     stockPricePo.setVolume(volume);
                     stockPricePo.setAmount(amount);
                     stockPricePo.setAmplitude(amplitude);
+//                    stockPricePo.setExchange();
                     stockPricePo.setDate(time);
 
                     list.add(stockPricePo);
