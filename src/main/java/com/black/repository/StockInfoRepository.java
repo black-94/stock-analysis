@@ -13,9 +13,10 @@ public interface StockInfoRepository {
 
     @Insert("""
             <script>
-            insert into stock_info(code,exchanger,subExchanger) values
+            insert into stock_info(code,exchanger,subExchanger,name,biz,openDay,marketDay) values
             <foreach item="item" index="index" collection="list" open="" separator="," close="">
-                (#{item.code},#{item.exchanger},#{item.subExchanger})
+                (#{item.code},#{item.exchanger},#{item.subExchanger},#{item.name},#{item.biz}
+                ,#{item.openDay},#{item.marketDay})
             </foreach> 
             </script>           
             """)
