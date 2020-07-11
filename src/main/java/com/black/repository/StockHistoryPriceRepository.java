@@ -17,7 +17,7 @@ public interface StockHistoryPriceRepository{
 
     @Insert("""
                 insert into stock_history_price(code,open,lastClose,high,low) values
-                <foreach item="item" index="index" collection="param1" open="" separator="," close="">
+                <foreach item="item" index="index" collection="list" open="" separator="," close="">
                     (#{item.code},#{item.open},#{item.lastClose},#{item.high},#{item.low})
                 </foreach>
             """)

@@ -13,7 +13,7 @@ public interface StockInfoRepository {
 
     @Insert("""
             insert into stock_info(code,exchanger,subExchanger) values
-            <foreach item="item" index="index" collection="param1" open="" separator="," close="">
+            <foreach item="item" index="index" collection="list" open="" separator="," close="">
                 (#{item.code},#{item.exchanger},#{item.subExchanger})
             </foreach>            
             """)

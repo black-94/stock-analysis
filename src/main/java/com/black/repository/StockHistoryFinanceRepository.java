@@ -17,7 +17,7 @@ public interface StockHistoryFinanceRepository{
 
     @Insert("""
                 insert into stock_finance(code,date,income,profit) values
-                <foreach item="item" index="index" collection="param1" open="" separator="," close="">
+                <foreach item="item" index="index" collection="collection" open="" separator="," close="">
                     (#{item.code},#{item.date},#{item.income},#{item.profit})
                 </foreach>
             """)
