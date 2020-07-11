@@ -16,10 +16,12 @@ public interface StockHistoryPriceRepository{
     List<Date> queryDatesByCode(String code);
 
     @Insert("""
+                <script>
                 insert into stock_history_price(code,open,lastClose,high,low) values
                 <foreach item="item" index="index" collection="list" open="" separator="," close="">
                     (#{item.code},#{item.open},#{item.lastClose},#{item.high},#{item.low})
                 </foreach>
+                </script>
             """)
     void batchInsert(List<StockHistoryPricePo> list);
 }

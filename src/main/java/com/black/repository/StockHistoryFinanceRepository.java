@@ -16,10 +16,12 @@ public interface StockHistoryFinanceRepository{
     List<Date> queryDateByCode(String code);
 
     @Insert("""
+                <script>
                 insert into stock_finance(code,date,income,profit) values
                 <foreach item="item" index="index" collection="collection" open="" separator="," close="">
                     (#{item.code},#{item.date},#{item.income},#{item.profit})
                 </foreach>
+                </script>
             """)
     void batchInsert(List<StockFinancePo> stockFinancePos);
 }

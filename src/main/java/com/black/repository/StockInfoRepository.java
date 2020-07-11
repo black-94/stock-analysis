@@ -12,10 +12,12 @@ public interface StockInfoRepository {
     List<String> queryAllCodes();
 
     @Insert("""
+            <script>
             insert into stock_info(code,exchanger,subExchanger) values
             <foreach item="item" index="index" collection="list" open="" separator="," close="">
                 (#{item.code},#{item.exchanger},#{item.subExchanger})
-            </foreach>            
+            </foreach> 
+            </script>           
             """)
     @Options(useGeneratedKeys = true)
     void batchInsert(List<StockInfoPo> list);
