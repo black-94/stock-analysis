@@ -9,6 +9,10 @@ import org.springframework.stereotype.Component;
 
 import java.util.Date;
 import java.util.List;
+import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.ForkJoinPool;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 @Component
@@ -26,67 +30,90 @@ public class Crawler {
     @Autowired
     StockHistoryPriceRepository stockHistoryPriceRepository;
 
+    static ThreadPoolExecutor executor = new ThreadPoolExecutor(20, 20, 1, TimeUnit.SECONDS,
+            new ArrayBlockingQueue(1000), new ThreadPoolExecutor.CallerRunsPolicy());
+
+    private void waitComplete() {
+        while (executor.getQueue().size() > 0) {
+            try {
+                Thread.sleep(1000L);
+            } catch (Exception e) {}
+        }
+    }
+
     @Scheduled(cron = "0 0 16 * * ?")
-    public void pullStockCodes(){
+    public void pullStockCodes() {
         List<String> codes = stockInfoRepository.queryAllCodes();
         List<StockInfoPo> stockInfoPos = eastMoneyRepository.queryAllStockCode();
         List<StockInfoPo> list = stockInfoPos.stream().filter(e -> !codes.contains(e)).collect(Collectors.toList());
         stockInfoRepository.batchInsert(list);
         initStockInfo();
+        waitComplete();
     }
 
-    public void initStockInfo(){
+    public void initStockInfo() {
         List<StockInfoPo> stockInfoPos = stockInfoRepository.queryUninitStock();
-        stockInfoPos.parallelStream().forEach(e->{
-            Finance163StockInfoPO info = finance163Repository.queryInfo(e.getCode(), e.getExchanger());
-            StockInfoPo stockInfoPo = PoBuildUtils.buildStockInfo(info);
-            stockInfoRepository.fillInfo(stockInfoPo);
-        });
+        stockInfoPos.stream().forEach(e -> executor.submit(() -> this.singleFillInfo(e)));
+    }
+
+    private void singleFillInfo(StockInfoPo e) {
+        Finance163StockInfoPO info = finance163Repository.queryInfo(e.getCode(), e.getExchanger());
+        StockInfoPo stockInfoPo = PoBuildUtils.buildStockInfo(info);
+        stockInfoRepository.fillInfo(stockInfoPo);
     }
 
     @Scheduled(cron = "0 0 17 * * ?")
-    public void pullStockPrice(){
+    public void pullStockPrice() {
         List<StockInfoPo> stockInfoPos = stockInfoRepository.queryAllStocks();
-        stockInfoPos.parallelStream().forEach(e->{
-            Finance163StockPricePO price = finance163Repository.queryCurPrice(e.getCode(), e.getExchanger());
-            StockPricePo stockPricePo = PoBuildUtils.buildStockPrice(price);
-            stockPriceRepository.insert(stockPricePo);
-        });
+        stockInfoPos.stream().forEach(e -> executor.submit(() -> this.singleFillPrice(e)));
+        waitComplete();
+    }
+
+    private void singleFillPrice(StockInfoPo e) {
+        Finance163StockPricePO price = finance163Repository.queryCurPrice(e.getCode(), e.getExchanger());
+        StockPricePo stockPricePo = PoBuildUtils.buildStockPrice(price);
+        stockPriceRepository.insert(stockPricePo);
     }
 
     @Scheduled(cron = "0 0 21 * * ?")
-    public void fillHistoryPrice(){
+    public void fillHistoryPrice() {
         List<StockInfoPo> stockInfoPos = stockInfoRepository.queryAllStocks();
-        stockInfoPos=stockInfoPos.stream().filter(e->e.getPriceComplete()==0).collect(Collectors.toList());
-        stockInfoPos.parallelStream().forEach(e->{
-            List<Finance163StockHistoryPricePO> prices = finance163Repository.queryHistoryPrice(e.getCode(), e.getExchanger());
-            List<StockHistoryPricePo> list = prices.parallelStream().map(PoBuildUtils::buildStockHistoryPrice).collect(Collectors.toList());
-            List<Date> dates = stockHistoryPriceRepository.queryDatesByCode(e.getCode());
-            list=list.stream().filter(p->!dates.contains(p.getDate())).collect(Collectors.toList());
-            stockHistoryPriceRepository.batchInsert(list);
-        });
+        stockInfoPos = stockInfoPos.stream().filter(e -> e.getPriceComplete() == 0).collect(Collectors.toList());
+        stockInfoPos.stream().forEach(e -> executor.submit(() -> this.singleFillHistoryPrice(e)));
+        waitComplete();
+    }
+
+    private void singleFillHistoryPrice(StockInfoPo e) {
+        List<Finance163StockHistoryPricePO> prices = finance163Repository.queryHistoryPrice(e.getCode(), e.getExchanger());
+        List<StockHistoryPricePo> list = prices.stream().map(PoBuildUtils::buildStockHistoryPrice).collect(Collectors.toList());
+        List<Date> dates = stockHistoryPriceRepository.queryDatesByCode(e.getCode());
+        list = list.stream().filter(p -> !dates.contains(p.getDate())).collect(Collectors.toList());
+        stockHistoryPriceRepository.batchInsert(list);
     }
 
     @Scheduled(cron = "0 0 17 * * ?")
-    public void pullStockFinance(){
+    public void pullStockFinance() {
         //do nothing
     }
 
     @Scheduled(cron = "0 0 22 * * ?")
-    public void fillHistoryFinance(){
+    public void fillHistoryFinance() {
         List<StockInfoPo> stockInfoPos = stockInfoRepository.queryAllStocks();
-        stockInfoPos=stockInfoPos.stream().filter(e->e.getFinanceComplete()==0).collect(Collectors.toList());
-        stockInfoPos.parallelStream().forEach(e->{
-            List<Finance163StockHistoryFinancePO> finances = finance163Repository.queryHistoryFinance(e.getCode(), e.getExchanger());
-            List<StockFinancePo> stockFinancePos = finances.parallelStream().map(PoBuildUtils::buildStockFinance).collect(Collectors.toList());
-            List<Date> dates = stockHistoryFinanceRepository.queryDateByCode(e.getCode());
-            stockFinancePos = stockFinancePos.stream().filter(shfp -> !dates.contains(shfp.getDate())).collect(Collectors.toList());
-            stockHistoryFinanceRepository.batchInsert(stockFinancePos);
-        });
+        stockInfoPos = stockInfoPos.stream().filter(e -> e.getFinanceComplete() == 0).collect(Collectors.toList());
+        stockInfoPos.stream().forEach(e -> executor.submit(() -> this.singleFillHistoryFinance(e)));
+        waitComplete();
+    }
+
+    private void singleFillHistoryFinance(StockInfoPo e) {
+        List<Finance163StockHistoryFinancePO> finances = finance163Repository.queryHistoryFinance(e.getCode(), e.getExchanger());
+        List<StockFinancePo> stockFinancePos = finances.stream().map(PoBuildUtils::buildStockFinance).collect(Collectors.toList());
+        List<Date> dates = stockHistoryFinanceRepository.queryDateByCode(e.getCode());
+        stockFinancePos = stockFinancePos.stream().filter(shfp -> !dates.contains(shfp.getDate())).collect(Collectors.toList());
+        stockHistoryFinanceRepository.batchInsert(stockFinancePos);
     }
 
     @Scheduled(cron = "0 0 22 * * ?")
-    public void fillFinanceCalRes(){
+    public void fillFinanceCalRes() {
         //使用股价*流通计算涨跌
 
     }

@@ -1,5 +1,6 @@
 package com.black.util;
 
+import com.google.common.util.concurrent.RateLimiter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -13,12 +14,15 @@ public class NetUtil {
 
     public static Logger root= LoggerFactory.getLogger(NetUtil.class);
 
+    public static RateLimiter rateLimiter = RateLimiter.create(500);
+
     public static String get(String link,Object... params){
         return get(e->e,link,params);
     }
 
     public static String get(Function<String,String> fun,String link,Object... params){
         String u=String.format(link,params);
+        rateLimiter.acquire();
         for (int i = 0; i < 3; i++) {
             try {
                 URL url=new URL(u);
