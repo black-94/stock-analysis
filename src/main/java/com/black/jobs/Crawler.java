@@ -37,7 +37,8 @@ public class Crawler {
         while (executor.getQueue().size() > 0) {
             try {
                 Thread.sleep(1000L);
-            } catch (Exception e) {}
+            } catch (Exception e) {
+            }
         }
     }
 
@@ -45,7 +46,7 @@ public class Crawler {
     public void pullStockCodes() {
         List<String> codes = stockInfoRepository.queryAllCodes();
         List<StockInfoPo> stockInfoPos = eastMoneyRepository.queryAllStockCode();
-        List<StockInfoPo> list = stockInfoPos.stream().filter(e -> !codes.contains(e)).collect(Collectors.toList());
+        List<StockInfoPo> list = stockInfoPos.stream().filter(e -> !codes.contains(e.getCode())).collect(Collectors.toList());
         stockInfoRepository.batchInsert(list);
         initStockInfo();
         waitComplete();
