@@ -87,7 +87,7 @@ public class Crawler {
     }
 
     private void singleFillHistoryPrice(StockInfoPo e) {
-        List<Finance163StockHistoryPricePO> prices = finance163Repository.queryHistoryPrice(e.getCode(), e.getExchanger());
+        List<Finance163StockHistoryPricePO> prices = finance163Repository.queryHistoryPrice(e.getCode(), e.getExchanger(), e.getMarketDay());
         List<StockHistoryPricePo> list = prices.stream().map(PoBuildUtils::buildStockHistoryPrice).collect(Collectors.toList());
         List<Date> dates = stockHistoryPriceRepository.queryDatesByCode(e.getCode());
         list = list.stream().filter(p -> !dates.contains(p.getDate())).collect(Collectors.toList());

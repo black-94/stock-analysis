@@ -88,8 +88,7 @@ public class Finance163Repository {
         return stockPricePo;
     }
 
-    public List<Finance163StockHistoryPricePO> queryHistoryPrice(String code, String exchanger){
-        String marketDay = queryInfo(code, exchanger).getMarketDay();
+    public List<Finance163StockHistoryPricePO> queryHistoryPrice(String code, String exchanger, String marketDay){
         int year=LocalDate.now().getYear();
         int marketYear=year-1;
         try {

@@ -29,7 +29,7 @@ public class Finance163Test {
 
     @Test
     public void queryStockHistoryPrice(){
-        List<Finance163StockHistoryPricePO> pos = finance163Repository.queryHistoryPrice("600036", "sh");
+        List<Finance163StockHistoryPricePO> pos = finance163Repository.queryHistoryPrice("600036", "sh", "2010-01-01");
         System.out.println(pos);
     }
 
