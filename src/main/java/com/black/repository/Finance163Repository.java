@@ -67,7 +67,7 @@ public class Finance163Repository {
     }
 
     public List<StockInfoPo> queryTodayCodes() {
-        int page = 1;
+        int page = 0;
         int year = LocalDate.now().getYear();
         List<String> codes = Lists.newArrayList();
         do {
@@ -75,10 +75,10 @@ public class Finance163Repository {
             String res = NetUtil.get(url, year, page);
             Document doc = Jsoup.parse(res);
             List<String> tmp = parseCodes(doc);
-            if (tmp.isEmpty() || hasNextPage(doc)) {
+            codes.addAll(tmp);
+            if (tmp.isEmpty() || !hasNextPage(doc)) {
                 break;
             }
-            codes.addAll(tmp);
             page++;
         } while (true);
         return codes.stream().distinct().map(this::buildStockInfo).collect(Collectors.toList());
