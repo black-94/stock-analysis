@@ -14,7 +14,7 @@ public class NetUtil {
 
     public static Logger root= LoggerFactory.getLogger(NetUtil.class);
 
-    public static RateLimiter rateLimiter = RateLimiter.create(500);
+    public static RateLimiter rateLimiter = RateLimiter.create(50000000);
 
     public static String get(String link,Object... params){
         return get(e->e,link,params);
@@ -23,7 +23,7 @@ public class NetUtil {
     public static String get(Function<String,String> fun,String link,Object... params){
         String u=String.format(link,params);
         rateLimiter.acquire();
-        for (int i = 0; i < 3; i++) {
+        for (int i = 0; i < 1; i++) {
             try {
                 URL url=new URL(u);
                 HttpURLConnection conn = (HttpURLConnection) url.openConnection();
