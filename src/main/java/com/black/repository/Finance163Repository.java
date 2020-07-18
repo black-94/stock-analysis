@@ -63,7 +63,8 @@ public class Finance163Repository {
 
     private StockInfoPo buildStockInfo(String code) {
         Pair<String, String> pair = MarketParser.parse(code);
-        return StockInfoPo.builder().code(code).exchanger(pair.getKey()).subExchanger(pair.getValue()).build();
+        return StockInfoPo.builder().code(code).exchanger(pair.getKey()).subExchanger(pair.getValue())
+                .name("").biz("").openDay("").marketDay("").build();
     }
 
     public List<StockInfoPo> queryTodayCodes() {
