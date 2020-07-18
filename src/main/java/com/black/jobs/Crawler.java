@@ -21,8 +21,6 @@ import java.util.stream.Collectors;
 public class Crawler {
     public static Logger root = LoggerFactory.getLogger(Crawler.class);
     @Autowired
-    EastMoneyRepository eastMoneyRepository;
-    @Autowired
     Finance163Repository finance163Repository;
     @Autowired
     StockInfoRepository stockInfoRepository;
@@ -57,7 +55,7 @@ public class Crawler {
     @Scheduled(cron = "0 0 16 * * ?")
     public void pullStockCodes() {
         List<String> codes = stockInfoRepository.queryAllCodes();
-        List<StockInfoPo> stockInfoPos = eastMoneyRepository.queryAllStockCode();
+        List<StockInfoPo> stockInfoPos = finance163Repository.queryTodayCodes();
         List<StockInfoPo> list = stockInfoPos.stream().filter(e -> !codes.contains(e.getCode())).collect(Collectors.toList());
         if (CollectionUtils.isNotEmpty(list)) {
             stockInfoRepository.batchInsert(list);

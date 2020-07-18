@@ -1,9 +1,6 @@
 package com.black.repository;
 
-import com.black.po.Finance163StockHistoryFinancePO;
-import com.black.po.Finance163StockHistoryPricePO;
-import com.black.po.Finance163StockInfoPO;
-import com.black.po.Finance163StockPricePO;
+import com.black.po.*;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -14,6 +11,12 @@ import java.util.List;
 public class Finance163Test {
     @Autowired
     Finance163Repository finance163Repository;
+
+    @Test
+    public void queryTodayStockCodes(){
+        List<StockInfoPo> stockInfoPos = finance163Repository.queryTodayCodes();
+        System.out.println(stockInfoPos);
+    }
 
     @Test
     public void queryStockInfo(){
