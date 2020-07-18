@@ -52,6 +52,17 @@ public class Crawler {
         }
     }
 
+    public void pullAllStockCodes(){
+        List<String> codes = stockInfoRepository.queryAllCodes();
+        List<StockInfoPo> stockInfoPos = finance163Repository.queryAllCodes();
+        List<StockInfoPo> list = stockInfoPos.stream().filter(e -> !codes.contains(e.getCode())).collect(Collectors.toList());
+        if (CollectionUtils.isNotEmpty(list)) {
+            stockInfoRepository.batchInsert(list);
+        }
+        initStockInfo();
+        waitComplete();
+    }
+
     @Scheduled(cron = "0 0 16 * * ?")
     public void pullStockCodes() {
         List<String> codes = stockInfoRepository.queryAllCodes();
