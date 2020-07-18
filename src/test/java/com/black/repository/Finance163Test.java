@@ -13,6 +13,12 @@ public class Finance163Test {
     Finance163Repository finance163Repository;
 
     @Test
+    public void queryAllCodes(){
+        List<StockInfoPo> stockInfoPos = finance163Repository.queryAllCodes();
+        System.out.println(stockInfoPos);
+    }
+
+    @Test
     public void queryTodayStockCodes(){
         List<StockInfoPo> stockInfoPos = finance163Repository.queryTodayCodes();
         System.out.println(stockInfoPos);
