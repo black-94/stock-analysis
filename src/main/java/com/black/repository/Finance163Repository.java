@@ -29,7 +29,7 @@ public class Finance163Repository {
         List<String> years = parseReportYear(doc);
         List<String> allCodes = Lists.newArrayList();
         for (String year : years) {
-            int page = 1;
+            int page = 0;
             do {
                 url = "http://quotes.money.163.com/data/ipo/shangshi.html?reportdate=%s&page=%d&sort=faxingri&order=desc";
                 res = NetUtil.get(url, year, page);
