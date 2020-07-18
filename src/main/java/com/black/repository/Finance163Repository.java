@@ -35,7 +35,7 @@ public class Finance163Repository {
                 res = NetUtil.get(url, year, page);
                 doc = Jsoup.parse(res);
                 List<String> tmp = parseCodes(doc);
-                if (tmp.isEmpty() || hasNextPage(doc)) {
+                if (tmp.isEmpty() || !hasNextPage(doc)) {
                     break;
                 }
                 allCodes.addAll(tmp);
