@@ -27,7 +27,7 @@ public class NetUtil {
             try {
                 URL url=new URL(u);
                 HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-                conn.setRequestProperty("Content-Type","charset=utf-8");
+                conn.setRequestProperty("Content-Type","charset=UTF-8");
                 StringWriter writer=new StringWriter();
                 try(InputStreamReader reader = new InputStreamReader(conn.getInputStream(),"UTF-8")){
                     reader.transferTo(writer);
