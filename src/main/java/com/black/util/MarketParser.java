@@ -12,6 +12,7 @@ public class MarketParser {
         map.put("sz.200","深B");
         map.put("sz.002","深中小");
         map.put("sz.300","深创");
+        map.put("sh.600","沪A");
         map.put("sh.601","沪A");
         map.put("sh.602","沪A");
         map.put("sh.603","沪A");
