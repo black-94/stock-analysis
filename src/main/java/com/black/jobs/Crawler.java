@@ -4,6 +4,8 @@ import com.black.po.*;
 import com.black.repository.*;
 import com.black.util.PoBuildUtils;
 import org.apache.commons.collections.CollectionUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
@@ -17,6 +19,7 @@ import java.util.stream.Collectors;
 
 @Component
 public class Crawler {
+    public static Logger root = LoggerFactory.getLogger(Crawler.class);
     @Autowired
     EastMoneyRepository eastMoneyRepository;
     @Autowired
@@ -31,13 +34,22 @@ public class Crawler {
     StockHistoryPriceRepository stockHistoryPriceRepository;
 
     static ThreadPoolExecutor executor = new ThreadPoolExecutor(20, 20, 1, TimeUnit.SECONDS,
-            new ArrayBlockingQueue(1000), new ThreadPoolExecutor.CallerRunsPolicy());
+            new ArrayBlockingQueue(1000), (r, e) -> Crawler.waitQueue(e, r));
+
+    private static void waitQueue(ThreadPoolExecutor e, Runnable r) {
+        try {
+            e.getQueue().put(r);
+        } catch (Exception exception) {
+            root.error("", exception);
+        }
+    }
 
     private void waitComplete() {
         while (executor.getQueue().size() > 0) {
             try {
                 Thread.sleep(1000L);
             } catch (Exception e) {
+                root.error("", e);
             }
         }
     }
@@ -47,7 +59,7 @@ public class Crawler {
         List<String> codes = stockInfoRepository.queryAllCodes();
         List<StockInfoPo> stockInfoPos = eastMoneyRepository.queryAllStockCode();
         List<StockInfoPo> list = stockInfoPos.stream().filter(e -> !codes.contains(e.getCode())).collect(Collectors.toList());
-        if(CollectionUtils.isNotEmpty(list)){
+        if (CollectionUtils.isNotEmpty(list)) {
             stockInfoRepository.batchInsert(list);
         }
         initStockInfo();
@@ -91,7 +103,7 @@ public class Crawler {
         List<StockHistoryPricePo> list = prices.stream().map(PoBuildUtils::buildStockHistoryPrice).collect(Collectors.toList());
         List<Date> dates = stockHistoryPriceRepository.queryDatesByCode(e.getCode());
         list = list.stream().filter(p -> !dates.contains(p.getDate())).collect(Collectors.toList());
-        if(list.isEmpty()){
+        if (list.isEmpty()) {
             return;
         }
         stockHistoryPriceRepository.batchInsert(list);
@@ -115,7 +127,7 @@ public class Crawler {
         List<StockFinancePo> stockFinancePos = finances.stream().map(PoBuildUtils::buildStockFinance).collect(Collectors.toList());
         List<Date> dates = stockHistoryFinanceRepository.queryDateByCode(e.getCode());
         stockFinancePos = stockFinancePos.stream().filter(shfp -> !dates.contains(shfp.getDate())).collect(Collectors.toList());
-        if(stockFinancePos.isEmpty()){
+        if (stockFinancePos.isEmpty()) {
             return;
         }
         stockHistoryFinanceRepository.batchInsert(stockFinancePos);
