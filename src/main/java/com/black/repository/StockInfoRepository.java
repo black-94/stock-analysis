@@ -28,7 +28,7 @@ public interface StockInfoRepository {
 
     @Update("""
             update stock_info set name=#{name}, biz=#{biz}, openDay=#{openDay}, marketDay=#{marketDay}, infoInit=1
-            where id=#{id}
+            where code=#{code}
             """
     )
     void fillInfo(StockInfoPo stockInfoPo);
