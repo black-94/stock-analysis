@@ -19,6 +19,7 @@ public class MarketParser {
         map.put("601", "sh.沪A");
         map.put("602", "sh.沪A");
         map.put("603", "sh.沪A");
+        map.put("605", "sh.沪A");
         map.put("900", "sh.沪B");
         map.put("688", "sh.沪科创");
         code2Market = Collections.unmodifiableMap(map);
