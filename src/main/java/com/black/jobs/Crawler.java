@@ -3,10 +3,12 @@ package com.black.jobs;
 import com.black.po.*;
 import com.black.repository.*;
 import com.black.util.PoBuildUtils;
+import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.concurrent.ArrayBlockingQueue;
@@ -47,7 +49,9 @@ public class Crawler {
         List<String> codes = stockInfoRepository.queryAllCodes();
         List<StockInfoPo> stockInfoPos = eastMoneyRepository.queryAllStockCode();
         List<StockInfoPo> list = stockInfoPos.stream().filter(e -> !codes.contains(e.getCode())).collect(Collectors.toList());
-        stockInfoRepository.batchInsert(list);
+        if(CollectionUtils.isNotEmpty(list)){
+            stockInfoRepository.batchInsert(list);
+        }
         initStockInfo();
         waitComplete();
     }
@@ -89,6 +93,9 @@ public class Crawler {
         List<StockHistoryPricePo> list = prices.stream().map(PoBuildUtils::buildStockHistoryPrice).collect(Collectors.toList());
         List<Date> dates = stockHistoryPriceRepository.queryDatesByCode(e.getCode());
         list = list.stream().filter(p -> !dates.contains(p.getDate())).collect(Collectors.toList());
+        if(list.isEmpty()){
+            return;
+        }
         stockHistoryPriceRepository.batchInsert(list);
     }
 
@@ -110,6 +117,9 @@ public class Crawler {
         List<StockFinancePo> stockFinancePos = finances.stream().map(PoBuildUtils::buildStockFinance).collect(Collectors.toList());
         List<Date> dates = stockHistoryFinanceRepository.queryDateByCode(e.getCode());
         stockFinancePos = stockFinancePos.stream().filter(shfp -> !dates.contains(shfp.getDate())).collect(Collectors.toList());
+        if(stockFinancePos.isEmpty()){
+            return;
+        }
         stockHistoryFinanceRepository.batchInsert(stockFinancePos);
     }
 
