@@ -1,5 +1,6 @@
 package com.black.util;
 
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 
 import java.io.PrintWriter;
@@ -11,6 +12,7 @@ import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.Date;
 
+@Slf4j
 public class Helper {
     public static String stack(Throwable e) {
         StringWriter stringWriter = new StringWriter();
@@ -25,14 +27,20 @@ public class Helper {
             }
             return new BigDecimal(str);
         } catch (Exception e) {
+            log.error("",e);
             return null;
         }
     }
 
     public static String href2Code(String href) {
-        href = StringUtils.remove(href, "http://quotes.money.163.com/");
-        href = StringUtils.remove(href, ".html");
-        return href.substring(1);
+        try {
+            href = StringUtils.remove(href, "http://quotes.money.163.com/");
+            href = StringUtils.remove(href, ".html");
+            return href.substring(1);
+        } catch (Exception e) {
+            log.error("",e);
+            return "";
+        }
     }
 
     public static BigDecimal parseTextNumber(String text) {

@@ -307,8 +307,12 @@ public class Finance163Repository {
         List<Finance163FundStockPO> list = Lists.newArrayList();
         for (Element element : elements) {
             Elements tds = element.select("td");
-            String href = tds.get(0).attr("href");
+            String href = tds.get(0).select("a").attr("href");
             String code = Helper.href2Code(href);
+            if(StringUtils.isBlank(code)){
+                continue;
+            }
+
             String stockNums = tds.get(1).text();
             String stockAmount = tds.get(2).text();
             String stockRatio = tds.get(3).text();
@@ -371,6 +375,10 @@ public class Finance163Repository {
                 Elements tds = element.select("td");
                 String href = tds.get(0).attr("href");
                 String code = Helper.href2Code(href);
+                if(StringUtils.isBlank(code)){
+                    continue;
+                }
+
                 String stockNums = tds.get(1).text();
                 String stockAmount = tds.get(2).text();
                 String stockRatio = tds.get(3).text();
