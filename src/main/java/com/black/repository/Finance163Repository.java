@@ -302,7 +302,8 @@ public class Finance163Repository {
     public List<Finance163FundStockPO> fundStockList(String fundCode) {
         String url = "http://quotes.money.163.com/fund/cgmx_%s.html";
         String res = NetUtil.get(String.format(url, fundCode));
-        Elements elements = Jsoup.parse(res).select(".fn_cm_table.fn_fund_rank tbody tr");
+        Elements elements = Jsoup.parse(res).select("#fn_fund_owner_01 .fn_cm_table.fn_fund_rank tbody tr");
+        String reportDate = Jsoup.parse(res).selectFirst(".fn_fund_selector option[selected]").text();
 
         List<Finance163FundStockPO> list = Lists.newArrayList();
         for (Element element : elements) {
@@ -323,6 +324,7 @@ public class Finance163Repository {
             po.setStockNums(Helper.parseTextNumber(stockNums));
             po.setStockAmount(Helper.parseTextNumber(stockAmount));
             po.setStockRatio(Helper.parseTextNumber(stockRatio));
+            po.setDate(reportDate);
             list.add(po);
         }
 
@@ -343,17 +345,18 @@ public class Finance163Repository {
                 Elements tds = element.select("td");
                 String date = tds.get(0).text();
                 String unit = tds.get(1).text();
-                String ratio = tds.get(2).text();
+                String ratio = tds.get(3).text();
 
                 Finance163FundPricePO po = new Finance163FundPricePO();
                 po.setFundCode(fundCode);
                 po.setDate(date);
-                po.setRatio(ratio);
+                po.setRatio(StringUtils.remove(ratio,"%"));
                 po.setUnit(unit);
 
                 pos.add(po);
             }
 
+            ++pageNo;
             if (elements.size() < 60) {
                 break;
             }
@@ -370,10 +373,10 @@ public class Finance163Repository {
 
         for (String reportDate : reportDates) {
             String ret = NetUtil.get(String.format(url + "?reportDate=%s", fundCode, reportDate));
-            Elements elements = Jsoup.parse(ret).select(".fn_cm_table.fn_fund_rank tbody tr");
+            Elements elements = Jsoup.parse(ret).select("#fn_fund_owner_01 .fn_cm_table.fn_fund_rank tbody tr");
             for (Element element : elements) {
                 Elements tds = element.select("td");
-                String href = tds.get(0).attr("href");
+                String href = tds.get(0).select("a").attr("href");
                 String code = Helper.href2Code(href);
                 if(StringUtils.isBlank(code)){
                     continue;
@@ -389,6 +392,7 @@ public class Finance163Repository {
                 po.setStockNums(Helper.parseTextNumber(stockNums));
                 po.setStockAmount(Helper.parseTextNumber(stockAmount));
                 po.setStockRatio(Helper.parseTextNumber(stockRatio));
+                po.setDate(reportDate);
                 list.add(po);
             }
         }

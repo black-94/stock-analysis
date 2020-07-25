@@ -15,6 +15,7 @@ public class Finance163FundStockPO {
     BigDecimal stockNums;
     BigDecimal stockAmount;
     BigDecimal stockRatio;
+    String date;
 
     public Finance163FundStockPO() {
     }

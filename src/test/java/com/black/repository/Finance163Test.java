@@ -48,7 +48,7 @@ public class Finance163Test {
         System.out.println(pos);
     }
 
-    @Test
+//    @Test
     public void fundTest(){
         List<Finance163FundPricePO> funds = finance163Repository.fundList();
         System.out.println(funds);
