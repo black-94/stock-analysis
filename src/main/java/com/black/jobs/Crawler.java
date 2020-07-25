@@ -154,9 +154,9 @@ public class Crawler {
 
     @Scheduled(cron = "0 0 1 * * ?")
     public void fillFundInfo() {
-        List<String> codes = fundInfoRepository.queryUninitFund();
-        codes.forEach(e -> submit(() -> {
-            List<Finance163FundPricePO> prices = finance163Repository.fundHistoryPrice(e);
+        List<FundInfoPO> funds = fundInfoRepository.queryUninitFund();
+        funds.forEach(e -> submit(() -> {
+            List<Finance163FundPricePO> prices = finance163Repository.fundHistoryPrice(e.getFundCode(),e.getMarketDate());
             List<FundPricePO> priceList = prices.stream().map(PoBuildUtils::buildFundPrice).collect(Collectors.toList());
             for (FundPricePO fundPricePO : priceList) {
                 FundPricePO tmp = fundPriceRepository.queryByDate(fundPricePO.getFundCode(), fundPricePO.getDate());
@@ -164,7 +164,7 @@ public class Crawler {
                     fundPriceRepository.insert(fundPricePO);
                 }
             }
-            List<Finance163FundStockPO> stocks = finance163Repository.fundHistoryStock(e);
+            List<Finance163FundStockPO> stocks = finance163Repository.fundHistoryStock(e.getFundCode());
             List<FundStockPO> stockList = stocks.stream().map(PoBuildUtils::buildFundStock).collect(Collectors.toList());
             for (FundStockPO fundStockPO : stockList) {
                 FundStockPO tmp = fundStockRepository.queryByDate(fundStockPO.getFundCode(), fundStockPO.getStockCode(), fundStockPO.getDate());

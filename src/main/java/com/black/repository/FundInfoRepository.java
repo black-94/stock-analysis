@@ -1,5 +1,6 @@
 package com.black.repository;
 
+import com.black.po.FundInfoPO;
 import com.black.po.StockInfoPo;
 import org.apache.ibatis.annotations.*;
 
@@ -39,5 +40,5 @@ public interface FundInfoRepository {
     @Update("update stock_info set ${param1}=#{param2} where id=#{param3}")
     void updateField(String name, String value, long id);
 
-    List<String> queryUninitFund();
+    List<FundInfoPO> queryUninitFund();
 }

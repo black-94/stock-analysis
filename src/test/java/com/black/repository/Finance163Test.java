@@ -48,12 +48,16 @@ public class Finance163Test {
         System.out.println(pos);
     }
 
-    public void queryFundInfo(){
-
-    }
-
-    public void queryPrice(){
-
+    @Test
+    public void fundTest(){
+        List<Finance163FundPricePO> funds = finance163Repository.fundList();
+        System.out.println(funds);
+        List<Finance163FundStockPO> stockPOS = finance163Repository.fundStockList("320007");
+        System.out.println(stockPOS);
+        List<Finance163FundStockPO> historyStocks = finance163Repository.fundHistoryStock("320007");
+        System.out.println(historyStocks);
+        List<Finance163FundPricePO> pricePOS = finance163Repository.fundHistoryPrice("320007", "2020-01-01");
+        System.out.println(pricePOS);
     }
 
 }

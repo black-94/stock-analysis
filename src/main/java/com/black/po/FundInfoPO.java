@@ -13,6 +13,7 @@ public class FundInfoPO {
     int id;
     String fundCode;
     String fundName;
+    String marketDate;
     int historyInit;
     Date createTime;
     Date updateTime;
