@@ -14,6 +14,12 @@ public class Finance163FundPricePO {
     String ratio;
     String amount;
     String date;
+    String marketDate;
+    String type;
+    String m1ret;
+    String m3ret;
+    String m6ret;
+    String m12ret;
 
     public Finance163FundPricePO() {
     }

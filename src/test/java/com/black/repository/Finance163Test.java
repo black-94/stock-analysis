@@ -12,39 +12,48 @@ public class Finance163Test {
     @Autowired
     Finance163Repository finance163Repository;
 
-    @Test
+//    @Test
     public void queryAllCodes(){
         List<StockInfoPo> stockInfoPos = finance163Repository.queryAllCodes();
         System.out.println(stockInfoPos);
     }
 
-    @Test
+//    @Test
     public void queryTodayStockCodes(){
         List<StockInfoPo> stockInfoPos = finance163Repository.queryTodayCodes();
         System.out.println(stockInfoPos);
     }
 
-    @Test
+//    @Test
     public void queryStockInfo(){
         Finance163StockInfoPO po = finance163Repository.queryInfo("600036", "sh");
         System.out.println(po);
     }
 
-    @Test
+//    @Test
     public void queryStockPrice(){
         Finance163StockPricePO po = finance163Repository.queryCurPrice("600036", "sh");
         System.out.println(po);
     }
 
-    @Test
+//    @Test
     public void queryStockHistoryPrice(){
         List<Finance163StockHistoryPricePO> pos = finance163Repository.queryHistoryPrice("600036", "sh", "2010-01-01");
         System.out.println(pos);
     }
 
-    @Test
+//    @Test
     public void queryStockHistoryFinance(){
         List<Finance163StockHistoryFinancePO> pos = finance163Repository.queryHistoryFinance("600036", "sh");
         System.out.println(pos);
     }
+
+    public void queryFundInfo(){
+
+    }
+
+    public void queryPrice(){
+
+    }
+
 }

@@ -1,11 +1,14 @@
 package com.black.repository;
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.black.po.*;
+import com.black.util.Helper;
 import com.black.util.MarketParser;
 import com.black.util.NetUtil;
 import com.google.common.collect.Lists;
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.jsoup.Jsoup;
@@ -14,10 +17,13 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import org.springframework.stereotype.Repository;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
+
+import static com.black.util.Helper.decimalOf;
 
 @Repository
 public class Finance163Repository {
@@ -246,38 +252,119 @@ public class Finance163Repository {
         return pos;
     }
 
-    public List<Finance163FundPricePO> fundList(){
-        //小于10亿或最后一页或小于20条
+    public List<Finance163FundPricePO> fundList() {
+        //小于10亿或最后一页或小于size
+        int pageNo = 0;
+        int pageSize = 1000;
+        BigDecimal billion = BigDecimal.valueOf(1000000000L);
+        String url = "http://quotes.money.163.com/fn/service/netvalue.php?page=%s&sort=ZJZC&order=desc&count=%s";
 
+        List<Finance163FundPricePO> ret = new ArrayList<>();
+        do {
+            String res = NetUtil.get(String.format(url, pageNo, pageSize));
+            JSONArray list = JSON.parseObject(res).getJSONArray("list");
 
+            for (Object o : list) {
+                JSONObject json = (JSONObject) o;
 
+                Finance163FundPricePO po = new Finance163FundPricePO();
+                po.setFundCode(json.getString("SYMBOL"));
+                po.setFundName(json.getString("SNAME"));
+                po.setUnit(json.getString("NAV"));
+                po.setRatio(json.getString("PCHG"));
+                po.setAmount(json.getString("ZJZC"));
+                po.setDate(json.getString("PUBLISHDATE"));
+                po.setMarketDate(json.getString("OFPROFILE8"));
+                po.setType(json.getString("TYPENAME3"));
+                po.setM1ret(json.getString("M1RETRUN"));
+                po.setM3ret(json.getString("M3RETRUN"));
+                po.setM6ret(json.getString("M6RETRUN"));
+                po.setM12ret(json.getString("M12RETRUN"));
 
-        //查询再插入
+                ret.add(po);
+            }
 
-        return null;
+            if (CollectionUtils.isEmpty(list) || list.size() < pageSize) {
+                break;
+            }
+
+            String lastAmout = ret.get(ret.size() - 1).getAmount();
+            if (decimalOf(lastAmout).compareTo(billion) < 0) {
+                break;
+            }
+
+            ++pageNo;
+        } while (true);
+
+        return ret;
     }
 
-    public List<Finance163FundPricePO> fundInfo(String fundCode){
+    public List<Finance163FundStockPO> fundStockList(String fundCode) {
+        String url = "http://quotes.money.163.com/fund/cgmx_%s.html";
+        String res = NetUtil.get(String.format(url, fundCode));
+        Elements elements = Jsoup.parse(res).select(".fn_cm_table.fn_fund_rank tbody tr");
 
-        return null;
+        List<Finance163FundStockPO> list = Lists.newArrayList();
+        for (Element element : elements) {
+            Elements tds = element.select("td");
+            String href = tds.get(0).attr("href");
+            String code = Helper.href2Code(href);
+            String stockNums = tds.get(1).text();
+            String stockAmount = tds.get(2).text();
+            String stockRatio = tds.get(3).text();
+
+            Finance163FundStockPO po = new Finance163FundStockPO();
+            po.setFundCode(fundCode);
+            po.setStockCode(code);
+            po.setStockNums(Helper.parseTextNumber(stockNums));
+            po.setStockAmount(Helper.parseTextNumber(stockAmount));
+            po.setStockRatio(Helper.parseTextNumber(stockRatio));
+            list.add(po);
+        }
+
+        return list;
     }
 
-    public List<Finance163FundStockPO> fundStockList(String fundCode){
+    public List<Finance163FundPricePO> fundHistoryPrice(String fundCode,String marketDate) {
+        String today=LocalDate.now().toString();
+        String beginDay=marketDate;
+        String url = "http://quotes.money.163.com/fund/jzzs_%s_%s.html?start=%s&end=%s&sort=TDATE&order=desc";
+        int pageNo=0;
 
-        return null;
-    }
+        List<Finance163FundPricePO> pos=new ArrayList<>();
+        do {
+            String res = NetUtil.get(String.format(url, fundCode,pageNo,beginDay,today));
+            Elements elements = Jsoup.parse(res).select(".fn_cm_table tbody tr");
+            for (Element element : elements) {
+                Elements tds = element.select("td");
+                String date = tds.get(0).text();
+                String unit = tds.get(1).text();
+                String ratio = tds.get(2).text();
 
-    public List<Finance163FundPricePO> fundHistoryPrice(String fundCode) {
-        return null;
+                Finance163FundPricePO po=new Finance163FundPricePO();
+                po.setFundCode(fundCode);
+                po.setDate(date);
+                po.setRatio(ratio);
+                po.setUnit(unit);
+
+                pos.add(po);
+            }
+
+            if(elements.size()<60){
+                break;
+            }
+        }while (true);
+
+        return pos;
     }
 
     public List<Finance163FundStockPO> fundHistoryStock(String fundCode) {
+
+
+
+
+
         return null;
     }
-
-
-    //每日拉取
-    //手动补完
-    //三个月拉取一次
 
 }
