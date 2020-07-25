@@ -41,7 +41,7 @@ public interface FundStockRepository {
     @Update("update stock_info set ${param1}=#{param2} where id=#{param3}")
     void updateField(String name, String value, long id);
 
-    FundStockPO queryByDate(String fundCode, Date date);
+    FundStockPO queryByDate(String code, String fundCode, Date date);
 
     void insert(FundStockPO fundStockPO);
 }

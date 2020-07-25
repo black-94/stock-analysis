@@ -77,3 +77,42 @@ CREATE TABLE `stock_finance` (
 	PRIMARY KEY (`id`),
 	KEY `ix_code_date`(`code`,`date`) USING BTREE
 ) ;
+
+CREATE TABLE `fund_info` (
+	`id` bigint(20) NOT NULL AUTO_INCREMENT,
+	`fundCode` varchar(20) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL COMMENT '基金编码',
+	`fundName` varchar(50) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL COMMENT '基金名称',
+	`historyInit` tinyint(4) NOT NULL DEFAULT 0 COMMENT '是否拉取历史数据',
+	`createTime` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+	`updateTime` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+	PRIMARY KEY (`id`),
+	Unique KEY `ix_code`(`fundCode`) USING BTREE
+) ;
+
+CREATE TABLE `fund_price` (
+	`id` bigint(20) NOT NULL AUTO_INCREMENT,
+	`fundCode` varchar(20) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL COMMENT '基金编码',
+	`fundName` varchar(20) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL COMMENT '基金名称',
+	`unit` decimal(11,2)  NOT NULL COMMENT '当日单位净值',
+	`amount` decimal(20,4)  NOT NULL COMMENT '当日基金总额',
+	`ratio` decimal(20,4)  NOT NULL COMMENT '涨跌幅度',
+	`date` datetime NOT NULL COMMENT '统计日期',
+	`createTime` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+	`updateTime` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+	PRIMARY KEY (`id`),
+	Unique KEY `uix_code_date`(`fundCode`,`date`) USING BTREE
+) ;
+
+CREATE TABLE `fund_stock` (
+	`id` bigint(20) NOT NULL AUTO_INCREMENT,
+	`fundCode` varchar(20) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL COMMENT '基金编码',
+	`stockCode` varchar(20) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL COMMENT '股票编码',
+	`stockNums` decimal(20,2)  NOT NULL COMMENT '股票份额',
+	`stockAmount` decimal(20,4)  NOT NULL COMMENT '股票金额',
+	`stockRatio` decimal(11,4)  NOT NULL COMMENT '股票占比',
+	`date` datetime NOT NULL COMMENT '拉取日期',
+	`createTime` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+	`updateTime` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+	PRIMARY KEY (`id`),
+	KEY `uix_code_date`(`stockCode`,`fundCode`,`date`) USING BTREE
+) ;
