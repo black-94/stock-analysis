@@ -17,9 +17,11 @@ import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
+import static com.black.util.ExecutorUtil.submit;
+import static com.black.util.ExecutorUtil.waitComplete;
+
 @Component
 public class Crawler {
-    public static Logger root = LoggerFactory.getLogger(Crawler.class);
     @Autowired
     Finance163Repository finance163Repository;
     @Autowired
@@ -30,27 +32,6 @@ public class Crawler {
     StockHistoryFinanceRepository stockHistoryFinanceRepository;
     @Autowired
     StockHistoryPriceRepository stockHistoryPriceRepository;
-
-    static ThreadPoolExecutor executor = new ThreadPoolExecutor(20, 20, 1, TimeUnit.SECONDS,
-            new ArrayBlockingQueue(1000), (r, e) -> Crawler.waitQueue(e, r));
-
-    private static void waitQueue(ThreadPoolExecutor e, Runnable r) {
-        try {
-            e.getQueue().put(r);
-        } catch (Exception exception) {
-            root.error("", exception);
-        }
-    }
-
-    private void waitComplete() {
-        while (executor.getQueue().size() > 0) {
-            try {
-                Thread.sleep(1000L);
-            } catch (Exception e) {
-                root.error("", e);
-            }
-        }
-    }
 
     public void pullAllStockCodes(){
         List<String> codes = stockInfoRepository.queryAllCodes();
@@ -77,7 +58,7 @@ public class Crawler {
 
     public void initStockInfo() {
         List<StockInfoPo> stockInfoPos = stockInfoRepository.queryUninitStock();
-        stockInfoPos.stream().forEach(e -> executor.submit(() -> this.singleFillInfo(e)));
+        stockInfoPos.stream().forEach(e -> submit(() -> this.singleFillInfo(e)));
     }
 
     private void singleFillInfo(StockInfoPo e) {
@@ -89,7 +70,7 @@ public class Crawler {
     @Scheduled(cron = "0 0 17 * * ?")
     public void pullStockPrice() {
         List<StockInfoPo> stockInfoPos = stockInfoRepository.queryAllStocks();
-        stockInfoPos.stream().forEach(e -> executor.submit(() -> this.singleFillPrice(e)));
+        stockInfoPos.stream().forEach(e -> submit(() -> this.singleFillPrice(e)));
         waitComplete();
     }
 
@@ -103,7 +84,7 @@ public class Crawler {
     public void fillHistoryPrice() {
         List<StockInfoPo> stockInfoPos = stockInfoRepository.queryAllStocks();
         stockInfoPos = stockInfoPos.stream().filter(e -> e.getPriceComplete() == 0).collect(Collectors.toList());
-        stockInfoPos.stream().forEach(e -> executor.submit(() -> this.singleFillHistoryPrice(e)));
+        stockInfoPos.stream().forEach(e -> submit(() -> this.singleFillHistoryPrice(e)));
         waitComplete();
     }
 
@@ -127,7 +108,7 @@ public class Crawler {
     public void fillHistoryFinance() {
         List<StockInfoPo> stockInfoPos = stockInfoRepository.queryAllStocks();
         stockInfoPos = stockInfoPos.stream().filter(e -> e.getFinanceComplete() == 0).collect(Collectors.toList());
-        stockInfoPos.stream().forEach(e -> executor.submit(() -> this.singleFillHistoryFinance(e)));
+        stockInfoPos.stream().forEach(e -> submit(() -> this.singleFillHistoryFinance(e)));
         waitComplete();
     }
 
