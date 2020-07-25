@@ -4,17 +4,12 @@ import com.black.po.*;
 import com.black.repository.*;
 import com.black.util.PoBuildUtils;
 import org.apache.commons.collections.CollectionUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import java.util.Date;
 import java.util.List;
-import java.util.concurrent.ArrayBlockingQueue;
-import java.util.concurrent.ThreadPoolExecutor;
-import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 import static com.black.util.ExecutorUtil.submit;
@@ -32,8 +27,14 @@ public class Crawler {
     StockHistoryFinanceRepository stockHistoryFinanceRepository;
     @Autowired
     StockHistoryPriceRepository stockHistoryPriceRepository;
+    @Autowired
+    FundInfoRepository fundInfoRepository;
+    @Autowired
+    FundPriceRepository fundPriceRepository;
+    @Autowired
+    FundStockRepository fundStockRepository;
 
-    public void pullAllStockCodes(){
+    public void pullAllStockCodes() {
         List<String> codes = stockInfoRepository.queryAllCodes();
         List<StockInfoPo> stockInfoPos = finance163Repository.queryAllCodes();
         List<StockInfoPo> list = stockInfoPos.stream().filter(e -> !codes.contains(e.getCode())).collect(Collectors.toList());
@@ -129,4 +130,48 @@ public class Crawler {
 
     }
 
+    @Scheduled(cron = "0 0 23 * * ?")
+    public void pullFundPrices() {
+        List<Finance163FundPricePO> pos = finance163Repository.fundList();
+        List<FundPricePO> list = pos.stream().map(PoBuildUtils::buildFundPrice).collect(Collectors.toList());
+        list.forEach(fundPricePO -> submit(() -> {
+            FundPricePO po = fundPriceRepository.queryByDate(fundPricePO.getFundCode(), fundPricePO.getDate());
+            if (po == null) {
+                fundPriceRepository.insert(fundPricePO);
+            }
+        }));
+    }
+
+    @Scheduled(cron = "0 0 0 1 1/3 ?")
+    public void pullFundStock() {
+        List<String> codes = fundInfoRepository.queryAllCodes();
+        codes.forEach(e -> submit(() -> {
+            List<Finance163FundStockPO> pos = finance163Repository.fundStockList(e);
+            List<FundStockPO> list = pos.stream().map(PoBuildUtils::buildFundStock).collect(Collectors.toList());
+            fundStockRepository.batchInsert(list);
+        }));
+    }
+
+    @Scheduled(cron = "0 0 1 * * ?")
+    public void fillFundPrices() {
+        List<String> codes = fundInfoRepository.queryUninitFund();
+        codes.forEach(e -> submit(() -> {
+            List<Finance163FundPricePO> prices = finance163Repository.fundHistoryPrice(e);
+            List<FundPricePO> priceList = prices.stream().map(PoBuildUtils::buildFundPrice).collect(Collectors.toList());
+            for (FundPricePO fundPricePO : priceList) {
+                FundPricePO tmp = fundPriceRepository.queryByDate(fundPricePO.getFundCode(), fundPricePO.getDate());
+                if (tmp == null) {
+                    fundPriceRepository.insert(fundPricePO);
+                }
+            }
+            List<Finance163FundStockPO> stocks = finance163Repository.fundHistoryStock(e);
+            List<FundStockPO> stockList = stocks.stream().map(PoBuildUtils::buildFundStock).collect(Collectors.toList());
+            for (FundStockPO fundStockPO : stockList) {
+                FundStockPO tmp = fundStockRepository.queryByDate(e, fundStockPO.getDate());
+                if (tmp == null) {
+                    fundStockRepository.insert(fundStockPO);
+                }
+            }
+        }));
+    }
 }

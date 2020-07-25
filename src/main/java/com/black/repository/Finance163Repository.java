@@ -246,4 +246,38 @@ public class Finance163Repository {
         return pos;
     }
 
+    public List<Finance163FundPricePO> fundList(){
+        //小于10亿或最后一页或小于20条
+
+
+
+
+        //查询再插入
+
+        return null;
+    }
+
+    public List<Finance163FundPricePO> fundInfo(String fundCode){
+
+        return null;
+    }
+
+    public List<Finance163FundStockPO> fundStockList(String fundCode){
+
+        return null;
+    }
+
+    public List<Finance163FundPricePO> fundHistoryPrice(String fundCode) {
+        return null;
+    }
+
+    public List<Finance163FundStockPO> fundHistoryStock(String fundCode) {
+        return null;
+    }
+
+
+    //每日拉取
+    //手动补完
+    //三个月拉取一次
+
 }

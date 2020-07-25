@@ -1,13 +1,6 @@
 package com.black.util;
 
-import com.black.po.Finance163StockHistoryFinancePO;
-import com.black.po.Finance163StockHistoryPricePO;
-import com.black.po.Finance163StockInfoPO;
-import com.black.po.Finance163StockPricePO;
-import com.black.po.StockFinancePo;
-import com.black.po.StockHistoryPricePo;
-import com.black.po.StockInfoPo;
-import com.black.po.StockPricePo;
+import com.black.po.*;
 import org.springframework.beans.BeanUtils;
 
 import static com.black.util.Helper.decimalOf;
@@ -63,5 +56,25 @@ public class PoBuildUtils {
         po.setProfit(decimalOf(financePO.getProfit()));
         po.setDate(parseDate(financePO.getDate()));
         return po;
+    }
+
+    public static FundPricePO buildFundPrice(Finance163FundPricePO pricePO) {
+//        StockFinancePo po=new StockFinancePo();
+//        po.setCode(financePO.getCode());
+//        po.setIncome(decimalOf(financePO.getIncome()));
+//        po.setProfit(decimalOf(financePO.getProfit()));
+//        po.setDate(parseDate(financePO.getDate()));
+//        return po;
+        return null;
+    }
+
+    public static FundStockPO buildFundStock(Finance163FundStockPO stockPO) {
+//        StockFinancePo po=new StockFinancePo();
+//        po.setCode(financePO.getCode());
+//        po.setIncome(decimalOf(financePO.getIncome()));
+//        po.setProfit(decimalOf(financePO.getProfit()));
+//        po.setDate(parseDate(financePO.getDate()));
+//        return po;
+        return null;
     }
 }
