@@ -325,15 +325,15 @@ public class Finance163Repository {
         return list;
     }
 
-    public List<Finance163FundPricePO> fundHistoryPrice(String fundCode,String marketDate) {
-        String today=LocalDate.now().toString();
-        String beginDay=marketDate;
+    public List<Finance163FundPricePO> fundHistoryPrice(String fundCode, String marketDate) {
+        String today = LocalDate.now().toString();
+        String beginDay = marketDate;
         String url = "http://quotes.money.163.com/fund/jzzs_%s_%s.html?start=%s&end=%s&sort=TDATE&order=desc";
-        int pageNo=0;
+        int pageNo = 0;
 
-        List<Finance163FundPricePO> pos=new ArrayList<>();
+        List<Finance163FundPricePO> pos = new ArrayList<>();
         do {
-            String res = NetUtil.get(String.format(url, fundCode,pageNo,beginDay,today));
+            String res = NetUtil.get(String.format(url, fundCode, pageNo, beginDay, today));
             Elements elements = Jsoup.parse(res).select(".fn_cm_table tbody tr");
             for (Element element : elements) {
                 Elements tds = element.select("td");
@@ -341,7 +341,7 @@ public class Finance163Repository {
                 String unit = tds.get(1).text();
                 String ratio = tds.get(2).text();
 
-                Finance163FundPricePO po=new Finance163FundPricePO();
+                Finance163FundPricePO po = new Finance163FundPricePO();
                 po.setFundCode(fundCode);
                 po.setDate(date);
                 po.setRatio(ratio);
@@ -350,21 +350,42 @@ public class Finance163Repository {
                 pos.add(po);
             }
 
-            if(elements.size()<60){
+            if (elements.size() < 60) {
                 break;
             }
-        }while (true);
+        } while (true);
 
         return pos;
     }
 
     public List<Finance163FundStockPO> fundHistoryStock(String fundCode) {
+        String url = "http://quotes.money.163.com/fund/cgmx_%s.html";
+        String res = NetUtil.get(String.format(url, fundCode));
+        List<String> reportDates = Jsoup.parse(res).select(".fn_fund_selector option").stream().map(e -> e.text()).collect(Collectors.toList());
+        List<Finance163FundStockPO> list = Lists.newArrayList();
 
+        for (String reportDate : reportDates) {
+            String ret = NetUtil.get(String.format(url + "?reportDate=%s", fundCode, reportDate));
+            Elements elements = Jsoup.parse(ret).select(".fn_cm_table.fn_fund_rank tbody tr");
+            for (Element element : elements) {
+                Elements tds = element.select("td");
+                String href = tds.get(0).attr("href");
+                String code = Helper.href2Code(href);
+                String stockNums = tds.get(1).text();
+                String stockAmount = tds.get(2).text();
+                String stockRatio = tds.get(3).text();
 
+                Finance163FundStockPO po = new Finance163FundStockPO();
+                po.setFundCode(fundCode);
+                po.setStockCode(code);
+                po.setStockNums(Helper.parseTextNumber(stockNums));
+                po.setStockAmount(Helper.parseTextNumber(stockAmount));
+                po.setStockRatio(Helper.parseTextNumber(stockRatio));
+                list.add(po);
+            }
+        }
 
-
-
-        return null;
+        return list;
     }
 
 }
