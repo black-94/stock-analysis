@@ -12,12 +12,12 @@ import java.util.List;
 @Mapper
 public interface StockHistoryFinanceRepository{
 
-    @Select("select date from stock_finance where code = #{code}")
+    @Select("select `date` from stock_finance where code = #{code}")
     List<Date> queryDateByCode(String code);
 
     @Insert("""
                 <script>
-                insert into stock_finance(code,date,income,profit) values
+                insert into stock_finance(`code`,`date`,`income`,`profit`) values
                 <foreach item="item" index="index" collection="collection" open="" separator="," close="">
                     (#{item.code},#{item.date},#{item.income},#{item.profit})
                 </foreach>
