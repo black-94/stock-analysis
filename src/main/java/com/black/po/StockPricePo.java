@@ -17,7 +17,6 @@ public class StockPricePo {
     BigDecimal amount;
     BigDecimal updown;
     BigDecimal change;
-    BigDecimal exchange;
     BigDecimal capital;
     Date date;
     Date createTime;
