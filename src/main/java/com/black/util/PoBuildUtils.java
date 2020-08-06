@@ -25,7 +25,6 @@ public class PoBuildUtils {
         po.setAmount(decimalOf(price.getAmount()));
         po.setUpdown(decimalOf(price.getUpdown()));
         po.setChange(decimalOf(price.getChange()));
-        po.setExchange(decimalOf(price.getExchange()));
         po.setCapital(decimalOf(price.getCapital()));
         po.setDate(parseDate(price.getDate()));
         return po;
