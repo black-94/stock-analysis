@@ -38,6 +38,15 @@ public class Helper {
         }
     }
 
+    public static BigDecimal safeDivide(BigDecimal divided,BigDecimal divide){
+        try {
+            return divided.divide(divide);
+        } catch (Exception e) {
+            log.error("",e);
+            return BigDecimal.ZERO;
+        }
+    }
+
     public static String href2Code(String href) {
         try {
             href = StringUtils.remove(href, "http://quotes.money.163.com/");

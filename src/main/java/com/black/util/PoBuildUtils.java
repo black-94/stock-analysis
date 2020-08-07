@@ -3,8 +3,11 @@ package com.black.util;
 import com.black.po.*;
 import org.springframework.beans.BeanUtils;
 
+import java.math.BigDecimal;
+
 import static com.black.util.Helper.decimalOf;
 import static com.black.util.Helper.parseDate;
+import static com.black.util.Helper.safeDivide;
 
 public class PoBuildUtils {
 
@@ -25,7 +28,15 @@ public class PoBuildUtils {
         po.setAmount(decimalOf(price.getAmount()));
         po.setUpdown(decimalOf(price.getUpdown()));
         po.setChange(decimalOf(price.getChange()));
-        po.setCapital(decimalOf(price.getCapital()));
+        po.setTotal(decimalOf(price.getTotal()));
+        po.setNum(decimalOf(price.getNum()));
+
+        BigDecimal amplitude=safeDivide(po.getHigh().subtract(po.getLow()),decimalOf(price.getLastClose()));
+        po.setAmplitude(amplitude);
+
+        BigDecimal capital=po.getTotal().multiply(po.getClose());
+        po.setCapital(capital);
+
         po.setDate(parseDate(price.getDate()));
         return po;
     }
@@ -38,12 +49,17 @@ public class PoBuildUtils {
         po.setHigh(decimalOf(price.getHigh()));
         po.setLow(decimalOf(price.getLow()));
         po.setVolume(decimalOf(price.getVolume()));
-        po.setTurnover(decimalOf(price.getAmount()));
-        po.setPercent(decimalOf(price.getUpdown()));
-        po.setUpdown(decimalOf(price.getChange()));
+        po.setAmount(decimalOf(price.getAmount()));
+        po.setUpdown(decimalOf(price.getUpdown()));
+        po.setChange(decimalOf(price.getChange()));
         po.setAmplitude(decimalOf(price.getAmplitude()));
-//        po.setExchange();
-//        po.setCapital();
+
+        BigDecimal exchange=decimalOf(price.getExchange());
+        BigDecimal total=safeDivide(po.getAmount(),exchange);
+        BigDecimal capital=safeDivide(po.getVolume(),exchange);
+
+        po.setTotal(total);
+        po.setCapital(capital);
         po.setDate(parseDate(price.getDate()));
         return po;
     }

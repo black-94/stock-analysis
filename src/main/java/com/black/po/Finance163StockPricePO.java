@@ -22,8 +22,8 @@ public class Finance163StockPricePO {
     String amount;
     String updown;
     String change;
-    String exchange;
-    String capital;
+    String total;
+    String num;
     String date;
 
 }
