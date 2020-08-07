@@ -14,10 +14,12 @@ public class StockHistoryPricePo {
     BigDecimal high;
     BigDecimal low;
     BigDecimal volume;
-    BigDecimal turnover;
-    BigDecimal percent;
+    BigDecimal amount;
     BigDecimal updown;
-    BigDecimal amplitude;
+    BigDecimal change;
+    BigDecimal total;
+    BigDecimal num;
+    BigDecimal capital;
     Date date;
     Date createTime;
     Date updateTime;
