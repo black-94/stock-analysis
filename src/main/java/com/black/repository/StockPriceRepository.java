@@ -9,8 +9,8 @@ import org.apache.ibatis.annotations.Mapper;
 public interface StockPriceRepository{
 
     @Insert("""
-            insert into stock_price(`code`,`open`,`close`,`high`,`low`,`volume`,`amount`,`updown`,`change`,`capital`,`date`)
-            values (#{code},#{open},#{close},#{high},#{low},#{volume},#{amount},#{updown},#{change},#{capital},#{date})
+            insert into stock_price(`code`,`open`,`close`,`high`,`low`,`volume`,`amount`,`updown`,`change`,`amplitude`,`total`,`num`,`capital`,`date`)
+            values (#{code},#{open},#{close},#{high},#{low},#{volume},#{amount},#{updown},#{change},#{amplitude},#{total},#{num},#{capital},#{date})
             """)
     void insert(StockPricePo stockPricePo);
 }
