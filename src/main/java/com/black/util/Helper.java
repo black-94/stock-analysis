@@ -6,6 +6,7 @@ import org.apache.commons.lang3.StringUtils;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneId;
@@ -40,7 +41,7 @@ public class Helper {
 
     public static BigDecimal safeDivide(BigDecimal divided,BigDecimal divide){
         try {
-            return divided.divide(divide);
+            return divided.divide(divide,6, RoundingMode.HALF_UP);
         } catch (Exception e) {
             log.error("",e);
             return BigDecimal.ZERO;
