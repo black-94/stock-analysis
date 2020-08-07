@@ -28,7 +28,7 @@ public class Helper {
             return new BigDecimal(str);
         } catch (Exception e) {
             log.error("",e);
-            return null;
+            return BigDecimal.ZERO;
         }
     }
 
@@ -44,14 +44,19 @@ public class Helper {
     }
 
     public static BigDecimal parseTextNumber(String text) {
+        if(StringUtils.isBlank(text)){
+            return BigDecimal.ZERO;
+        }
+
         String numStr = text.substring(0, text.length() - 1);
-        BigDecimal num = decimalOf(numStr);
         if (text.endsWith("亿")) {
+            BigDecimal num = decimalOf(numStr);
             return num.multiply(BigDecimal.valueOf(100000000));
         } else if (text.endsWith("万")) {
+            BigDecimal num = decimalOf(numStr);
             return num.multiply(BigDecimal.valueOf(10000));
         }
-        return num;
+        return decimalOf(text);
     }
 
     /**
