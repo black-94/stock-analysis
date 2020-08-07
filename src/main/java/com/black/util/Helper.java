@@ -22,12 +22,18 @@ public class Helper {
 
     public static BigDecimal decimalOf(String str) {
         try {
-            if (str != null) {
-                str = str.replace(",", "").replace(" ", "").replace("-", "");
+            if (StringUtils.isBlank(str)) {
+                return BigDecimal.ZERO;
             }
-            return new BigDecimal(str);
+            boolean negative = false;
+            if (str.startsWith("-")) {
+                negative = true;
+            }
+            str = str.replace(",", "").replace(" ", "").replace("-", "");
+            BigDecimal res = new BigDecimal(str);
+            return negative ? res.negate() : res;
         } catch (Exception e) {
-            log.error("",e);
+            log.error("", e);
             return BigDecimal.ZERO;
         }
     }
@@ -38,13 +44,13 @@ public class Helper {
             href = StringUtils.remove(href, ".html");
             return href.substring(1);
         } catch (Exception e) {
-            log.error("",e);
+            log.error("", e);
             return "";
         }
     }
 
     public static BigDecimal parseTextNumber(String text) {
-        if(StringUtils.isBlank(text)){
+        if (StringUtils.isBlank(text)) {
             return BigDecimal.ZERO;
         }
 
