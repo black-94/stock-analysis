@@ -26,8 +26,8 @@ public class PoBuildUtils {
         po.setLow(decimalOf(price.getLow()));
         po.setVolume(decimalOf(price.getVolume()));
         po.setAmount(decimalOf(price.getAmount()));
-        po.setUpdown(decimalOf(price.getUpdown()));
-        po.setChange(decimalOf(price.getChange()));
+        po.setPercent(decimalOf(price.getUpdown()));
+        po.setUpdown(decimalOf(price.getChange()));
         po.setTotal(decimalOf(price.getTotal()));
         po.setNum(decimalOf(price.getNum()));
 
@@ -50,8 +50,8 @@ public class PoBuildUtils {
         po.setLow(decimalOf(price.getLow()));
         po.setVolume(decimalOf(price.getVolume()));
         po.setAmount(decimalOf(price.getAmount()));
-        po.setUpdown(decimalOf(price.getUpdown()));
-        po.setChange(decimalOf(price.getChange()));
+        po.setPercent(decimalOf(price.getUpdown()));
+        po.setUpdown(decimalOf(price.getChange()));
         po.setAmplitude(decimalOf(price.getAmplitude()));
 
         BigDecimal exchange=decimalOf(price.getExchange());

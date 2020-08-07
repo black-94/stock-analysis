@@ -15,8 +15,8 @@ public class StockHistoryPricePo {
     BigDecimal low;
     BigDecimal volume;
     BigDecimal amount;
+    BigDecimal percent;
     BigDecimal updown;
-    BigDecimal change;
     BigDecimal amplitude;
     BigDecimal total;
     BigDecimal capital;
