@@ -17,6 +17,7 @@ public class StockHistoryPricePo {
     BigDecimal amount;
     BigDecimal updown;
     BigDecimal change;
+    BigDecimal amplitude;
     BigDecimal total;
     BigDecimal num;
     BigDecimal capital;
