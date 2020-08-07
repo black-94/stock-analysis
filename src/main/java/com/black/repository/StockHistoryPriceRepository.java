@@ -17,10 +17,10 @@ public interface StockHistoryPriceRepository{
 
     @Insert("""
                 <script>
-                insert into stock_history_price(`code`,`open`,`close`,`high`,`low`,`volume`,`amount`,`updown`,`percent`,`amplitude`,`total`,`capital`) values
+                insert into stock_history_price(`code`,`open`,`close`,`high`,`low`,`volume`,`amount`,`updown`,`percent`,`amplitude`,`total`,`capital`,`date`) values
                 <foreach item="item" index="index" collection="list" open="" separator="," close="">
                     (#{item.code},#{item.open},#{item.close},#{item.high},#{item.low},#{item.volume},#{item.amount},#{item.updown},
-                    #{item.percent},#{item.amplitude},#{item.total},#{item.capital})
+                    #{item.percent},#{item.amplitude},#{item.total},#{item.capital},#{item.date})
                 </foreach>
                 </script>
             """)
