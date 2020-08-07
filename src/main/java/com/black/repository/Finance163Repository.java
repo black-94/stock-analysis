@@ -149,6 +149,8 @@ public class Finance163Repository {
         String date = time.substring(0, 10);
         date = StringUtils.replace(date, "/", "-");
 
+        //todo 解析流通股和总股数，核对各字段数据
+
         Finance163StockPricePO stockPricePo = new Finance163StockPricePO();
         stockPricePo.setCode(code);
         stockPricePo.setOpen(open);
