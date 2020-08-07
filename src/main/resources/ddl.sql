@@ -58,7 +58,6 @@ CREATE TABLE `stock_history_price` (
 	`updown` decimal(20,4)  NOT NULL COMMENT '涨跌额',
 	`amplitude` decimal(20,4)  NOT NULL COMMENT '振幅',
 	`total` decimal(20,4)  NOT NULL COMMENT '总股本',
-	`num` decimal(20,4)  NOT NULL COMMENT '流通股本',
 	`capital` decimal(20,4)  NOT NULL COMMENT '市值',
 	`date` varchar(25)  NOT NULL COMMENT '股价日期',
 	`createTime` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
