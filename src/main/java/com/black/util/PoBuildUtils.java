@@ -7,6 +7,7 @@ import java.math.BigDecimal;
 
 import static com.black.util.Helper.decimalOf;
 import static com.black.util.Helper.parseDate;
+import static com.black.util.Helper.parseTextNumber;
 import static com.black.util.Helper.safeDivide;
 
 public class PoBuildUtils {
@@ -28,8 +29,8 @@ public class PoBuildUtils {
         po.setAmount(decimalOf(price.getAmount()));
         po.setPercent(decimalOf(price.getUpdown()));
         po.setUpdown(decimalOf(price.getChange()));
-        po.setTotal(decimalOf(price.getTotal()));
-        po.setNum(decimalOf(price.getNum()));
+        po.setTotal(parseTextNumber(price.getTotal()));
+        po.setNum(parseTextNumber(price.getNum()));
 
         BigDecimal amplitude=safeDivide(po.getHigh().subtract(po.getLow()),decimalOf(price.getLastClose()));
         po.setAmplitude(amplitude);
