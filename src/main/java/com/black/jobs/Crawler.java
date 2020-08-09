@@ -4,6 +4,7 @@ import com.black.po.*;
 import com.black.repository.*;
 import com.black.util.PoBuildUtils;
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
@@ -79,6 +80,10 @@ public class Crawler {
         Finance163StockPricePO price = finance163Repository.queryCurPrice(e.getCode(), e.getExchanger());
         StockPricePo stockPricePo = PoBuildUtils.buildStockPrice(price);
         stockPriceRepository.insert(stockPricePo);
+
+        if(StringUtils.isBlank(e.getMarketDay())||"--".equals(e.getMarketDay())){
+            stockInfoRepository.updateField("marketDay",price.getMarketDay(),e.getId());
+        }
     }
 
     @Scheduled(cron = "0 0 21 * * ?")
