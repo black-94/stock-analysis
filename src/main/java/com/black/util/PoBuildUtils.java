@@ -75,13 +75,17 @@ public class PoBuildUtils {
     }
 
     public static FundPricePO buildFundPrice(Finance163FundPricePO pricePO) {
-//        StockFinancePo po=new StockFinancePo();
-//        po.setCode(financePO.getCode());
-//        po.setIncome(decimalOf(financePO.getIncome()));
-//        po.setProfit(decimalOf(financePO.getProfit()));
-//        po.setDate(parseDate(financePO.getDate()));
-//        return po;
-        return null;
+        FundPricePO po=new FundPricePO();
+//        po.setFundCode(pricePO.getFundCode());
+//        po.setUnit(pricePO.getUnit());
+//        po.setRatio(pricePO.getRatio());
+//        po.setAmount(pricePO.getAmount());
+//        po.setM1ret(pricePO.getM1ret());
+//        po.setM3ret(pricePO.getM3ret());
+//        po.setM6ret(pricePO.getM6ret());
+//        po.setM12ret(pricePO.getM12ret());
+//        po.setDate(pricePO.getDate());
+        return po;
     }
 
     public static FundStockPO buildFundStock(Finance163FundStockPO stockPO) {
