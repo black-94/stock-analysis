@@ -75,6 +75,20 @@ public class Helper {
         return decimalOf(text);
     }
 
+    public static String truncateAfter(String str,String tag){
+        if(StringUtils.isBlank(str)){
+            return "";
+        }
+        if(StringUtils.isBlank(tag)){
+            return str;
+        }
+        int i = str.indexOf(tag);
+        if(i<0){
+            return str;
+        }
+        return str.substring(i+tag.length());
+    }
+
     /**
      * pattern yyyy-MM-dd
      *

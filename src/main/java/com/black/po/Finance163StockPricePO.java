@@ -23,6 +23,7 @@ public class Finance163StockPricePO {
     String updown;
     String change;
     String total;
+    String marketDay;
     String num;
     String date;
 

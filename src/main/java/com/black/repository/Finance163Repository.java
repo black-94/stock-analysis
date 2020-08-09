@@ -3,7 +3,13 @@ package com.black.repository;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
-import com.black.po.*;
+import com.black.po.Finance163FundPricePO;
+import com.black.po.Finance163FundStockPO;
+import com.black.po.Finance163StockHistoryFinancePO;
+import com.black.po.Finance163StockHistoryPricePO;
+import com.black.po.Finance163StockInfoPO;
+import com.black.po.Finance163StockPricePO;
+import com.black.po.StockInfoPo;
 import com.black.util.Helper;
 import com.black.util.MarketParser;
 import com.black.util.NetUtil;
@@ -149,7 +155,17 @@ public class Finance163Repository {
         String date = time.substring(0, 10);
         date = StringUtils.replace(date, "/", "-");
 
-        //todo 解析流通股和总股数，核对各字段数据
+        url = "http://quotes.money.163.com/%s.html";
+        res = NetUtil.get(url, key);
+        Elements elements = Jsoup.parse(res).select(".corp_info.inner_box p");
+        String marketDayStr = elements.get(8).text();
+        marketDayStr = Helper.truncateAfter(marketDayStr, "上市：");
+        String totalStr = elements.get(9).text();
+        totalStr = Helper.truncateAfter(totalStr, "本：");
+        totalStr = StringUtils.remove(totalStr, "股");
+        String numStr = elements.get(10).text();
+        numStr = Helper.truncateAfter(numStr, "本：");
+        numStr = StringUtils.remove(numStr, "股");
 
         Finance163StockPricePO stockPricePo = new Finance163StockPricePO();
         stockPricePo.setCode(code);
@@ -162,8 +178,9 @@ public class Finance163Repository {
         stockPricePo.setAmount(turnover);
         stockPricePo.setUpdown(percent);
         stockPricePo.setChange(updown);
-//        stockPricePo.setAmplitude();
-//        stockPricePo.setCapital();
+        stockPricePo.setTotal(totalStr);
+        stockPricePo.setNum(numStr);
+        stockPricePo.setMarketDay(marketDayStr);
         stockPricePo.setDate(date);
 
         return stockPricePo;
@@ -312,7 +329,7 @@ public class Finance163Repository {
             Elements tds = element.select("td");
             String href = tds.get(0).select("a").attr("href");
             String code = Helper.href2Code(href);
-            if(StringUtils.isBlank(code)){
+            if (StringUtils.isBlank(code)) {
                 continue;
             }
 
@@ -352,7 +369,7 @@ public class Finance163Repository {
                 Finance163FundPricePO po = new Finance163FundPricePO();
                 po.setFundCode(fundCode);
                 po.setDate(date);
-                po.setRatio(StringUtils.remove(ratio,"%"));
+                po.setRatio(StringUtils.remove(ratio, "%"));
                 po.setUnit(unit);
 
                 pos.add(po);
@@ -380,7 +397,7 @@ public class Finance163Repository {
                 Elements tds = element.select("td");
                 String href = tds.get(0).select("a").attr("href");
                 String code = Helper.href2Code(href);
-                if(StringUtils.isBlank(code)){
+                if (StringUtils.isBlank(code)) {
                     continue;
                 }
 
