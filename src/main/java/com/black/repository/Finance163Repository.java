@@ -217,6 +217,7 @@ public class Finance163Repository {
                     String time = tds.get(0).text();
                     String change = tds.get(5).text();
                     String amplitude = tds.get(9).text();
+                    String exchange = tds.get(10).text();
 
                     Finance163StockHistoryPricePO stockPricePo = new Finance163StockHistoryPricePO();
                     stockPricePo.setCode(code);
@@ -229,7 +230,7 @@ public class Finance163Repository {
                     stockPricePo.setVolume(volume);
                     stockPricePo.setAmount(amount);
                     stockPricePo.setAmplitude(amplitude);
-//                    stockPricePo.setExchange();
+                    stockPricePo.setExchange(exchange);
                     stockPricePo.setDate(time);
 
                     list.add(stockPricePo);
