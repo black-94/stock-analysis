@@ -25,11 +25,14 @@ import org.springframework.stereotype.Repository;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
 import static com.black.util.Helper.decimalOf;
+import static com.black.util.Helper.parseDate;
 
 @Repository
 public class Finance163Repository {
@@ -188,15 +191,27 @@ public class Finance163Repository {
 
     public List<Finance163StockHistoryPricePO> queryHistoryPrice(String code, String exchanger, String marketDay) {
         int year = LocalDate.now().getYear();
+        int season = (LocalDate.now().getMonthValue() + 2) / 3;
         int marketYear = year - 1;
+        int marketSeason = 1;
         try {
-            marketYear = Integer.valueOf(marketDay.substring(0, 4));
+            ZonedDateTime date = parseDate(marketDay).toInstant().atZone(ZoneId.systemDefault());
+            marketYear = date.getYear();
+            marketSeason = (date.getDayOfMonth() + 2) / 3;
         } catch (Exception e) {
         }
 
         List<Finance163StockHistoryPricePO> list = new ArrayList<>();
         for (int i = marketYear; i <= year; i++) {
-            for (int j = 1; j < 5; j++) {
+            int begin = 1, end = 5;
+            if (i == marketYear) {
+                begin = marketSeason;
+            }
+            if (i == year) {
+                end = season + 1;
+            }
+
+            for (int j = begin; j < end; ++j) {
                 String url = "http://quotes.money.163.com/trade/lsjysj_%s.html?year=%d&season=%d";
                 String res = NetUtil.get(url, code, i, j);
                 Document doc = Jsoup.parse(res);
