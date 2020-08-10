@@ -56,8 +56,8 @@ public class PoBuildUtils {
         po.setAmplitude(decimalOf(price.getAmplitude()));
 
         BigDecimal exchange=decimalOf(price.getExchange());
-        BigDecimal total=safeDivide(po.getAmount(),exchange);
-        BigDecimal capital=safeDivide(po.getVolume(),exchange);
+        BigDecimal total=safeDivide(po.getAmount().multiply(BigDecimal.valueOf(100*100)),exchange);
+        BigDecimal capital=safeDivide(po.getVolume().multiply(BigDecimal.valueOf(10000*100)),exchange);
 
         po.setTotal(total);
         po.setCapital(capital);
