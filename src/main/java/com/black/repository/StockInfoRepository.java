@@ -33,7 +33,7 @@ public interface StockInfoRepository {
     )
     void fillInfo(StockInfoPo stockInfoPo);
 
-    @Select("select * from stock_info")
+    @Select("select * from stock_info where name <> '' ")
     List<StockInfoPo> queryAllStocks();
 
     @Update("update stock_info set ${param1}=#{param2} where id=#{param3}")
