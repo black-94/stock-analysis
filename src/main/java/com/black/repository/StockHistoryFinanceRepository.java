@@ -6,6 +6,7 @@ import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
+import org.apache.ibatis.annotations.Update;
 
 import java.util.Date;
 import java.util.List;
@@ -25,4 +26,10 @@ public interface StockHistoryFinanceRepository{
                 </script>
             """)
     void batchInsert(@Param("list") List<StockFinancePo> stockFinancePos);
+
+    @Select("select * from stock_finance where code=#{param1}")
+    List<StockFinancePo> queryByCode(String code);
+
+    @Update("update stock_finance set ${param1}=#{param2} where id=#{param3}")
+    void updateField(String name, String value, long id);
 }

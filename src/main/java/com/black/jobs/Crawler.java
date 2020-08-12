@@ -140,7 +140,6 @@ public class Crawler {
     }
 
     private void singleFillHistoryFinance(StockInfoPo e) {
-        Date endDate = e.getFinanceComplete() > 0 ? Date.from(LocalDate.now().plusMonths(-1).atStartOfDay(ZoneId.systemDefault()).toInstant()) : e.getMarketDay();
         List<Finance163StockHistoryFinancePO> finances = finance163Repository.queryHistoryFinance(e.getCode());
         List<StockFinancePo> stockFinancePos = finances.stream().map(PoBuildUtils::buildStockFinance).collect(Collectors.toList());
         List<Date> dates = stockHistoryFinanceRepository.queryDateByCode(e.getCode());
@@ -148,13 +147,16 @@ public class Crawler {
         if (!stockFinancePos.isEmpty()) {
             stockHistoryFinanceRepository.batchInsert(stockFinancePos);
         }
+        fillFinanceCalRes(e);
         if (e.getFinanceComplete() <= 1) {
             stockInfoRepository.updateField("financeComplete", "1", e.getId());
         }
     }
 
-    @Scheduled(cron = "0 0 22 * * ?")
-    public void fillFinanceCalRes() {
+    private void fillFinanceCalRes(StockInfoPo e) {
+        stockHistoryFinanceRepository.q
+
+
 
     }
 
