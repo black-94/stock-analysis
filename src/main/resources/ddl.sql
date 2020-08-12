@@ -42,7 +42,8 @@ CREATE TABLE `stock_price` (
 	`createTime` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
 	`updateTime` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
 	PRIMARY KEY (`id`),
-	KEY `ix_code_date`(`code`,`date`) USING BTREE
+	KEY `ix_code`(`code`) USING BTREE,
+	KEY `ix_date`(`date`) USING BTREE
 ) ;
 
 CREATE TABLE `stock_history_price` (
@@ -63,7 +64,8 @@ CREATE TABLE `stock_history_price` (
 	`createTime` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
 	`updateTime` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
 	PRIMARY KEY (`id`),
-	KEY `ix_code_date`(`code`,`date`) USING BTREE
+	KEY `ix_code`(`code`) USING BTREE,
+	KEY `ix_date`(`date`) USING BTREE
 ) ;
 
 CREATE TABLE `stock_finance` (
