@@ -1,10 +1,18 @@
 package com.black.repository;
 
-import com.black.po.*;
-import org.junit.jupiter.api.Test;
+import com.black.po.Finance163FundPricePO;
+import com.black.po.Finance163FundStockPO;
+import com.black.po.Finance163StockHistoryFinancePO;
+import com.black.po.Finance163StockHistoryPricePO;
+import com.black.po.Finance163StockInfoPO;
+import com.black.po.Finance163StockPricePO;
+import com.black.po.StockInfoPo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 
 @SpringBootTest
@@ -37,8 +45,10 @@ public class Finance163Test {
     }
 
 //    @Test
-    public void queryStockHistoryPrice(){
-        List<Finance163StockHistoryPricePO> pos = finance163Repository.queryHistoryPrice("600036", "sh", "2010-01-01");
+    public void queryStockHistoryPrice() throws ParseException {
+        SimpleDateFormat format=new SimpleDateFormat("yyyy-MM-dd");
+        Date marketDay = format.parse("2010-01-01");
+        List<Finance163StockHistoryPricePO> pos = finance163Repository.queryHistoryPrice("600036", "sh", marketDay);
         System.out.println(pos);
     }
 
