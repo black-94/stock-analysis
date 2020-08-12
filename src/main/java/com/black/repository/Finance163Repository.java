@@ -28,6 +28,7 @@ import java.time.LocalDate;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -79,7 +80,7 @@ public class Finance163Repository {
     private StockInfoPo buildStockInfo(String code) {
         Pair<String, String> pair = MarketParser.parse(code);
         return StockInfoPo.builder().code(code).exchanger(pair.getKey()).subExchanger(pair.getValue())
-                .name("").biz("").openDay("").marketDay("").build();
+                .name("").biz("").openDay(new Date(0)).marketDay(new Date(0)).build();
     }
 
     public List<StockInfoPo> queryTodayCodes() {
