@@ -96,7 +96,11 @@ public class Helper {
      * @return
      */
     public static Date parseDate(String str) {
-        Instant ins = LocalDate.parse(str, DateTimeFormatter.ofPattern("yyyy-MM-dd")).atStartOfDay(ZoneId.systemDefault()).toInstant();
-        return Date.from(ins);
+        try {
+            Instant ins = LocalDate.parse(str, DateTimeFormatter.ofPattern("yyyy-MM-dd")).atStartOfDay(ZoneId.systemDefault()).toInstant();
+            return Date.from(ins);
+        } catch (Exception e) {
+            return new Date(0);
+        }
     }
 }
