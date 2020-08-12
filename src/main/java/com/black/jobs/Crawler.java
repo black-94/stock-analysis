@@ -97,6 +97,11 @@ public class Crawler {
     private void singleFillPrice(StockInfoPo e) {
         Finance163StockPricePO price = finance163Repository.queryCurPrice(e.getCode(), e.getExchanger());
         StockPricePo stockPricePo = PoBuildUtils.buildStockPrice(price);
+        StockPricePo tmp = stockPriceRepository.queryByDate(stockPricePo.getCode(), stockPricePo.getDate());
+        if(tmp!=null){
+            return;
+        }
+
         stockPriceRepository.insert(stockPricePo);
 
         if(new Date(0).equals(e.getMarketDay())){
