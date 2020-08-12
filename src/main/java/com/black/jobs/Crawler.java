@@ -27,6 +27,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
+import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -82,7 +84,7 @@ public class Crawler {
     }
 
     private void singleFillInfo(StockInfoPo e) {
-        Finance163StockInfoPO info = finance163Repository.queryInfo(e.getCode(), e.getExchanger());
+        Finance163StockInfoPO info = finance163Repository.queryInfo(e.getCode());
         StockInfoPo stockInfoPo = PoBuildUtils.buildStockInfo(info);
         stockInfoRepository.fillInfo(stockInfoPo);
     }
@@ -98,14 +100,14 @@ public class Crawler {
         Finance163StockPricePO price = finance163Repository.queryCurPrice(e.getCode(), e.getExchanger());
         StockPricePo stockPricePo = PoBuildUtils.buildStockPrice(price);
         StockPricePo tmp = stockPriceRepository.queryByDate(stockPricePo.getCode(), stockPricePo.getDate());
-        if(tmp!=null){
+        if (tmp != null) {
             return;
         }
 
         stockPriceRepository.insert(stockPricePo);
 
-        if(new Date(0).equals(e.getMarketDay())){
-            stockInfoRepository.updateField("marketDay",price.getMarketDay(),e.getId());
+        if (new Date(0).equals(e.getMarketDay())) {
+            stockInfoRepository.updateField("marketDay", price.getMarketDay(), e.getId());
         }
     }
 
@@ -118,19 +120,17 @@ public class Crawler {
     }
 
     private void singleFillHistoryPrice(StockInfoPo e) {
-        if(e.getPriceComplete()>0){
-            return;
-        }
-        List<Finance163StockHistoryPricePO> prices = finance163Repository.queryHistoryPrice(e.getCode(), e.getExchanger(), e.getMarketDay());
+        Date endDate = e.getPriceComplete() > 0 ? Date.from(LocalDate.now().plusMonths(-1).atStartOfDay(ZoneId.systemDefault()).toInstant()) : e.getMarketDay();
+        List<Finance163StockHistoryPricePO> prices = finance163Repository.queryHistoryPrice(e.getCode(), endDate);
         List<StockHistoryPricePo> list = prices.stream().map(PoBuildUtils::buildStockHistoryPrice).collect(Collectors.toList());
         List<Date> dates = stockHistoryPriceRepository.queryDatesByCode(e.getCode());
         list = list.stream().filter(p -> !dates.contains(p.getDate())).collect(Collectors.toList());
-        if (list.isEmpty()) {
-            stockInfoRepository.updateField("priceComplete","1",e.getId());
-            return;
+        if (!list.isEmpty()) {
+            stockHistoryPriceRepository.batchInsert(list);
         }
-        stockHistoryPriceRepository.batchInsert(list);
-        stockInfoRepository.updateField("priceComplete","1",e.getId());
+        if (e.getPriceComplete() <= 0) {
+            stockInfoRepository.updateField("priceComplete", "1", e.getId());
+        }
     }
 
     @Scheduled(cron = "0 0 17 * * ?")
@@ -147,19 +147,17 @@ public class Crawler {
     }
 
     private void singleFillHistoryFinance(StockInfoPo e) {
-        if(e.getFinanceComplete()>0){
-            return;
-        }
-        List<Finance163StockHistoryFinancePO> finances = finance163Repository.queryHistoryFinance(e.getCode(), e.getExchanger());
+        Date endDate = e.getFinanceComplete() > 0 ? Date.from(LocalDate.now().plusMonths(-1).atStartOfDay(ZoneId.systemDefault()).toInstant()) : e.getMarketDay();
+        List<Finance163StockHistoryFinancePO> finances = finance163Repository.queryHistoryFinance(e.getCode());
         List<StockFinancePo> stockFinancePos = finances.stream().map(PoBuildUtils::buildStockFinance).collect(Collectors.toList());
         List<Date> dates = stockHistoryFinanceRepository.queryDateByCode(e.getCode());
         stockFinancePos = stockFinancePos.stream().filter(shfp -> !dates.contains(shfp.getDate())).collect(Collectors.toList());
-        if (stockFinancePos.isEmpty()) {
-            stockInfoRepository.updateField("financeComplete","1",e.getId());
-            return;
+        if (!stockFinancePos.isEmpty()) {
+            stockHistoryFinanceRepository.batchInsert(stockFinancePos);
         }
-        stockHistoryFinanceRepository.batchInsert(stockFinancePos);
-        stockInfoRepository.updateField("financeComplete","1",e.getId());
+        if (e.getFinanceComplete() <= 1) {
+            stockInfoRepository.updateField("financeComplete", "1", e.getId());
+        }
     }
 
     @Scheduled(cron = "0 0 22 * * ?")
@@ -194,7 +192,7 @@ public class Crawler {
     public void fillFundInfo() {
         List<FundInfoPO> funds = fundInfoRepository.queryUninitFund();
         funds.forEach(e -> submit(() -> {
-            List<Finance163FundPricePO> prices = finance163Repository.fundHistoryPrice(e.getFundCode(),e.getMarketDate());
+            List<Finance163FundPricePO> prices = finance163Repository.fundHistoryPrice(e.getFundCode(), e.getMarketDate());
             List<FundPricePO> priceList = prices.stream().map(PoBuildUtils::buildFundPrice).collect(Collectors.toList());
             for (FundPricePO fundPricePO : priceList) {
                 FundPricePO tmp = fundPriceRepository.queryByDate(fundPricePO.getFundCode(), fundPricePO.getDate());

@@ -100,7 +100,7 @@ public class Finance163Repository {
         return codes.stream().distinct().map(this::buildStockInfo).collect(Collectors.toList());
     }
 
-    public Finance163StockInfoPO queryInfo(String code, String exchanger) {
+    public Finance163StockInfoPO queryInfo(String code) {
         String url = "http://quotes.money.163.com/f10/gszl_%s.html";
         String res = NetUtil.get(url, code);
         Document doc = Jsoup.parse(res);
@@ -189,13 +189,13 @@ public class Finance163Repository {
         return stockPricePo;
     }
 
-    public List<Finance163StockHistoryPricePO> queryHistoryPrice(String code, String exchanger, Date marketDay) {
+    public List<Finance163StockHistoryPricePO> queryHistoryPrice(String code, Date marketDay) {
         int year = LocalDate.now().getYear();
         int season = (LocalDate.now().getMonthValue() + 2) / 3;
         int marketYear = year - 1;
         int marketSeason = 1;
 
-        if(new Date(0).compareTo(marketDay)<0){
+        if (new Date(0).compareTo(marketDay) < 0) {
             ZonedDateTime date = marketDay.toInstant().atZone(ZoneId.systemDefault());
             marketYear = date.getYear();
             marketSeason = (date.getDayOfMonth() + 2) / 3;
@@ -256,7 +256,7 @@ public class Finance163Repository {
         return list;
     }
 
-    public List<Finance163StockHistoryFinancePO> queryHistoryFinance(String code, String exchanger) {
+    public List<Finance163StockHistoryFinancePO> queryHistoryFinance(String code) {
         String url = "http://quotes.money.163.com/f10/lrb_%s.html";
         String res = NetUtil.get(url, code);
         Document doc = Jsoup.parse(res);

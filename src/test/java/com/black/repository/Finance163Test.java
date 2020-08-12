@@ -34,7 +34,7 @@ public class Finance163Test {
 
 //    @Test
     public void queryStockInfo(){
-        Finance163StockInfoPO po = finance163Repository.queryInfo("600036", "sh");
+        Finance163StockInfoPO po = finance163Repository.queryInfo("600036");
         System.out.println(po);
     }
 
@@ -48,13 +48,13 @@ public class Finance163Test {
     public void queryStockHistoryPrice() throws ParseException {
         SimpleDateFormat format=new SimpleDateFormat("yyyy-MM-dd");
         Date marketDay = format.parse("2010-01-01");
-        List<Finance163StockHistoryPricePO> pos = finance163Repository.queryHistoryPrice("600036", "sh", marketDay);
+        List<Finance163StockHistoryPricePO> pos = finance163Repository.queryHistoryPrice("600036", marketDay);
         System.out.println(pos);
     }
 
 //    @Test
     public void queryStockHistoryFinance(){
-        List<Finance163StockHistoryFinancePO> pos = finance163Repository.queryHistoryFinance("600036", "sh");
+        List<Finance163StockHistoryFinancePO> pos = finance163Repository.queryHistoryFinance("600036");
         System.out.println(pos);
     }
 
