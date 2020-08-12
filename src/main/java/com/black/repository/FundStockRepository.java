@@ -1,8 +1,10 @@
 package com.black.repository;
 
 import com.black.po.FundStockPO;
-import com.black.po.StockInfoPo;
-import org.apache.ibatis.annotations.*;
+import org.apache.ibatis.annotations.Insert;
+import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Options;
+import org.apache.ibatis.annotations.Select;
 
 import java.util.Date;
 import java.util.List;
@@ -10,38 +12,22 @@ import java.util.List;
 @Mapper
 public interface FundStockRepository {
 
-    @Select("select distinct(code) from stock_info")
-    List<String> queryAllCodes();
-
-    @Insert("""
-            <script>
-            insert into stock_info(code,exchanger,subExchanger,name,biz,openDay,marketDay) values
-            <foreach item="item" index="index" collection="list" open="" separator="," close="">
-                (#{item.code},#{item.exchanger},#{item.subExchanger},#{item.name},#{item.biz}
-                ,#{item.openDay},#{item.marketDay})
-            </foreach> 
-            </script>           
-            """)
+//    @Insert("""
+//            <script>
+//            insert into stock_info(code,exchanger,subExchanger,name,biz,openDay,marketDay) values
+//            <foreach item="item" index="index" collection="list" open="" separator="," close="">
+//                (#{item.code},#{item.exchanger},#{item.subExchanger},#{item.name},#{item.biz}
+//                ,#{item.openDay},#{item.marketDay})
+//            </foreach>
+//            </script>
+//            """)
     @Options(useGeneratedKeys = true)
     void batchInsert(List<FundStockPO> list);
 
-    @Select("select * from stock_info where infoInit=0")
-    List<StockInfoPo> queryUninitStock();
-
-    @Update("""
-            update stock_info set name=#{name}, biz=#{biz}, openDay=#{openDay}, marketDay=#{marketDay}, infoInit=1
-            where code=#{code}
-            """
-    )
-    void fillInfo(StockInfoPo stockInfoPo);
-
-    @Select("select * from stock_info")
-    List<StockInfoPo> queryAllStocks();
-
-    @Update("update stock_info set ${param1}=#{param2} where id=#{param3}")
-    void updateField(String name, String value, long id);
-
+    @Select("select * from fund_stock where fundCode=#{param2} and stockCode=#{param1} and `date`=#{param3}")
     FundStockPO queryByDate(String code, String fundCode, Date date);
 
+    @Insert("insert into fund_stock(fundCode,stockCode,stockNums,stockAmount,stockRatio,`date`) " +
+            "values(#{fundCode},#{stockCode},#{stockNums},#{stockAmount},#{stockRatio},#{date})")
     void insert(FundStockPO fundStockPO);
 }
