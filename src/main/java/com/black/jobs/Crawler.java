@@ -21,14 +21,17 @@ import com.black.repository.StockHistoryFinanceRepository;
 import com.black.repository.StockHistoryPriceRepository;
 import com.black.repository.StockInfoRepository;
 import com.black.repository.StockPriceRepository;
+import com.black.util.Helper;
 import com.black.util.PoBuildUtils;
 import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.ZoneId;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -154,10 +157,50 @@ public class Crawler {
     }
 
     private void fillFinanceCalRes(StockInfoPo e) {
-        stockHistoryFinanceRepository.q
+        List<StockFinancePo> list = stockHistoryFinanceRepository.queryByCode(e.getCode());
+        list.sort(Comparator.comparing(StockFinancePo::getDate).reversed());
+        int size = list.size();
+        for (int i = 0; i < size - 1; i++) {
+            StockFinancePo cur = list.get(i);
+            StockFinancePo pre = list.get(i + 1);
 
+            BigDecimal m2mIncome = Helper.safeDivide(cur.getIncome(), pre.getIncome());
+            BigDecimal m2mProfit = Helper.safeDivide(cur.getProfit(), pre.getProfit());
 
+            if (cur.getM2mIncome() == null && m2mIncome != null) {
+                stockHistoryFinanceRepository.updateField("m2mIncome", m2mIncome.toString(), cur.getId());
+            }
 
+            if (cur.getM2mProfit() == null && m2mProfit != null) {
+                stockHistoryFinanceRepository.updateField("m2mProfit", m2mProfit.toString(), cur.getId());
+            }
+        }
+        for (int i = 0; i < size - 4; i++) {
+            StockFinancePo cur = list.get(i);
+            StockFinancePo pre = list.get(i + 4);
+
+            BigDecimal y2yIncome = Helper.safeDivide(cur.getIncome(), pre.getIncome());
+            BigDecimal y2yProfit = Helper.safeDivide(cur.getProfit(), pre.getProfit());
+
+            if (cur.getY2yIncome() == null && y2yIncome != null) {
+                stockHistoryFinanceRepository.updateField("y2yIncome", y2yIncome.toString(), cur.getId());
+            }
+
+            if (cur.getY2yProfit() == null && y2yProfit != null) {
+                stockHistoryFinanceRepository.updateField("y2yProfit", y2yProfit.toString(), cur.getId());
+            }
+        }
+    }
+
+    private BigDecimal calculate(BigDecimal cur, BigDecimal pre) {
+        if (cur == null || pre == null) {
+            return null;
+        }
+        BigDecimal divided = cur.subtract(pre);
+        if (pre.compareTo(BigDecimal.ZERO) < 0) {
+            return Helper.safeDivide(divided, pre).abs().add(BigDecimal.ONE);
+        }
+        return Helper.safeDivide(divided, pre).subtract(BigDecimal.ONE);
     }
 
     @Scheduled(cron = "0 0 23 * * ?")
