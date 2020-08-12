@@ -16,8 +16,8 @@ public class StockInfoPo {
     String exchanger;
     String subExchanger;
     String biz;
-    String openDay;
-    String marketDay;
+    Date openDay;
+    Date marketDay;
     int infoInit;
     int priceComplete;
     int financeComplete;

@@ -41,7 +41,9 @@ public interface FundPriceRepository {
     @Update("update stock_info set ${param1}=#{param2} where id=#{param3}")
     void updateField(String name, String value, long id);
 
-    FundPricePO queryByDate(String fundCode, Date date);
+    @Select("select * from fund_code where `date`=#{date} and fundCode=#{fundCode}")
+    FundPricePO queryByDate(@Param("fundCode") String fundCode,@Param("date") Date date);
 
+    @Insert("insert into fund_info() values()")
     void insert(FundPricePO fundPricePO);
 }

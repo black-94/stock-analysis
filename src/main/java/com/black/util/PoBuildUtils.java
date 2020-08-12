@@ -1,7 +1,17 @@
 package com.black.util;
 
-import com.black.po.*;
-import org.springframework.beans.BeanUtils;
+import com.black.po.Finance163FundPricePO;
+import com.black.po.Finance163FundStockPO;
+import com.black.po.Finance163StockHistoryFinancePO;
+import com.black.po.Finance163StockHistoryPricePO;
+import com.black.po.Finance163StockInfoPO;
+import com.black.po.Finance163StockPricePO;
+import com.black.po.FundPricePO;
+import com.black.po.FundStockPO;
+import com.black.po.StockFinancePo;
+import com.black.po.StockHistoryPricePo;
+import com.black.po.StockInfoPo;
+import com.black.po.StockPricePo;
 
 import java.math.BigDecimal;
 
@@ -14,7 +24,11 @@ public class PoBuildUtils {
 
     public static StockInfoPo buildStockInfo(Finance163StockInfoPO info) {
         StockInfoPo po=new StockInfoPo();
-        BeanUtils.copyProperties(info,po);
+        po.setCode(info.getCode());
+        po.setName(info.getName());
+        po.setBiz(info.getBiz());
+        po.setOpenDay(parseDate(info.getOpenDay()));
+        po.setMarketDay(parseDate(info.getMarketDay()));
         return po;
     }
 
