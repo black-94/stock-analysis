@@ -77,7 +77,7 @@ CREATE TABLE `stock_finance` (
 	`profit` varchar(50)  NOT NULL COMMENT '当季利润',
 	`y2yProfit` varchar(50) COMMENT '同比',
 	`m2mProfit` varchar(50) COMMENT '环比',
-	`pe` varchar(50)  NOT NULL COMMENT '市盈率',
+	`pe` varchar(50) COMMENT '市盈率',
 	`date` varchar(25)  NOT NULL COMMENT '财报日期',
 	`createTime` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
 	`updatetime` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
