@@ -103,9 +103,7 @@ public class Crawler {
         if (tmp != null) {
             return;
         }
-
         stockPriceRepository.insert(stockPricePo);
-
         if (new Date(0).equals(e.getMarketDay())) {
             stockInfoRepository.updateField("marketDay", price.getMarketDay(), e.getId());
         }
