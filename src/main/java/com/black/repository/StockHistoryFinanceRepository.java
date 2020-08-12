@@ -4,6 +4,7 @@ package com.black.repository;
 import com.black.po.StockFinancePo;
 import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
 
 import java.util.Date;
@@ -18,10 +19,10 @@ public interface StockHistoryFinanceRepository{
     @Insert("""
                 <script>
                 insert into stock_finance(`code`,`date`,`income`,`profit`) values
-                <foreach item="item" index="index" collection="collection" open="" separator="," close="">
+                <foreach item="item" index="index" collection="list" open="" separator="," close="">
                     (#{item.code},#{item.date},#{item.income},#{item.profit})
                 </foreach>
                 </script>
             """)
-    void batchInsert(List<StockFinancePo> stockFinancePos);
+    void batchInsert(@Param("list") List<StockFinancePo> stockFinancePos);
 }
