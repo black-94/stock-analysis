@@ -82,7 +82,8 @@ CREATE TABLE `stock_finance` (
 	`createTime` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
 	`updatetime` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
 	PRIMARY KEY (`id`),
-	KEY `ix_code_date`(`code`,`date`) USING BTREE
+	KEY `ix_code`(`code`) USING BTREE,
+	KEY `ix_date`(`date`) USING BTREE
 ) ;
 
 CREATE TABLE `fund_info` (
@@ -107,7 +108,8 @@ CREATE TABLE `fund_price` (
 	`createTime` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
 	`updateTime` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
 	PRIMARY KEY (`id`),
-	Unique KEY `uix_code_date`(`fundCode`,`date`) USING BTREE
+	KEY `ix_code`(`fundCode`) USING BTREE,
+	KEY `ix_date`(`date`) USING BTREE
 ) ;
 
 CREATE TABLE `fund_stock` (
@@ -121,5 +123,7 @@ CREATE TABLE `fund_stock` (
 	`createTime` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
 	`updateTime` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
 	PRIMARY KEY (`id`),
-	KEY `uix_code_date`(`stockCode`,`fundCode`,`date`) USING BTREE
+	KEY `ix_stock_code`(`stockCode`) USING BTREE,
+	KEY `ix_fund_code`(`fundCode`) USING BTREE,
+	KEY `ix_date`(`date`) USING BTREE
 ) ;
