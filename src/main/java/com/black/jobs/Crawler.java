@@ -164,8 +164,8 @@ public class Crawler {
             StockFinancePo cur = list.get(i);
             StockFinancePo pre = list.get(i + 1);
 
-            BigDecimal m2mIncome = Helper.safeDivide(cur.getIncome(), pre.getIncome());
-            BigDecimal m2mProfit = Helper.safeDivide(cur.getProfit(), pre.getProfit());
+            BigDecimal m2mIncome = calculate(cur.getIncome(), pre.getIncome());
+            BigDecimal m2mProfit = calculate(cur.getProfit(), pre.getProfit());
 
             if (cur.getM2mIncome() == null && m2mIncome != null) {
                 stockHistoryFinanceRepository.updateField("m2mIncome", m2mIncome.toString(), cur.getId());
@@ -179,8 +179,8 @@ public class Crawler {
             StockFinancePo cur = list.get(i);
             StockFinancePo pre = list.get(i + 4);
 
-            BigDecimal y2yIncome = Helper.safeDivide(cur.getIncome(), pre.getIncome());
-            BigDecimal y2yProfit = Helper.safeDivide(cur.getProfit(), pre.getProfit());
+            BigDecimal y2yIncome = calculate(cur.getIncome(), pre.getIncome());
+            BigDecimal y2yProfit = calculate(cur.getProfit(), pre.getProfit());
 
             if (cur.getY2yIncome() == null && y2yIncome != null) {
                 stockHistoryFinanceRepository.updateField("y2yIncome", y2yIncome.toString(), cur.getId());
