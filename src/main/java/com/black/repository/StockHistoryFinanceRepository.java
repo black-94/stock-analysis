@@ -12,7 +12,7 @@ import java.util.List;
 @Mapper
 public interface StockHistoryFinanceRepository{
 
-    @Select("select `date` from stock_finance where code = #{code}")
+    @Select("select `date` from stock_finance where code = #{param1}")
     List<Date> queryDateByCode(String code);
 
     @Insert("""
