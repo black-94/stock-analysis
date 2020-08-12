@@ -1,10 +1,28 @@
 package com.black.jobs;
 
-import com.black.po.*;
-import com.black.repository.*;
+import com.black.po.Finance163FundPricePO;
+import com.black.po.Finance163FundStockPO;
+import com.black.po.Finance163StockHistoryFinancePO;
+import com.black.po.Finance163StockHistoryPricePO;
+import com.black.po.Finance163StockInfoPO;
+import com.black.po.Finance163StockPricePO;
+import com.black.po.FundInfoPO;
+import com.black.po.FundPricePO;
+import com.black.po.FundStockPO;
+import com.black.po.StockFinancePo;
+import com.black.po.StockHistoryPricePo;
+import com.black.po.StockInfoPo;
+import com.black.po.StockPricePo;
+import com.black.repository.Finance163Repository;
+import com.black.repository.FundInfoRepository;
+import com.black.repository.FundPriceRepository;
+import com.black.repository.FundStockRepository;
+import com.black.repository.StockHistoryFinanceRepository;
+import com.black.repository.StockHistoryPriceRepository;
+import com.black.repository.StockInfoRepository;
+import com.black.repository.StockPriceRepository;
 import com.black.util.PoBuildUtils;
 import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
@@ -81,7 +99,7 @@ public class Crawler {
         StockPricePo stockPricePo = PoBuildUtils.buildStockPrice(price);
         stockPriceRepository.insert(stockPricePo);
 
-        if(StringUtils.isBlank(e.getMarketDay())||"--".equals(e.getMarketDay())){
+        if(new Date(0).equals(e.getMarketDay())){
             stockInfoRepository.updateField("marketDay",price.getMarketDay(),e.getId());
         }
     }

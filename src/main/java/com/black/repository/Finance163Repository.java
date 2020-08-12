@@ -33,7 +33,6 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import static com.black.util.Helper.decimalOf;
-import static com.black.util.Helper.parseDate;
 
 @Repository
 public class Finance163Repository {
@@ -190,16 +189,16 @@ public class Finance163Repository {
         return stockPricePo;
     }
 
-    public List<Finance163StockHistoryPricePO> queryHistoryPrice(String code, String exchanger, String marketDay) {
+    public List<Finance163StockHistoryPricePO> queryHistoryPrice(String code, String exchanger, Date marketDay) {
         int year = LocalDate.now().getYear();
         int season = (LocalDate.now().getMonthValue() + 2) / 3;
         int marketYear = year - 1;
         int marketSeason = 1;
-        try {
-            ZonedDateTime date = parseDate(marketDay).toInstant().atZone(ZoneId.systemDefault());
+
+        if(new Date(0).compareTo(marketDay)<0){
+            ZonedDateTime date = marketDay.toInstant().atZone(ZoneId.systemDefault());
             marketYear = date.getYear();
             marketSeason = (date.getDayOfMonth() + 2) / 3;
-        } catch (Exception e) {
         }
 
         List<Finance163StockHistoryPricePO> list = new ArrayList<>();
