@@ -116,7 +116,6 @@ public class Crawler {
     @Scheduled(cron = "0 0 21 * * ?")
     public void fillHistoryPrice() {
         List<StockInfoPo> stockInfoPos = stockInfoRepository.queryAllStocks();
-        stockInfoPos = stockInfoPos.stream().filter(e -> e.getPriceComplete() == 0).collect(Collectors.toList());
         stockInfoPos.stream().forEach(e -> submit(() -> this.singleFillHistoryPrice(e)));
         waitComplete();
     }
@@ -138,7 +137,6 @@ public class Crawler {
     @Scheduled(cron = "0 0 22 * * ?")
     public void fillHistoryFinance() {
         List<StockInfoPo> stockInfoPos = stockInfoRepository.queryAllStocks();
-        stockInfoPos = stockInfoPos.stream().filter(e -> e.getFinanceComplete() == 0).collect(Collectors.toList());
         stockInfoPos.stream().forEach(e -> submit(() -> this.singleFillHistoryFinance(e)));
         waitComplete();
     }
