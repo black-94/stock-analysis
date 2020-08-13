@@ -1,26 +1,9 @@
 package com.black.jobs;
 
-import com.black.po.Finance163FundPricePO;
-import com.black.po.Finance163FundStockPO;
-import com.black.po.Finance163StockHistoryFinancePO;
-import com.black.po.Finance163StockHistoryPricePO;
-import com.black.po.Finance163StockInfoPO;
-import com.black.po.Finance163StockPricePO;
-import com.black.po.FundInfoPO;
-import com.black.po.FundPricePO;
-import com.black.po.FundStockPO;
-import com.black.po.StockFinancePo;
-import com.black.po.StockHistoryPricePo;
-import com.black.po.StockInfoPo;
-import com.black.po.StockPricePo;
-import com.black.repository.Finance163Repository;
-import com.black.repository.FundInfoRepository;
-import com.black.repository.FundPriceRepository;
-import com.black.repository.FundStockRepository;
-import com.black.repository.StockHistoryFinanceRepository;
-import com.black.repository.StockHistoryPriceRepository;
-import com.black.repository.StockInfoRepository;
-import com.black.repository.StockPriceRepository;
+import com.black.po.*;
+import com.black.repository.*;
+import com.black.util.ExecutorUtil;
+import com.black.util.FailContext;
 import com.black.util.Helper;
 import com.black.util.PoBuildUtils;
 import org.apache.commons.collections.CollectionUtils;
@@ -88,6 +71,7 @@ public class Crawler {
     }
 
     private void singleFillInfo(StockInfoPo e) {
+        FailContext.put("singleFillInfo",e);
         Finance163StockInfoPO info = finance163Repository.queryInfo(e.getCode());
         StockInfoPo stockInfoPo = PoBuildUtils.buildStockInfo(info);
         stockInfoRepository.fillInfo(stockInfoPo);
@@ -101,6 +85,7 @@ public class Crawler {
     }
 
     private void singleFillPrice(StockInfoPo e) {
+        FailContext.put("singleFillPrice",e);
         Finance163StockPricePO price = finance163Repository.queryCurPrice(e.getCode(), e.getExchanger());
         StockPricePo stockPricePo = PoBuildUtils.buildStockPrice(price);
         StockPricePo tmp = stockPriceRepository.queryByDate(stockPricePo.getCode(), stockPricePo.getDate());
@@ -121,6 +106,7 @@ public class Crawler {
     }
 
     private void singleFillHistoryPrice(StockInfoPo e) {
+        FailContext.put("singleFillHistoryPrice",e);
         Date endDate = e.getPriceComplete() > 0 ? Date.from(LocalDate.now().plusMonths(-1).atStartOfDay(ZoneId.systemDefault()).toInstant()) : e.getMarketDay();
         List<Finance163StockHistoryPricePO> prices = finance163Repository.queryHistoryPrice(e.getCode(), endDate);
         List<StockHistoryPricePo> list = prices.stream().map(PoBuildUtils::buildStockHistoryPrice).collect(Collectors.toList());
@@ -142,6 +128,7 @@ public class Crawler {
     }
 
     private void singleFillHistoryFinance(StockInfoPo e) {
+        FailContext.put("singleFillHistoryFinance",e);
         List<Finance163StockHistoryFinancePO> finances = finance163Repository.queryHistoryFinance(e.getCode());
         List<StockFinancePo> stockFinancePos = finances.stream().map(PoBuildUtils::buildStockFinance).collect(Collectors.toList());
         List<Date> dates = stockHistoryFinanceRepository.queryDateByCode(e.getCode());
@@ -269,5 +256,34 @@ public class Crawler {
                 }
             }
         }));
+    }
+
+    @Scheduled(cron = "0 0/10 * * * ?")
+    public void retry() {
+        FailContext.addFail(FailContext.gap);
+        while (FailContext.hasNext()) {
+            FailContext.FailObject fail = FailContext.getFail();
+            if (fail == FailContext.gap) {
+                return;
+            }
+            ExecutorUtil.submit(() -> {
+                switch (fail.getType()) {
+                    case "singleFillInfo":
+                        singleFillInfo((StockInfoPo) fail.getParam());
+                        break;
+                    case "singleFillPrice":
+                        singleFillPrice((StockInfoPo) fail.getParam());
+                        break;
+                    case "singleFillHistoryPrice":
+                        singleFillHistoryPrice((StockInfoPo) fail.getParam());
+                        break;
+                    case "singleFillHistoryFinance":
+                        singleFillHistoryFinance((StockInfoPo) fail.getParam());
+                        break;
+                    default:
+                        break;
+                }
+            });
+        }
     }
 }

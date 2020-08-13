@@ -37,7 +37,12 @@ public class ExecutorUtil {
                     run.run();
                 } catch (Exception e) {
                     log.error("", e);
+                    FailContext.FailObject failObject = FailContext.get();
+                    if (failObject != null) {
+                        FailContext.addFail(failObject);
+                    }
                 }
+                FailContext.clear();
             }
         });
     }
