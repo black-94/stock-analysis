@@ -19,4 +19,7 @@ public interface StockPriceRepository{
 
     @Select("select * from stock_price where code=#{param1} and `date`=#{param2}")
     StockPricePo queryByDate(String code, Date date);
+
+    @Select("select * from stock_price where code=#{param1} and `date` <= #{param2} order by `date` desc limit 1")
+    StockPricePo queryOneBeforeDate(String code, Date date);
 }

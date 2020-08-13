@@ -31,6 +31,7 @@ import org.springframework.stereotype.Component;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.ZoneId;
+import java.time.temporal.ChronoUnit;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
@@ -175,9 +176,14 @@ public class Crawler {
                 stockHistoryFinanceRepository.updateField("m2mProfit", m2mProfit.toString(), cur.getId());
             }
         }
-        for (int i = 0; i < size - 4; i++) {
+        for (int i = 0; i < size - 1; i++) {
             StockFinancePo cur = list.get(i);
-            StockFinancePo pre = list.get(i + 4);
+            Date lastYear = Helper.datePlus(cur.getDate(), -1, ChronoUnit.YEARS);
+            StockFinancePo pre = list.stream().filter(p -> p.getDate().equals(lastYear)).findFirst().orElse(null);
+
+            if (pre == null) {
+                continue;
+            }
 
             BigDecimal y2yIncome = calculate(cur.getIncome(), pre.getIncome());
             BigDecimal y2yProfit = calculate(cur.getProfit(), pre.getProfit());
@@ -188,6 +194,20 @@ public class Crawler {
 
             if (cur.getY2yProfit() == null && y2yProfit != null) {
                 stockHistoryFinanceRepository.updateField("y2yProfit", y2yProfit.toString(), cur.getId());
+            }
+        }
+        for (int i = 0; i < size - 1; i++) {
+            StockFinancePo cur = list.get(i);
+            Date lastYear = Helper.datePlus(cur.getDate(), -1, ChronoUnit.YEARS);
+            List<StockFinancePo> financeIn = list.subList(i, size).stream().filter(p -> p.getDate().after(lastYear)).collect(Collectors.toList());
+            BigDecimal profitSum = financeIn.stream().map(StockFinancePo::getProfit).reduce(BigDecimal::add).orElse(BigDecimal.valueOf(-1));
+            StockPricePo recentPrice = stockPriceRepository.queryOneBeforeDate(cur.getCode(), cur.getDate());
+            if (recentPrice == null) {
+                continue;
+            }
+            BigDecimal pe = Helper.safeDivide(recentPrice.getCapital(), profitSum);
+            if (cur.getPe() == null && pe != null) {
+                stockHistoryFinanceRepository.updateField("pe", pe.toString(), cur.getId());
             }
         }
     }

@@ -10,7 +10,10 @@ import java.math.RoundingMode;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoUnit;
+import java.util.Arrays;
 import java.util.Date;
 
 @Slf4j
@@ -39,11 +42,11 @@ public class Helper {
         }
     }
 
-    public static BigDecimal safeDivide(BigDecimal divided,BigDecimal divide){
+    public static BigDecimal safeDivide(BigDecimal divided, BigDecimal divide) {
         try {
-            return divided.divide(divide,6, RoundingMode.HALF_UP);
+            return divided.divide(divide, 6, RoundingMode.HALF_UP);
         } catch (Exception e) {
-            log.error("",e);
+            log.error("", e);
             return BigDecimal.ZERO;
         }
     }
@@ -75,18 +78,18 @@ public class Helper {
         return decimalOf(text);
     }
 
-    public static String truncateAfter(String str,String tag){
-        if(StringUtils.isBlank(str)){
+    public static String truncateAfter(String str, String tag) {
+        if (StringUtils.isBlank(str)) {
             return "";
         }
-        if(StringUtils.isBlank(tag)){
+        if (StringUtils.isBlank(tag)) {
             return str;
         }
         int i = str.indexOf(tag);
-        if(i<0){
+        if (i < 0) {
             return str;
         }
-        return str.substring(i+tag.length());
+        return str.substring(i + tag.length());
     }
 
     /**
@@ -101,6 +104,18 @@ public class Helper {
             return Date.from(ins);
         } catch (Exception e) {
             return new Date(0);
+        }
+    }
+
+    public static Date datePlus(Date date, int diff, ChronoUnit unit) {
+        ChronoUnit[] units = {ChronoUnit.YEARS, ChronoUnit.MONTHS, ChronoUnit.WEEKS, ChronoUnit.DAYS};
+        ZonedDateTime zonedDateTime = date.toInstant().atZone(ZoneId.systemDefault());
+        if (Arrays.asList(units).contains(unit)) {
+            Instant instant = zonedDateTime.toLocalDate().plus(diff, unit).atStartOfDay(ZoneId.systemDefault()).toInstant();
+            return Date.from(instant);
+        } else {
+            Instant instant = zonedDateTime.plus(diff, unit).toInstant();
+            return Date.from(instant);
         }
     }
 }

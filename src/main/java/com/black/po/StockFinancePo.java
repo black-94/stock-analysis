@@ -18,13 +18,14 @@ public class StockFinancePo {
     String code;
     String name;
     String exchange;
-    Date date;
     BigDecimal income;
     BigDecimal y2yIncome;
     BigDecimal m2mIncome;
     BigDecimal profit;
     BigDecimal y2yProfit;
     BigDecimal m2mProfit;
+    BigDecimal pe;
+    Date date;
     Date createTime;
     Date updateTime;
 
