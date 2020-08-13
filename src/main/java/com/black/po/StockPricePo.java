@@ -9,6 +9,7 @@ import java.util.Date;
 public class StockPricePo {
     long id;
     String code;
+    BigDecimal lastClose;
     BigDecimal open;
     BigDecimal close;
     BigDecimal high;

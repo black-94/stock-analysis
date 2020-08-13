@@ -35,18 +35,19 @@ public class PoBuildUtils {
     public static StockPricePo buildStockPrice(Finance163StockPricePO price) {
         StockPricePo po=new StockPricePo();
         po.setCode(price.getCode());
+        po.setLastClose(decimalOf(price.getLastClose()));
         po.setOpen(decimalOf(price.getOpen()));
         po.setClose(decimalOf(price.getCur()));
         po.setHigh(decimalOf(price.getHigh()));
         po.setLow(decimalOf(price.getLow()));
         po.setVolume(decimalOf(price.getVolume()));
         po.setAmount(decimalOf(price.getAmount()));
-        po.setPercent(decimalOf(price.getUpdown()));
+        po.setPercent(decimalOf(price.getUpdown()).multiply(BigDecimal.valueOf(100)));
         po.setUpdown(decimalOf(price.getChange()));
         po.setTotal(parseTextNumber(price.getTotal()));
         po.setNum(parseTextNumber(price.getNum()));
 
-        BigDecimal amplitude=safeDivide(po.getHigh().subtract(po.getLow()),decimalOf(price.getLastClose()));
+        BigDecimal amplitude=safeDivide(po.getHigh().subtract(po.getLow()).multiply(BigDecimal.valueOf(100)),decimalOf(price.getLastClose()));
         po.setAmplitude(amplitude);
 
         BigDecimal capital=po.getTotal().multiply(po.getClose());
@@ -63,18 +64,20 @@ public class PoBuildUtils {
         po.setClose(decimalOf(price.getClose()));
         po.setHigh(decimalOf(price.getHigh()));
         po.setLow(decimalOf(price.getLow()));
-        po.setVolume(decimalOf(price.getVolume()));
-        po.setAmount(decimalOf(price.getAmount()));
+        po.setVolume(decimalOf(price.getVolume()).multiply(BigDecimal.valueOf(100)));
+        po.setAmount(decimalOf(price.getAmount()).multiply(BigDecimal.valueOf(10000)));
         po.setPercent(decimalOf(price.getUpdown()));
         po.setUpdown(decimalOf(price.getChange()));
         po.setAmplitude(decimalOf(price.getAmplitude()));
 
         BigDecimal exchange=decimalOf(price.getExchange());
-        BigDecimal total=safeDivide(po.getAmount().multiply(BigDecimal.valueOf(100*100)),exchange);
-        BigDecimal capital=safeDivide(po.getVolume().multiply(BigDecimal.valueOf(10000*100)),exchange);
+        BigDecimal capital=safeDivide(po.getAmount().multiply(BigDecimal.valueOf(100)),exchange);
+        BigDecimal total=safeDivide(po.getVolume().multiply(BigDecimal.valueOf(100)),exchange);
+        BigDecimal lastClose=po.getClose().subtract(po.getUpdown());
 
         po.setTotal(total);
         po.setCapital(capital);
+        po.setLastClose(lastClose);
         po.setDate(parseDate(price.getDate()));
         return po;
     }

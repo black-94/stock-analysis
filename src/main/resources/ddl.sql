@@ -26,6 +26,7 @@ CREATE TABLE `stock_info` (
 CREATE TABLE `stock_price` (
 	`id` bigint(20) NOT NULL AUTO_INCREMENT,
 	`code` varchar(20)  NOT NULL COMMENT '股票代码',
+	`lastClose` decimal(20,4)  NOT NULL COMMENT '昨日收盘',
 	`open` decimal(20,4)  NOT NULL COMMENT '开盘价',
 	`close` decimal(20,4)  NOT NULL COMMENT '收盘价',
 	`high` decimal(20,4)  NOT NULL COMMENT '最高价',
@@ -49,6 +50,7 @@ CREATE TABLE `stock_price` (
 CREATE TABLE `stock_history_price` (
 	`id` bigint(20) NOT NULL AUTO_INCREMENT,
 	`code` varchar(20)  NOT NULL COMMENT '股票代码',
+	`lastClose` decimal(20,4)  NOT NULL COMMENT '昨日收盘',
 	`open` decimal(20,4)  NOT NULL COMMENT '开盘价',
 	`close` decimal(20,4)  NOT NULL COMMENT '收盘价',
 	`high` decimal(20,4)  NOT NULL COMMENT '最高价',

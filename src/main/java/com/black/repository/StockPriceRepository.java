@@ -12,8 +12,8 @@ import java.util.Date;
 public interface StockPriceRepository{
 
     @Insert("""
-            insert into stock_price(`code`,`open`,`close`,`high`,`low`,`volume`,`amount`,`updown`,`percent`,`amplitude`,`total`,`num`,`capital`,`date`)
-            values (#{code},#{open},#{close},#{high},#{low},#{volume},#{amount},#{updown},#{percent},#{amplitude},#{total},#{num},#{capital},#{date})
+            insert into stock_price(`code`,`lastClose`,`open`,`close`,`high`,`low`,`volume`,`amount`,`updown`,`percent`,`amplitude`,`total`,`num`,`capital`,`date`)
+            values (#{code},#{lastClose},#{open},#{close},#{high},#{low},#{volume},#{amount},#{updown},#{percent},#{amplitude},#{total},#{num},#{capital},#{date})
             """)
     void insert(StockPricePo stockPricePo);
 
