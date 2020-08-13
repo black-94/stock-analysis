@@ -85,8 +85,8 @@ public class PoBuildUtils {
     public static StockFinancePo buildStockFinance(Finance163StockHistoryFinancePO financePO) {
         StockFinancePo po=new StockFinancePo();
         po.setCode(financePO.getCode());
-        po.setIncome(decimalOf(financePO.getIncome()));
-        po.setProfit(decimalOf(financePO.getProfit()));
+        po.setIncome(decimalOf(financePO.getIncome()).multiply(BigDecimal.valueOf(10000)));
+        po.setProfit(decimalOf(financePO.getProfit()).multiply(BigDecimal.valueOf(10000)));
         po.setDate(parseDate(financePO.getDate()));
         return po;
     }

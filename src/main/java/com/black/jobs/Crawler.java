@@ -216,11 +216,16 @@ public class Crawler {
         if (cur == null || pre == null) {
             return null;
         }
-        BigDecimal divided = cur.subtract(pre);
-        if (pre.compareTo(BigDecimal.ZERO) < 0) {
-            return Helper.safeDivide(divided, pre).abs().add(BigDecimal.ONE);
+        if (cur.compareTo(pre) >= 0) {
+            if (pre.compareTo(BigDecimal.ZERO) < 0) {
+                return Helper.safeDivide(cur, pre).abs().add(BigDecimal.ONE);
+            }
+            return Helper.safeDivide(cur, pre).abs().subtract(BigDecimal.ONE);
         }
-        return Helper.safeDivide(divided, pre).subtract(BigDecimal.ONE);
+        if (pre.compareTo(BigDecimal.ZERO) < 0) {
+            return Helper.safeDivide(cur, pre).abs().negate().add(BigDecimal.ONE);
+        }
+        return Helper.safeDivide(cur, pre).abs().negate().subtract(BigDecimal.ONE);
     }
 
     @Scheduled(cron = "0 0 23 * * ?")
