@@ -261,15 +261,15 @@ public class Finance163Repository {
         String res = NetUtil.get(url, code);
         Document doc = Jsoup.parse(res);
 
-//        Element status = doc.selectFirst(".stock_detail .price");
-//        if(status!=null&&(status.text().equals("已退市")||status.text().equals("未上市"))){
-//            return new ArrayList<>();
-//        }
+        Element status = doc.selectFirst(".stock_detail .price");
+        if(status!=null&&(status.text().equals("已退市")||status.text().equals("未上市"))){
+            return new ArrayList<>();
+        }
 
         Elements elements = doc.select(".table_bg001.border_box.limit_sale.scr_table tr");
         Elements dates = elements.get(0).select("th");
-        Elements incomes = elements.get(1).select("td");
-        Elements profits = elements.get(40).select("td");
+        Elements incomes = elements.get(4).select("td");
+        Elements profits = elements.get(5).select("td");
 
         if (dates.size() < 1) {
             return new ArrayList<>();
