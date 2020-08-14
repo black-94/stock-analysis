@@ -257,14 +257,14 @@ public class Finance163Repository {
     }
 
     public List<Finance163StockHistoryFinancePO> queryHistoryFinance(String code) {
-        String url = "http://quotes.money.163.com/f10/lrb_%s.html";
+        String url = "http://quotes.money.163.com/f10/zycwzb_%s,season.html";
         String res = NetUtil.get(url, code);
         Document doc = Jsoup.parse(res);
 
-        Element status = doc.selectFirst(".stock_detail .price");
-        if(status!=null&&(status.text().equals("已退市")||status.text().equals("未上市"))){
-            return new ArrayList<>();
-        }
+//        Element status = doc.selectFirst(".stock_detail .price");
+//        if(status!=null&&(status.text().equals("已退市")||status.text().equals("未上市"))){
+//            return new ArrayList<>();
+//        }
 
         Elements elements = doc.select(".table_bg001.border_box.limit_sale.scr_table tr");
         Elements dates = elements.get(0).select("th");
