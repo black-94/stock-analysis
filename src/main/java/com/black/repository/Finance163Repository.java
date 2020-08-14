@@ -262,7 +262,7 @@ public class Finance163Repository {
         Document doc = Jsoup.parse(res);
 
         Element status = doc.selectFirst(".stock_detail .price");
-        if(status!=null&&status.text().equals("已退市")){
+        if(status!=null&&(status.text().equals("已退市")||status.text().equals("未上市"))){
             return new ArrayList<>();
         }
 
