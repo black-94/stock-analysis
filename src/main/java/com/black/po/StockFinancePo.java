@@ -24,7 +24,6 @@ public class StockFinancePo {
     BigDecimal profit;
     BigDecimal y2yProfit;
     BigDecimal m2mProfit;
-    BigDecimal pe;
     Date date;
     Date createTime;
     Date updateTime;

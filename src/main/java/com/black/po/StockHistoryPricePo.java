@@ -21,6 +21,7 @@ public class StockHistoryPricePo {
     BigDecimal amplitude;
     BigDecimal total;
     BigDecimal capital;
+    BigDecimal pe;
     Date date;
     Date createTime;
     Date updateTime;

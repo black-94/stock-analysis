@@ -1,7 +1,26 @@
 package com.black.jobs;
 
-import com.black.po.*;
-import com.black.repository.*;
+import com.black.po.Finance163FundPricePO;
+import com.black.po.Finance163FundStockPO;
+import com.black.po.Finance163StockHistoryFinancePO;
+import com.black.po.Finance163StockHistoryPricePO;
+import com.black.po.Finance163StockInfoPO;
+import com.black.po.Finance163StockPricePO;
+import com.black.po.FundInfoPO;
+import com.black.po.FundPricePO;
+import com.black.po.FundStockPO;
+import com.black.po.StockFinancePo;
+import com.black.po.StockHistoryPricePo;
+import com.black.po.StockInfoPo;
+import com.black.po.StockPricePo;
+import com.black.repository.Finance163Repository;
+import com.black.repository.FundInfoRepository;
+import com.black.repository.FundPriceRepository;
+import com.black.repository.FundStockRepository;
+import com.black.repository.StockHistoryFinanceRepository;
+import com.black.repository.StockHistoryPriceRepository;
+import com.black.repository.StockInfoRepository;
+import com.black.repository.StockPriceRepository;
 import com.black.util.ExecutorUtil;
 import com.black.util.FailContext;
 import com.black.util.Helper;
@@ -15,6 +34,7 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.time.temporal.ChronoUnit;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
@@ -71,7 +91,7 @@ public class Crawler {
     }
 
     private void singleFillInfo(StockInfoPo e) {
-        FailContext.put("singleFillInfo",e);
+        FailContext.put("singleFillInfo", e);
         Finance163StockInfoPO info = finance163Repository.queryInfo(e.getCode());
         StockInfoPo stockInfoPo = PoBuildUtils.buildStockInfo(info);
         stockInfoRepository.fillInfo(stockInfoPo);
@@ -85,7 +105,7 @@ public class Crawler {
     }
 
     private void singleFillPrice(StockInfoPo e) {
-        FailContext.put("singleFillPrice",e);
+        FailContext.put("singleFillPrice", e);
         Finance163StockPricePO price = finance163Repository.queryCurPrice(e.getCode(), e.getExchanger());
         StockPricePo stockPricePo = PoBuildUtils.buildStockPrice(price);
         StockPricePo tmp = stockPriceRepository.queryByDate(stockPricePo.getCode(), stockPricePo.getDate());
@@ -98,7 +118,7 @@ public class Crawler {
         }
     }
 
-    @Scheduled(cron = "0 0 21 * * ?")
+    @Scheduled(cron = "0 0 22 * * ?")
     public void fillHistoryPrice() {
         List<StockInfoPo> stockInfoPos = stockInfoRepository.queryAllStocks();
         stockInfoPos.stream().forEach(e -> submit(() -> this.singleFillHistoryPrice(e)));
@@ -106,13 +126,15 @@ public class Crawler {
     }
 
     private void singleFillHistoryPrice(StockInfoPo e) {
-        FailContext.put("singleFillHistoryPrice",e);
+        FailContext.put("singleFillHistoryPrice", e);
         Date endDate = e.getPriceComplete() > 0 ? Date.from(LocalDate.now().plusMonths(-1).atStartOfDay(ZoneId.systemDefault()).toInstant()) : e.getMarketDay();
         List<Finance163StockHistoryPricePO> prices = finance163Repository.queryHistoryPrice(e.getCode(), endDate);
         List<StockHistoryPricePo> list = prices.stream().map(PoBuildUtils::buildStockHistoryPrice).collect(Collectors.toList());
         List<Date> dates = stockHistoryPriceRepository.queryDatesByCode(e.getCode());
         list = list.stream().filter(p -> !dates.contains(p.getDate())).collect(Collectors.toList());
         if (!list.isEmpty()) {
+            List<StockFinancePo> stockFinancePos = stockHistoryFinanceRepository.queryByCode(e.getCode());
+            fillPE(stockFinancePos, list);
             stockHistoryPriceRepository.batchInsert(list);
         }
         if (e.getPriceComplete() <= 0) {
@@ -120,7 +142,19 @@ public class Crawler {
         }
     }
 
-    @Scheduled(cron = "0 0 22 * * ?")
+    private void fillPE(List<StockFinancePo> finances, List<StockHistoryPricePo> prices) {
+        Collections.sort(finances, Comparator.comparing(StockFinancePo::getDate).reversed());
+        for (StockHistoryPricePo price : prices) {
+            Date cur = price.getDate();
+            Date lastYear = Helper.datePlus(cur, -1, ChronoUnit.YEARS);
+            List<StockFinancePo> financeIn = finances.stream().filter(e -> e.getDate().before(cur)).filter(e -> e.getDate().after(lastYear)).collect(Collectors.toList());
+            BigDecimal profitSum = financeIn.stream().map(StockFinancePo::getProfit).reduce(BigDecimal::add).orElse(BigDecimal.valueOf(-1));
+            BigDecimal pe = Helper.safeDivide(price.getCapital().multiply(BigDecimal.valueOf(4)), profitSum.multiply(BigDecimal.valueOf(financeIn.size())));
+            price.setPe(pe);
+        }
+    }
+
+    @Scheduled(cron = "0 0 19 * * ?")
     public void fillHistoryFinance() {
         List<StockInfoPo> stockInfoPos = stockInfoRepository.queryAllStocks();
         stockInfoPos.stream().forEach(e -> submit(() -> this.singleFillHistoryFinance(e)));
@@ -128,7 +162,7 @@ public class Crawler {
     }
 
     private void singleFillHistoryFinance(StockInfoPo e) {
-        FailContext.put("singleFillHistoryFinance",e);
+        FailContext.put("singleFillHistoryFinance", e);
         List<Finance163StockHistoryFinancePO> finances = finance163Repository.queryHistoryFinance(e.getCode());
         List<StockFinancePo> stockFinancePos = finances.stream().map(PoBuildUtils::buildStockFinance).collect(Collectors.toList());
         List<Date> dates = stockHistoryFinanceRepository.queryDateByCode(e.getCode());
@@ -179,20 +213,6 @@ public class Crawler {
 
             if (cur.getY2yProfit() == null && y2yProfit != null) {
                 stockHistoryFinanceRepository.updateField("y2yProfit", y2yProfit.toString(), cur.getId());
-            }
-        }
-        for (int i = 0; i < size - 1; i++) {
-            StockFinancePo cur = list.get(i);
-            Date lastYear = Helper.datePlus(cur.getDate(), -1, ChronoUnit.YEARS);
-            List<StockFinancePo> financeIn = list.subList(i, size).stream().filter(p -> p.getDate().after(lastYear)).collect(Collectors.toList());
-            BigDecimal profitSum = financeIn.stream().map(StockFinancePo::getProfit).reduce(BigDecimal::add).orElse(BigDecimal.valueOf(-1));
-            StockPricePo recentPrice = stockPriceRepository.queryOneBeforeDate(cur.getCode(), cur.getDate());
-            if (recentPrice == null) {
-                continue;
-            }
-            BigDecimal pe = Helper.safeDivide(recentPrice.getCapital(), profitSum);
-            if (cur.getPe() == null && pe != null) {
-                stockHistoryFinanceRepository.updateField("pe", pe.toString(), cur.getId());
             }
         }
     }
