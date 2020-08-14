@@ -260,6 +260,12 @@ public class Finance163Repository {
         String url = "http://quotes.money.163.com/f10/lrb_%s.html";
         String res = NetUtil.get(url, code);
         Document doc = Jsoup.parse(res);
+
+        Element status = doc.selectFirst(".stock_detail .price");
+        if(status!=null&&status.text().equals("已退市")){
+            return new ArrayList<>();
+        }
+
         Elements elements = doc.select(".table_bg001.border_box.limit_sale.scr_table tr");
         Elements dates = elements.get(0).select("th");
         Elements incomes = elements.get(1).select("td");
