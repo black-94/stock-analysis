@@ -1,6 +1,5 @@
 package com.black.util;
 
-import com.black.po.StockInfoPo;
 import lombok.Data;
 
 import java.util.Objects;
@@ -10,9 +9,9 @@ public class FailContext {
     @Data
     public static class FailObject {
         String type;
-        StockInfoPo param;
+        Object param;
 
-        public FailObject(String type, StockInfoPo param) {
+        public FailObject(String type, Object param) {
             this.type = type;
             this.param = param;
         }
@@ -26,12 +25,12 @@ public class FailContext {
             if (o == null || getClass() != o.getClass()) return false;
             FailObject that = (FailObject) o;
             return Objects.equals(type, that.type) &&
-                    Objects.equals(param.getCode(), that.param.getCode());
+                    Objects.equals(param.toString(), that.param.toString());
         }
 
         @Override
         public int hashCode() {
-            return Objects.hash(type, param.getCode());
+            return Objects.hash(type, param.toString());
         }
     }
 
