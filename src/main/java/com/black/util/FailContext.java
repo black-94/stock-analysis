@@ -1,21 +1,37 @@
 package com.black.util;
 
+import com.black.po.StockInfoPo;
 import lombok.Data;
 
+import java.util.Objects;
 import java.util.concurrent.LinkedBlockingQueue;
 
 public class FailContext {
     @Data
     public static class FailObject {
         String type;
-        Object param;
+        StockInfoPo param;
 
-        public FailObject(String type, Object param) {
+        public FailObject(String type, StockInfoPo param) {
             this.type = type;
             this.param = param;
         }
 
         public FailObject() {
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
+            FailObject that = (FailObject) o;
+            return Objects.equals(type, that.type) &&
+                    Objects.equals(param.getCode(), that.param.getCode());
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(type, param.getCode());
         }
     }
 
@@ -42,6 +58,9 @@ public class FailContext {
     }
 
     public static void addFail(FailObject failObject) {
+        if(failQueue.contains(failObject)){
+            return;
+        }
         failQueue.offer(failObject);
     }
 
