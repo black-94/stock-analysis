@@ -19,9 +19,11 @@ public class StockFinancePo {
     String name;
     String exchange;
     BigDecimal income;
+    BigDecimal profit;
+    BigDecimal curIncome;
+    BigDecimal curProfit;
     BigDecimal y2yIncome;
     BigDecimal m2mIncome;
-    BigDecimal profit;
     BigDecimal y2yProfit;
     BigDecimal m2mProfit;
     Date date;
