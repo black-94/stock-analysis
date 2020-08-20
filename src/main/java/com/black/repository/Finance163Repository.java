@@ -198,7 +198,7 @@ public class Finance163Repository {
         if (new Date(0).compareTo(marketDay) < 0) {
             ZonedDateTime date = marketDay.toInstant().atZone(ZoneId.systemDefault());
             marketYear = date.getYear();
-            marketSeason = (date.getDayOfMonth() + 2) / 3;
+            marketSeason = (date.getMonthValue() + 2) / 3;
         }
 
         List<Finance163StockHistoryPricePO> list = new ArrayList<>();
