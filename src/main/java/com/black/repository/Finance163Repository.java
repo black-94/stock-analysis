@@ -184,8 +184,8 @@ public class Finance163Repository {
             stockPricePo.setHigh(high);
             stockPricePo.setLow(low);
             stockPricePo.setClose(close);
-            stockPricePo.setPercent(change);
-            stockPricePo.setChange(updown);
+            stockPricePo.setPercent(updown);
+            stockPricePo.setChange(change);
             stockPricePo.setVolume(volume);
             stockPricePo.setAmount(amount);
             stockPricePo.setAmplitude(amplitude);

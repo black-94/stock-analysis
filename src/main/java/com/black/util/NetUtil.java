@@ -12,30 +12,34 @@ import java.util.function.Function;
 
 public class NetUtil {
 
-    public static Logger root= LoggerFactory.getLogger(NetUtil.class);
+    public static Logger root = LoggerFactory.getLogger(NetUtil.class);
 
     public static RateLimiter rateLimiter = RateLimiter.create(100);
 
-    public static String get(String link,Object... params){
-        return get(e->e,link,params);
+    public static String get(String link, Object... params) {
+        return get(e -> e, link, params);
     }
 
-    public static String get(Function<String,String> fun,String link,Object... params){
-        String u=String.format(link,params);
+    public static String get(Function<String, String> fun, String link, Object... params) {
+        String u = String.format(link, params);
         rateLimiter.acquire();
         for (int i = 0; i < 3; i++) {
             try {
-                URL url=new URL(u);
+                URL url = new URL(u);
                 HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-                conn.setRequestProperty("Content-Type","charset=UTF-8");
-                StringWriter writer=new StringWriter();
-                try(InputStreamReader reader = new InputStreamReader(conn.getInputStream(),"UTF-8")){
+                conn.setRequestProperty("Content-Type", "charset=UTF-8");
+                StringWriter writer = new StringWriter();
+                try (InputStreamReader reader = new InputStreamReader(conn.getInputStream(), "UTF-8")) {
                     reader.transferTo(writer);
                 }
                 String res = writer.toString();
                 return fun.apply(res);
             } catch (Exception e) {
-                root.error("request fail,url:"+u,e);
+                root.error("request fail,url:" + u, e);
+                try {
+                    Thread.sleep(50L);
+                } catch (InterruptedException interruptedException) {
+                }
             }
         }
         return null;

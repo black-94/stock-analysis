@@ -144,9 +144,9 @@ public class Crawler {
         for (int i = begin; i <=end; i++) {
             int season=i-i/10*10;
             int year=i/10;
-            if(season==4){
+            if(season==5){
                 year++;
-                season=0;
+                season=1;
                 i=year*10;
             }
             List<StockPriceHistoryPage> stockPriceHistoryPages = finance163Repository.queryHistoryPrice(code, String.valueOf(year), String.valueOf(season));
