@@ -103,15 +103,22 @@ public class Finance163Repository {
         String url = "http://quotes.money.163.com/%s.html";
         String res = NetUtil.get(url, key);
         Elements elements = Jsoup.parse(res).select(".corp_info.inner_box p");
+        String name = elements.get(0).text();
+        String biz = elements.get(1).text();
         String marketDayStr = elements.get(8).text();
+        marketDayStr = Helper.truncateAfter(marketDayStr, "上市：");
         String totalStr = elements.get(9).text();
+        totalStr = Helper.truncateAfter(totalStr, "本：");
+        totalStr = StringUtils.remove(totalStr, "股");
         String numStr = elements.get(10).text();
+        numStr = Helper.truncateAfter(numStr, "本：");
+        numStr = StringUtils.remove(numStr, "股");
 
         StockNumPage po = new StockNumPage();
         po.setCode(code);
-//        po.setName();
-//        po.setBiz();
-//        po.setMarketDay();
+        po.setName(name);
+        po.setBiz(biz);
+        po.setMarketDay(marketDayStr);
         po.setTotal(totalStr);
         po.setCycle(numStr);
         po.setDate(Helper.formatDate(new Date()));
