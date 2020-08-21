@@ -1,5 +1,6 @@
 package com.black.repository;
 
+import com.black.po.*;
 import com.black.pojo.Finance163FundPricePO;
 import com.black.pojo.Finance163FundStockPO;
 import com.black.pojo.Finance163StockHistoryFinancePO;
@@ -7,6 +8,8 @@ import com.black.pojo.Finance163StockHistoryPricePO;
 import com.black.pojo.Finance163StockInfoPO;
 import com.black.pojo.Finance163StockPricePO;
 import com.black.pojo.StockInfoPo;
+import org.apache.commons.lang3.RandomUtils;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
@@ -70,4 +73,15 @@ public class Finance163Test {
         System.out.println(pricePOS);
     }
 
+    @Test
+    public void stockTest(){
+        List<IpoStockPage> ipoStockPages = finance163Repository.queryCodes("2020");
+        String code = ipoStockPages.get(RandomUtils.nextInt(0, ipoStockPages.size())).getCode();
+        StockInfoPage stockInfoPage = finance163Repository.queryInfov2(code);
+        StockNumPage stockNumPage = finance163Repository.queryStockNum(code);
+        List<StockFinancePage> stockFinancePages = finance163Repository.queryFinance(code);
+        StockPricePage stockPricePage = finance163Repository.queryPriceV2(code);
+        List<StockPriceHistoryPage> stockPriceHistoryPages = finance163Repository.queryHistoryPrice(code, "2020","0");
+        System.out.println("success");
+    }
 }
