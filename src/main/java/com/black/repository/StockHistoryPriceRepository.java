@@ -1,7 +1,7 @@
 package com.black.repository;
 
 
-import com.black.po.StockHistoryPricePo;
+import com.black.pojo.StockHistoryPricePo;
 import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Select;

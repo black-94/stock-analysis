@@ -1,7 +1,7 @@
 package com.black.repository;
 
 
-import com.black.po.StockFinancePo;
+import com.black.pojo.StockFinancePo;
 import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;

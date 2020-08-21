@@ -1,8 +1,7 @@
 package com.black.controller;
 
 import com.black.jobs.Crawler;
-import com.black.po.StockExchangerPo;
-import com.black.repository.*;
+import com.black.pojo.StockExchangerPo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;

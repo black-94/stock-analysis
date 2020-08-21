@@ -1,6 +1,6 @@
 package com.black.repository;
 
-import com.black.po.FundInfoPO;
+import com.black.pojo.FundInfoPO;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Select;
 

@@ -7,14 +7,14 @@ import lombok.Data;
 @Data
 @Builder
 @AllArgsConstructor
-public class Finance163StockHistoryFinancePO {
+public class StockFinancePage {
 
-    public Finance163StockHistoryFinancePO() {
+    public StockFinancePage() {
     }
 
     String code;
     String income;
     String profit;
-    String date;
+    String reportDay;
 
 }

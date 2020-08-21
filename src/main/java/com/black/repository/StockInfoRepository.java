@@ -1,6 +1,6 @@
 package com.black.repository;
 
-import com.black.po.StockInfoPo;
+import com.black.pojo.StockInfoPo;
 import org.apache.ibatis.annotations.*;
 
 import java.util.List;

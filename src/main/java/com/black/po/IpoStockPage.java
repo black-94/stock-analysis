@@ -7,13 +7,12 @@ import lombok.Data;
 @Data
 @Builder
 @AllArgsConstructor
-public class Finance163StockInfoPO {
+public class IpoStockPage {
 
-    public Finance163StockInfoPO(){}
+    public IpoStockPage(){}
 
     String code;
-    String name;
-    String biz;
-    String openDay;
     String marketDay;
+    String marketYear;
+
 }

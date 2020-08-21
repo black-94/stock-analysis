@@ -1,4 +1,4 @@
-package com.black.po;
+package com.black.pojo;
 
 import lombok.Data;
 

@@ -1,12 +1,12 @@
 package com.black.repository;
 
-import com.black.po.Finance163FundPricePO;
-import com.black.po.Finance163FundStockPO;
-import com.black.po.Finance163StockHistoryFinancePO;
-import com.black.po.Finance163StockHistoryPricePO;
-import com.black.po.Finance163StockInfoPO;
-import com.black.po.Finance163StockPricePO;
-import com.black.po.StockInfoPo;
+import com.black.pojo.Finance163FundPricePO;
+import com.black.pojo.Finance163FundStockPO;
+import com.black.pojo.Finance163StockHistoryFinancePO;
+import com.black.pojo.Finance163StockHistoryPricePO;
+import com.black.pojo.Finance163StockInfoPO;
+import com.black.pojo.Finance163StockPricePO;
+import com.black.pojo.StockInfoPo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
