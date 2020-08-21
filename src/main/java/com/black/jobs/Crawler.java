@@ -1,11 +1,7 @@
 package com.black.jobs;
 
 import com.black.enums.Constant;
-import com.black.po.IpoStockPage;
-import com.black.po.StockFinancePage;
-import com.black.po.StockInfoPage;
-import com.black.po.StockNumPage;
-import com.black.po.StockPricePage;
+import com.black.po.*;
 import com.black.pojo.Finance163FundPricePO;
 import com.black.pojo.Finance163FundStockPO;
 import com.black.pojo.Finance163StockHistoryFinancePO;
@@ -19,19 +15,7 @@ import com.black.pojo.StockFinancePo;
 import com.black.pojo.StockHistoryPricePo;
 import com.black.pojo.StockInfoPo;
 import com.black.pojo.StockPricePo;
-import com.black.repository.Finance163Repository;
-import com.black.repository.FundInfoRepository;
-import com.black.repository.FundPriceRepository;
-import com.black.repository.FundStockRepository;
-import com.black.repository.IpoStockPageRepository;
-import com.black.repository.StockFinancePageRepository;
-import com.black.repository.StockHistoryFinanceRepository;
-import com.black.repository.StockHistoryPriceRepository;
-import com.black.repository.StockInfoPageRepository;
-import com.black.repository.StockInfoRepository;
-import com.black.repository.StockNumPageRepository;
-import com.black.repository.StockPricePageRepository;
-import com.black.repository.StockPriceRepository;
+import com.black.repository.*;
 import com.black.util.ExecutorUtil;
 import com.black.util.FailContext;
 import com.black.util.Helper;
@@ -69,6 +53,8 @@ public class Crawler {
     StockFinancePageRepository stockFinancePageRepository;
     @Autowired
     StockPricePageRepository stockPricePageRepository;
+    @Autowired
+    StockPriceHistoryPageRepository stockPriceHistoryPageRepository;
 
     public void firstInit() {
         initCodes();
@@ -133,7 +119,6 @@ public class Crawler {
         stockPricePageRepository.deleteAll();
         List<String> codes = ipoStockPageRepository.queryAllCodes();
         codes.forEach(e -> submit(() -> initStockPrice(e)));
-
     }
 
     public void initStockPrice(String code) {
@@ -144,13 +129,44 @@ public class Crawler {
     }
 
     public void initStockPriceHistorys() {
-
+        stockPriceHistoryPageRepository.deleteAll();
+        List<String> codes = ipoStockPageRepository.queryAllCodes();
+        codes.forEach(e -> submit(() -> initStockPriceHistory(e)));
     }
 
     public void initStockPriceHistory(String code) {
-
+        stockPriceHistoryPageRepository.deleteByCode(code);
+        IpoStockPage ipoStockPage = ipoStockPageRepository.queryByCode(code);
+        LocalDate marketDate = Helper.parseDate(ipoStockPage.getMarketDay()).toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+        LocalDate now=LocalDate.now();
+        int end=Integer.valueOf(now.getYear()+""+((now.getMonthValue()+2)/3));
+        int begin=Integer.valueOf(marketDate.getYear()+""+((marketDate.getMonthValue()+2)/3));
+        for (int i = begin; i <=end; i++) {
+            int season=i-i/10*10;
+            int year=i/10;
+            if(season==4){
+                year++;
+                season=0;
+                i=year*10;
+            }
+            List<StockPriceHistoryPage> stockPriceHistoryPages = finance163Repository.queryHistoryPrice(code, String.valueOf(year), String.valueOf(season));
+            stockPriceHistoryPageRepository.batchInsert(stockPriceHistoryPages);
+        }
     }
 
+    public void queryCurStockPriceHistory(String code) {
+        LocalDate now=LocalDate.now();
+        int season=(now.getMonthValue()+2)/3;
+        int year=now.getYear();
+        List<StockPriceHistoryPage> stockPriceHistoryPages = finance163Repository.queryHistoryPrice(code, String.valueOf(year), String.valueOf(season));
+        for (StockPriceHistoryPage stockPriceHistoryPage : stockPriceHistoryPages) {
+            StockPriceHistoryPage query = stockPriceHistoryPageRepository.queryByCodeAndDate(code, stockPriceHistoryPage.getDate());
+            if(query!=null){
+                continue;
+            }
+            stockPriceHistoryPageRepository.insert(stockPriceHistoryPage);
+        }
+    }
 
     @Autowired
     StockInfoRepository stockInfoRepository;

@@ -14,4 +14,6 @@ public interface IpoStockPageRepository {
     void batchInsert(List<IpoStockPage> ipoStockPages);
 
     List<String> queryAllCodes();
+
+    IpoStockPage queryByCode(String code);
 }
