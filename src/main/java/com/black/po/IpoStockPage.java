@@ -12,6 +12,7 @@ public class IpoStockPage {
     public IpoStockPage(){}
 
     String code;
+    String name;
     String marketDay;
     String marketYear;
 

@@ -3,19 +3,8 @@ package com.black.repository;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
-import com.black.po.IpoStockPage;
-import com.black.po.StockFinancePage;
-import com.black.po.StockInfoPage;
-import com.black.po.StockNumPage;
-import com.black.po.StockPriceHistoryPage;
-import com.black.po.StockPricePage;
-import com.black.pojo.Finance163FundPricePO;
-import com.black.pojo.Finance163FundStockPO;
-import com.black.pojo.Finance163StockHistoryFinancePO;
-import com.black.pojo.Finance163StockHistoryPricePO;
-import com.black.pojo.Finance163StockInfoPO;
-import com.black.pojo.Finance163StockPricePO;
-import com.black.pojo.StockInfoPo;
+import com.black.po.*;
+import com.black.pojo.*;
 import com.black.util.Helper;
 import com.black.util.MarketParser;
 import com.black.util.NetUtil;
@@ -51,9 +40,15 @@ public class Finance163Repository {
             String res = NetUtil.get(url, year, page);
             Document doc = Jsoup.parse(res);
             Elements trs = doc.select("#plate_performance tbody tr");
-            List<String> codes = trs.stream().map(tr -> tr.child(1).text()).collect(Collectors.toList());
-            //todo
-            if (codes.isEmpty() || !hasNextPage(doc)) {
+            for (Element tr : trs) {
+                String code = tr.child(1).text();
+                String name = tr.child(2).text();
+                String date = tr.child(3).text();
+
+                IpoStockPage ipoStockPage = IpoStockPage.builder().code(code).name(name).marketDay(date).marketYear(year).build();
+                list.add(ipoStockPage);
+            }
+            if (trs.isEmpty() || !hasNextPage(doc)) {
                 break;
             }
             page++;
@@ -62,7 +57,7 @@ public class Finance163Repository {
         return list;
     }
 
-    public StockInfoPage queryInfov2(String code){
+    public StockInfoPage queryInfov2(String code) {
         String url = "http://quotes.money.163.com/f10/gszl_%s.html";
         String res = NetUtil.get(url, code);
         Document doc = Jsoup.parse(res);
@@ -102,7 +97,7 @@ public class Finance163Repository {
         return po;
     }
 
-    public StockNumPage queryStockNum(String code){
+    public StockNumPage queryStockNum(String code) {
         String exchanger = MarketParser.parse(code).getKey();
         String key = (exchanger.contains("sz") ? 1 : 0) + code;
         String url = "http://quotes.money.163.com/%s.html";
@@ -112,7 +107,7 @@ public class Finance163Repository {
         String totalStr = elements.get(9).text();
         String numStr = elements.get(10).text();
 
-        StockNumPage po=new StockNumPage();
+        StockNumPage po = new StockNumPage();
         po.setCode(code);
 //        po.setName();
 //        po.setBiz();
@@ -124,7 +119,7 @@ public class Finance163Repository {
         return po;
     }
 
-    public StockPricePage queryPriceV2(String code){
+    public StockPricePage queryPriceV2(String code) {
         String exchanger = MarketParser.parse(code).getKey();
         String key = (exchanger.contains("sz") ? 1 : 0) + code;
         String url = "http://api.money.126.net/data/feed/%s,money.api?callback=a";
@@ -159,7 +154,7 @@ public class Finance163Repository {
         return stockPricePo;
     }
 
-    public List<StockPriceHistoryPage> queryHistoryPrice(String code,String year,String season){
+    public List<StockPriceHistoryPage> queryHistoryPrice(String code, String year, String season) {
         List<StockPriceHistoryPage> list = new ArrayList<>();
         String url = "http://quotes.money.163.com/trade/lsjysj_%s.html?year=%s&season=%s";
         String res = NetUtil.get(url, code, year, season);
