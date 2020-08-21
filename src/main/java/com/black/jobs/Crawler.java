@@ -1,5 +1,11 @@
 package com.black.jobs;
 
+import com.black.enums.Constant;
+import com.black.po.IpoStockPage;
+import com.black.po.StockFinancePage;
+import com.black.po.StockInfoPage;
+import com.black.po.StockNumPage;
+import com.black.po.StockPricePage;
 import com.black.pojo.Finance163FundPricePO;
 import com.black.pojo.Finance163FundStockPO;
 import com.black.pojo.Finance163StockHistoryFinancePO;
@@ -17,9 +23,14 @@ import com.black.repository.Finance163Repository;
 import com.black.repository.FundInfoRepository;
 import com.black.repository.FundPriceRepository;
 import com.black.repository.FundStockRepository;
+import com.black.repository.IpoStockPageRepository;
+import com.black.repository.StockFinancePageRepository;
 import com.black.repository.StockHistoryFinanceRepository;
 import com.black.repository.StockHistoryPriceRepository;
+import com.black.repository.StockInfoPageRepository;
 import com.black.repository.StockInfoRepository;
+import com.black.repository.StockNumPageRepository;
+import com.black.repository.StockPricePageRepository;
 import com.black.repository.StockPriceRepository;
 import com.black.util.ExecutorUtil;
 import com.black.util.FailContext;
@@ -45,8 +56,102 @@ import static com.black.util.ExecutorUtil.waitComplete;
 
 @Component
 public class Crawler {
+
     @Autowired
     Finance163Repository finance163Repository;
+    @Autowired
+    IpoStockPageRepository ipoStockPageRepository;
+    @Autowired
+    StockInfoPageRepository stockInfoPageRepository;
+    @Autowired
+    StockNumPageRepository stockNumPageRepository;
+    @Autowired
+    StockFinancePageRepository stockFinancePageRepository;
+    @Autowired
+    StockPricePageRepository stockPricePageRepository;
+
+    public void firstInit() {
+        initCodes();
+        initStockInfos();
+        initStockNums();
+        initStockFinances();
+        initStockPrices();
+        initStockPriceHistorys();
+    }
+
+    public void initCodes() {
+        ipoStockPageRepository.deleteAll();
+        int beginYear = Constant.CHINA_IPO_START_YEAR;
+        int endYear = LocalDate.now().getYear();
+        for (int i = beginYear; i <= endYear; i++) {
+            List<IpoStockPage> ipoStockPages = finance163Repository.queryCodes(String.valueOf(i));
+            if (ipoStockPages.isEmpty()) {
+                continue;
+            }
+            ipoStockPageRepository.batchInsert(ipoStockPages);
+        }
+    }
+
+    public void initStockInfos() {
+        stockInfoPageRepository.deleteAll();
+        List<String> codes = ipoStockPageRepository.queryAllCodes();
+        codes.forEach(e -> submit(() -> initStockInfo(e)));
+    }
+
+    public void initStockInfo(String code) {
+        stockInfoPageRepository.deleteByCode(code);
+        StockInfoPage stockInfoPage = finance163Repository.queryInfov2(code);
+        stockInfoPageRepository.insert(stockInfoPage);
+    }
+
+    public void initStockNums() {
+        stockNumPageRepository.deleteAll();
+        List<String> codes = ipoStockPageRepository.queryAllCodes();
+        codes.forEach(e -> submit(() -> initStockNum(e)));
+    }
+
+    public void initStockNum(String code) {
+        String date = Helper.formatDate(new Date());
+        stockNumPageRepository.deleteByCode(code, date);
+        StockNumPage stockNumPage = finance163Repository.queryStockNum(code);
+        stockNumPageRepository.insert(stockNumPage);
+    }
+
+    public void initStockFinances() {
+        stockFinancePageRepository.deleteAll();
+        List<String> codes = ipoStockPageRepository.queryAllCodes();
+        codes.forEach(e -> submit(() -> initStockFinance(e)));
+    }
+
+    public void initStockFinance(String code) {
+        stockFinancePageRepository.deleteByCode(code);
+        List<StockFinancePage> stockFinancePages = finance163Repository.queryFinance(code);
+        stockFinancePageRepository.batchInsert(stockFinancePages);
+    }
+
+    public void initStockPrices() {
+        stockPricePageRepository.deleteAll();
+        List<String> codes = ipoStockPageRepository.queryAllCodes();
+        codes.forEach(e -> submit(() -> initStockPrice(e)));
+
+    }
+
+    public void initStockPrice(String code) {
+        String date = Helper.formatDate(new Date());
+        stockPricePageRepository.deleteByCode(code, date);
+        StockPricePage stockPricePage = finance163Repository.queryPriceV2(code);
+        stockPricePageRepository.insert(stockPricePage);
+    }
+
+    public void initStockPriceHistorys() {
+
+    }
+
+    public void initStockPriceHistory(String code) {
+
+    }
+
+
     @Autowired
     StockInfoRepository stockInfoRepository;
     @Autowired

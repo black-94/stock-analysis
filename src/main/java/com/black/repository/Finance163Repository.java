@@ -3,6 +3,12 @@ package com.black.repository;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import com.black.po.IpoStockPage;
+import com.black.po.StockFinancePage;
+import com.black.po.StockInfoPage;
+import com.black.po.StockNumPage;
+import com.black.po.StockPriceHistoryPage;
+import com.black.po.StockPricePage;
 import com.black.pojo.Finance163FundPricePO;
 import com.black.pojo.Finance163FundStockPO;
 import com.black.pojo.Finance163StockHistoryFinancePO;
@@ -36,6 +42,203 @@ import static com.black.util.Helper.decimalOf;
 
 @Repository
 public class Finance163Repository {
+
+    public List<IpoStockPage> queryCodes(String year) {
+        int page = 0;
+        String url = "http://quotes.money.163.com/data/ipo/shangshi.html?reportdate=%s&page=%d&sort=faxingri&order=desc";
+        List<IpoStockPage> list = Lists.newArrayList();
+        do {
+            String res = NetUtil.get(url, year, page);
+            Document doc = Jsoup.parse(res);
+            Elements trs = doc.select("#plate_performance tbody tr");
+            List<String> codes = trs.stream().map(tr -> tr.child(1).text()).collect(Collectors.toList());
+            //todo
+            if (codes.isEmpty() || !hasNextPage(doc)) {
+                break;
+            }
+            page++;
+        } while (true);
+
+        return list;
+    }
+
+    public StockInfoPage queryInfov2(String code){
+        String url = "http://quotes.money.163.com/f10/gszl_%s.html";
+        String res = NetUtil.get(url, code);
+        Document doc = Jsoup.parse(res);
+        Elements elements = doc.select(".table_bg001 .td_label");
+
+        String name = "";
+        String biz = "";
+        String openDay = "";
+        String marketDay = "";
+        for (Element e : elements) {
+            String text = e.text();
+            String value = e.nextElementSibling().text();
+            switch (text) {
+                case "中文简称":
+                    name = value;
+                    break;
+                case "主营业务":
+                    biz = value;
+                    break;
+                case "上市日期":
+                    marketDay = value;
+                    break;
+                case "成立日期":
+                    openDay = value;
+                    break;
+                default:
+                    break;
+            }
+        }
+
+        StockInfoPage po = new StockInfoPage();
+        po.setCode(code);
+        po.setName(name);
+        po.setBiz(biz);
+        po.setOpenDay(openDay);
+        po.setMarketDay(marketDay);
+        return po;
+    }
+
+    public StockNumPage queryStockNum(String code){
+        String exchanger = MarketParser.parse(code).getKey();
+        String key = (exchanger.contains("sz") ? 1 : 0) + code;
+        String url = "http://quotes.money.163.com/%s.html";
+        String res = NetUtil.get(url, key);
+        Elements elements = Jsoup.parse(res).select(".corp_info.inner_box p");
+        String marketDayStr = elements.get(8).text();
+        String totalStr = elements.get(9).text();
+        String numStr = elements.get(10).text();
+
+        StockNumPage po=new StockNumPage();
+        po.setCode(code);
+//        po.setName();
+//        po.setBiz();
+//        po.setMarketDay();
+        po.setTotal(totalStr);
+        po.setCycle(numStr);
+        po.setDate(Helper.formatDate(new Date()));
+
+        return po;
+    }
+
+    public StockPricePage queryPriceV2(String code){
+        String exchanger = MarketParser.parse(code).getKey();
+        String key = (exchanger.contains("sz") ? 1 : 0) + code;
+        String url = "http://api.money.126.net/data/feed/%s,money.api?callback=a";
+        String res = NetUtil.get(e -> e.substring(2, e.length() - 2), url, key);
+        JSONObject json = JSON.parseObject(res).getJSONObject(key);
+        String percent = json.getString("percent");
+        String yestclose = json.getString("yestclose");
+        String open = json.getString("open");
+        String price = json.getString("price");
+        String high = json.getString("high");
+        String low = json.getString("low");
+        String volume = json.getString("volume");
+        String turnover = json.getString("turnover");
+        String time = json.getString("time");
+        String updown = json.getString("updown");
+        String date = time.substring(0, 10);
+        date = StringUtils.replace(date, "/", "-");
+
+        StockPricePage stockPricePo = new StockPricePage();
+        stockPricePo.setCode(code);
+        stockPricePo.setOpen(open);
+        stockPricePo.setLastClose(yestclose);
+        stockPricePo.setCur(price);
+        stockPricePo.setHigh(high);
+        stockPricePo.setLow(low);
+        stockPricePo.setVolume(volume);
+        stockPricePo.setAmount(turnover);
+        stockPricePo.setPercent(percent);
+        stockPricePo.setChange(updown);
+        stockPricePo.setDate(date);
+
+        return stockPricePo;
+    }
+
+    public List<StockPriceHistoryPage> queryHistoryPrice(String code,String year,String season){
+        List<StockPriceHistoryPage> list = new ArrayList<>();
+        String url = "http://quotes.money.163.com/trade/lsjysj_%s.html?year=%s&season=%s";
+        String res = NetUtil.get(url, code, year, season);
+        Document doc = Jsoup.parse(res);
+        Elements elements = doc.select(".table_bg001 tr");
+        if (elements.size() < 2) {
+            return list;
+        }
+        for (int k = 1; k < elements.size(); k++) {
+            Element e = elements.get(k);
+            Elements tds = e.select("td");
+            String updown = tds.get(6).text();
+            String open = tds.get(1).text();
+            String close = tds.get(4).text();
+            String high = tds.get(2).text();
+            String low = tds.get(3).text();
+            String volume = tds.get(7).text();
+            String amount = tds.get(8).text();
+            String time = tds.get(0).text();
+            String change = tds.get(5).text();
+            String amplitude = tds.get(9).text();
+            String exchange = tds.get(10).text();
+
+            StockPriceHistoryPage stockPricePo = new StockPriceHistoryPage();
+            stockPricePo.setCode(code);
+            stockPricePo.setOpen(open);
+            stockPricePo.setHigh(high);
+            stockPricePo.setLow(low);
+            stockPricePo.setClose(close);
+            stockPricePo.setPercent(change);
+            stockPricePo.setChange(updown);
+            stockPricePo.setVolume(volume);
+            stockPricePo.setAmount(amount);
+            stockPricePo.setAmplitude(amplitude);
+            stockPricePo.setExchange(exchange);
+            stockPricePo.setDate(time);
+
+            list.add(stockPricePo);
+        }
+
+        return list;
+    }
+
+    public List<StockFinancePage> queryFinance(String code) {
+        String url = "http://quotes.money.163.com/f10/lrb_%s.html";
+        String res = NetUtil.get(url, code);
+        Document doc = Jsoup.parse(res);
+
+        Element status = doc.selectFirst(".stock_detail .price");
+        if (status != null && (status.text().equals("已退市") || status.text().equals("未上市"))) {
+            return new ArrayList<>();
+        }
+
+        Elements elements = doc.select(".table_bg001.border_box.limit_sale.scr_table tr");
+        Elements dates = elements.get(0).select("th");
+        Elements incomes = elements.get(1).select("td");
+        Elements profits = elements.get(40).select("td");
+
+        if (dates.size() < 1) {
+            return new ArrayList<>();
+        }
+
+        List<StockFinancePage> pos = new ArrayList<>();
+        for (int i = 0; i < dates.size(); i++) {
+            String time = dates.get(i).text();
+            String income = incomes.get(i).text();
+            String profit = profits.get(i).text();
+
+            StockFinancePage po = new StockFinancePage();
+            po.setCode(code);
+            po.setIncome(income);
+            po.setProfit(profit);
+            po.setReportDay(time);
+
+            pos.add(po);
+        }
+
+        return pos;
+    }
 
     public List<StockInfoPo> queryAllCodes() {
         String url = "http://quotes.money.163.com/data/ipo/shangshi.html";
@@ -262,7 +465,7 @@ public class Finance163Repository {
         Document doc = Jsoup.parse(res);
 
         Element status = doc.selectFirst(".stock_detail .price");
-        if(status!=null&&(status.text().equals("已退市")||status.text().equals("未上市"))){
+        if (status != null && (status.text().equals("已退市") || status.text().equals("未上市"))) {
             return new ArrayList<>();
         }
 

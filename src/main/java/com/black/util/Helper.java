@@ -2,6 +2,7 @@ package com.black.util;
 
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.time.FastDateFormat;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -105,6 +106,12 @@ public class Helper {
         } catch (Exception e) {
             return new Date(0);
         }
+    }
+
+    public static final FastDateFormat format = FastDateFormat.getInstance("yyyy-MM-dd");
+
+    public static String formatDate(Date date) {
+        return format.format(date);
     }
 
     public static Date datePlus(Date date, int diff, ChronoUnit unit) {
