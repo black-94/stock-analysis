@@ -29,7 +29,7 @@ public interface StockPriceHistoryPageRepository {
             """)
     void batchInsert(@Param("list")List<StockPriceHistoryPage> stockPriceHistoryPages);
 
-    @Select("select * from stock_price_history_page where code=#{code} and `date`=#{date}")
+    @Select("select * from stock_price_history_page where code=#{param1} and `date`=#{param2}")
     StockPriceHistoryPage queryByCodeAndDate(String code, String date);
 
     @Insert("""

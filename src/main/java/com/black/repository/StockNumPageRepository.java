@@ -11,7 +11,7 @@ public interface StockNumPageRepository {
     @Delete("truncate table stock_num_page")
     void deleteAll();
 
-    @Delete("delete from stock_num_page where code=#{code} and `date`=#{date}")
+    @Delete("delete from stock_num_page where code=#{param1} and `date`=#{param2}")
     void deleteByCode(String code, String date);
 
     @Insert("""
