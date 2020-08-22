@@ -40,7 +40,6 @@ import com.black.util.Helper;
 import com.black.util.PoBuildUtils;
 import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
@@ -239,7 +238,7 @@ public class Crawler {
         waitComplete();
     }
 
-    @Scheduled(cron = "0 0 16 * * ?")
+//    @Scheduled(cron = "0 0 16 * * ?")
     public void pullStockCodes() {
         List<String> codes = stockInfoRepository.queryAllCodes();
         List<StockInfoPo> stockInfoPos = finance163Repository.queryTodayCodes();
@@ -263,7 +262,7 @@ public class Crawler {
         stockInfoRepository.fillInfo(stockInfoPo);
     }
 
-    @Scheduled(cron = "0 0 17 * * ?")
+//    @Scheduled(cron = "0 0 17 * * ?")
     public void pullStockPrice() {
         List<StockInfoPo> stockInfoPos = stockInfoRepository.queryAllStocks();
         stockInfoPos.stream().forEach(e -> submit(() -> this.singleFillPrice(e)));
@@ -284,7 +283,7 @@ public class Crawler {
         }
     }
 
-    @Scheduled(cron = "0 0 22 * * ?")
+//    @Scheduled(cron = "0 0 22 * * ?")
     public void fillHistoryPrice() {
         List<StockInfoPo> stockInfoPos = stockInfoRepository.queryAllStocks();
         stockInfoPos.stream().forEach(e -> submit(() -> this.singleFillHistoryPrice(e)));
@@ -320,7 +319,7 @@ public class Crawler {
         }
     }
 
-    @Scheduled(cron = "0 0 19 * * ?")
+//    @Scheduled(cron = "0 0 19 * * ?")
     public void fillHistoryFinance() {
         List<StockInfoPo> stockInfoPos = stockInfoRepository.queryAllStocks();
         stockInfoPos.stream().forEach(e -> submit(() -> this.singleFillHistoryFinance(e)));
@@ -399,7 +398,7 @@ public class Crawler {
         return Helper.safeDivide(cur, pre).abs().negate().subtract(BigDecimal.ONE);
     }
 
-    @Scheduled(cron = "0 0 23 * * ?")
+//    @Scheduled(cron = "0 0 23 * * ?")
     public void pullFundPrices() {
         List<Finance163FundPricePO> pos = finance163Repository.fundList();
         List<FundPricePO> list = pos.stream().map(PoBuildUtils::buildFundPrice).collect(Collectors.toList());
@@ -411,7 +410,7 @@ public class Crawler {
         }));
     }
 
-    @Scheduled(cron = "0 0 0 1 1/3 ?")
+//    @Scheduled(cron = "0 0 0 1 1/3 ?")
     public void pullFundStock() {
         List<String> codes = fundInfoRepository.queryAllCodes();
         codes.forEach(e -> submit(() -> {
@@ -421,7 +420,7 @@ public class Crawler {
         }));
     }
 
-    @Scheduled(cron = "0 0 1 * * ?")
+//    @Scheduled(cron = "0 0 1 * * ?")
     public void fillFundInfo() {
         List<FundInfoPO> funds = fundInfoRepository.queryUninitFund();
         funds.forEach(e -> submit(() -> {
@@ -444,7 +443,7 @@ public class Crawler {
         }));
     }
 
-    @Scheduled(cron = "0 0/10 * * * ?")
+//    @Scheduled(cron = "0 0/10 * * * ?")
     public void retry() {
         FailContext.addFail(FailContext.gap);
         while (FailContext.hasNext()) {
