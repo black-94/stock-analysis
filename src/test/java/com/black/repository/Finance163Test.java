@@ -1,6 +1,11 @@
 package com.black.repository;
 
-import com.black.po.*;
+import com.black.po.IpoStockPage;
+import com.black.po.StockFinancePage;
+import com.black.po.StockInfoPage;
+import com.black.po.StockNumPage;
+import com.black.po.StockPriceHistoryPage;
+import com.black.po.StockPricePage;
 import com.black.pojo.Finance163FundPricePO;
 import com.black.pojo.Finance163FundStockPO;
 import com.black.pojo.Finance163StockHistoryFinancePO;
@@ -9,7 +14,6 @@ import com.black.pojo.Finance163StockInfoPO;
 import com.black.pojo.Finance163StockPricePO;
 import com.black.pojo.StockInfoPo;
 import org.apache.commons.lang3.RandomUtils;
-import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
@@ -73,7 +77,7 @@ public class Finance163Test {
         System.out.println(pricePOS);
     }
 
-    @Test
+//    @Test
     public void stockTest(){
         List<IpoStockPage> ipoStockPages = finance163Repository.queryCodes("2020");
         String code = ipoStockPages.get(RandomUtils.nextInt(0, ipoStockPages.size())).getCode();
