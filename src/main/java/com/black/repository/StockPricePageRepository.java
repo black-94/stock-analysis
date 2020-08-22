@@ -15,7 +15,7 @@ public interface StockPricePageRepository {
     void deleteByCode(String code, String date);
 
     @Insert("""
-            insert into stock_price_page(code,last_close,open,cur,high,low,volume,amount,percent,change,`date`)
+            insert into stock_price_page(code,last_close,open,cur,high,low,volume,amount,`percent`,change,`date`)
             values(#{code},#{lastClose},#{open},#{cur},#{high},#{low},#{volume},#{amount},#{percent},#{change},#{date})
             """)
     void insert(StockPricePage stockPricePage);
