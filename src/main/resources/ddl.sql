@@ -28,6 +28,7 @@ CREATE TABLE `stock_num_page` (
   `market_day` varchar(20) DEFAULT NULL COMMENT '上市日期',
   `total` varchar(50) DEFAULT NULL COMMENT '总股份',
   `cycle` varchar(50) DEFAULT NULL COMMENT '流通股份',
+  `date` varchar(20) DEFAULT NULL COMMENT '爬取日期',
   `create_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`code`,`date`),
   KEY `ix_market_day` (`market_day`)
