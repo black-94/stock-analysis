@@ -14,4 +14,6 @@ public interface StockFinancePageRepository {
     void deleteByCode(String code);
 
     void batchInsert(List<StockFinancePage> stockFinancePages);
+
+    List<StockFinancePage> queryByCode(String code);
 }

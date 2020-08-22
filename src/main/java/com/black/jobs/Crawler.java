@@ -1,7 +1,12 @@
 package com.black.jobs;
 
 import com.black.enums.Constant;
-import com.black.po.*;
+import com.black.po.IpoStockPage;
+import com.black.po.StockFinancePage;
+import com.black.po.StockInfoPage;
+import com.black.po.StockNumPage;
+import com.black.po.StockPriceHistoryPage;
+import com.black.po.StockPricePage;
 import com.black.pojo.Finance163FundPricePO;
 import com.black.pojo.Finance163FundStockPO;
 import com.black.pojo.Finance163StockHistoryFinancePO;
@@ -15,7 +20,20 @@ import com.black.pojo.StockFinancePo;
 import com.black.pojo.StockHistoryPricePo;
 import com.black.pojo.StockInfoPo;
 import com.black.pojo.StockPricePo;
-import com.black.repository.*;
+import com.black.repository.Finance163Repository;
+import com.black.repository.FundInfoRepository;
+import com.black.repository.FundPriceRepository;
+import com.black.repository.FundStockRepository;
+import com.black.repository.IpoStockPageRepository;
+import com.black.repository.StockFinancePageRepository;
+import com.black.repository.StockHistoryFinanceRepository;
+import com.black.repository.StockHistoryPriceRepository;
+import com.black.repository.StockInfoPageRepository;
+import com.black.repository.StockInfoRepository;
+import com.black.repository.StockNumPageRepository;
+import com.black.repository.StockPriceHistoryPageRepository;
+import com.black.repository.StockPricePageRepository;
+import com.black.repository.StockPriceRepository;
 import com.black.util.ExecutorUtil;
 import com.black.util.FailContext;
 import com.black.util.Helper;
@@ -29,6 +47,7 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.time.temporal.ChronoUnit;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
@@ -93,10 +112,10 @@ public class Crawler {
     public void initStockNums() {
         stockNumPageRepository.deleteAll();
         List<String> codes = ipoStockPageRepository.queryAllCodes();
-        codes.forEach(e -> submit(() -> initStockNum(e)));
+        codes.forEach(e -> submit(() -> queryStockNum(e)));
     }
 
-    public void initStockNum(String code) {
+    public void queryStockNum(String code) {
         String date = Helper.formatDate(new Date());
         stockNumPageRepository.deleteByCode(code, date);
         StockNumPage stockNumPage = finance163Repository.queryStockNum(code);
@@ -106,22 +125,24 @@ public class Crawler {
     public void initStockFinances() {
         stockFinancePageRepository.deleteAll();
         List<String> codes = ipoStockPageRepository.queryAllCodes();
-        codes.forEach(e -> submit(() -> initStockFinance(e)));
+        codes.forEach(e -> submit(() -> queryStockFinance(e)));
     }
 
-    public void initStockFinance(String code) {
-        stockFinancePageRepository.deleteByCode(code);
+    public void queryStockFinance(String code) {
         List<StockFinancePage> stockFinancePages = finance163Repository.queryFinance(code);
-        stockFinancePageRepository.batchInsert(stockFinancePages);
+        List<StockFinancePage> existFinances = stockFinancePageRepository.queryByCode(code);
+        List<String> existReportDay = existFinances.stream().map(e -> e.getReportDay()).collect(Collectors.toList());
+        List<StockFinancePage> newFinances = stockFinancePages.stream().filter(e -> !existReportDay.contains(e.getReportDay())).collect(Collectors.toList());
+        stockFinancePageRepository.batchInsert(newFinances);
     }
 
     public void initStockPrices() {
         stockPricePageRepository.deleteAll();
         List<String> codes = ipoStockPageRepository.queryAllCodes();
-        codes.forEach(e -> submit(() -> initStockPrice(e)));
+        codes.forEach(e -> submit(() -> queryStockPrice(e)));
     }
 
-    public void initStockPrice(String code) {
+    public void queryStockPrice(String code) {
         String date = Helper.formatDate(new Date());
         stockPricePageRepository.deleteByCode(code, date);
         StockPricePage stockPricePage = finance163Repository.queryPriceV2(code);
@@ -138,34 +159,54 @@ public class Crawler {
         stockPriceHistoryPageRepository.deleteByCode(code);
         IpoStockPage ipoStockPage = ipoStockPageRepository.queryByCode(code);
         LocalDate marketDate = Helper.parseDate(ipoStockPage.getMarketDay()).toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
-        LocalDate now=LocalDate.now();
-        int end=Integer.valueOf(now.getYear()+""+((now.getMonthValue()+2)/3));
-        int begin=Integer.valueOf(marketDate.getYear()+""+((marketDate.getMonthValue()+2)/3));
-        for (int i = begin; i <=end; i++) {
-            int season=i-i/10*10;
-            int year=i/10;
-            if(season==5){
+        LocalDate now = LocalDate.now();
+        int end = Integer.valueOf(now.getYear() + "" + ((now.getMonthValue() + 2) / 3));
+        int begin = Integer.valueOf(marketDate.getYear() + "" + ((marketDate.getMonthValue() + 2) / 3));
+        for (int i = begin; i <= end; i++) {
+            int season = i - i / 10 * 10;
+            int year = i / 10;
+            if (season == 5) {
                 year++;
-                season=1;
-                i=year*10;
+                season = 1;
+                i = year * 10;
             }
             List<StockPriceHistoryPage> stockPriceHistoryPages = finance163Repository.queryHistoryPrice(code, String.valueOf(year), String.valueOf(season));
             stockPriceHistoryPageRepository.batchInsert(stockPriceHistoryPages);
         }
     }
 
+    public void queryCurCodes() {
+        int curYear = LocalDate.now().getYear();
+        List<IpoStockPage> ipoStockPages = finance163Repository.queryCodes(String.valueOf(curYear));
+        List<String> existCodes = ipoStockPageRepository.queryByYear(String.valueOf(curYear));
+        List<IpoStockPage> newStocks = ipoStockPages.stream().filter(e -> !existCodes.contains(e.getCode())).collect(Collectors.toList());
+        ipoStockPageRepository.batchInsert(newStocks);
+    }
+
     public void queryCurStockPriceHistory(String code) {
-        LocalDate now=LocalDate.now();
-        int season=(now.getMonthValue()+2)/3;
-        int year=now.getYear();
+        LocalDate now = LocalDate.now();
+        int season = (now.getMonthValue() + 2) / 3;
+        int year = now.getYear();
         List<StockPriceHistoryPage> stockPriceHistoryPages = finance163Repository.queryHistoryPrice(code, String.valueOf(year), String.valueOf(season));
         for (StockPriceHistoryPage stockPriceHistoryPage : stockPriceHistoryPages) {
             StockPriceHistoryPage query = stockPriceHistoryPageRepository.queryByCodeAndDate(code, stockPriceHistoryPage.getDate());
-            if(query!=null){
+            if (query != null) {
                 continue;
             }
             stockPriceHistoryPageRepository.insert(stockPriceHistoryPage);
         }
+    }
+
+    public void dayCrawler() {
+        queryCurCodes();
+        List<String> codes = ipoStockPageRepository.queryAllCodes();
+        List<StockInfoPage> stockInfoPages = stockInfoPageRepository.queryAll();
+        List<String> existCodes = stockInfoPages.stream().map(StockInfoPage::getCode).collect(Collectors.toList());
+        Collection<String> newCodes = CollectionUtils.removeAll(codes, existCodes);
+        newCodes.forEach(e -> submit(() -> initStockInfo(e)));
+        codes.forEach(e -> submit(() -> queryStockNum(e)));
+        codes.forEach(e -> submit(() -> queryCurStockPriceHistory(e)));
+        codes.forEach(e -> submit(() -> queryStockPrice(e)));
     }
 
     @Autowired

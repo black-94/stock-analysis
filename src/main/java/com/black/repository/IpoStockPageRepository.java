@@ -20,4 +20,8 @@ public interface IpoStockPageRepository {
 
     @Select("select * from ipo_stock_page where code=#{param1}")
     IpoStockPage queryByCode(String code);
+
+    void insert(IpoStockPage ipoStockPage);
+
+    List<String> queryByYear(String year);
 }

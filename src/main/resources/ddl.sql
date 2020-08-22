@@ -6,7 +6,8 @@ CREATE TABLE `ipo_stock_page` (
   `market_year` varchar(20) DEFAULT NULL COMMENT '上市年份',
   `create_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`code`),
-  KEY `ix_market_day` (`market_day`)
+  KEY `ix_market_day` (`market_day`),
+  KEY `ix_market_year` (`market_year`)
 ) ;
 
 CREATE TABLE `stock_info_page` (
