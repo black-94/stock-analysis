@@ -20,7 +20,7 @@ public interface StockPriceHistoryPageRepository {
 
     @Insert("""
                 <script>
-                insert into stock_history_price(`code`,`open`,`close`,`high`,`low`,`volume`,`amount`,`change`,`percent`,`amplitude`,`exchange`,`date`) values
+                insert into stock_history_price_page(`code`,`open`,`close`,`high`,`low`,`volume`,`amount`,`change`,`percent`,`amplitude`,`exchange`,`date`) values
                 <foreach item="item" index="index" collection="list" open="" separator="," close="">
                     (#{item.code},#{item.open},#{item.close},#{item.high},#{item.low},#{item.volume},#{item.amount},#{item.change},
                     #{item.percent},#{item.amplitude},#{item.exchange},#{item.date})
@@ -33,7 +33,7 @@ public interface StockPriceHistoryPageRepository {
     StockPriceHistoryPage queryByCodeAndDate(String code, String date);
 
     @Insert("""
-            insert into stock_history_price(`code`,`open`,`close`,`high`,`low`,`volume`,`amount`,`change`,`percent`,`amplitude`,`exchange`,`date`) values
+            insert into stock_history_price_page(`code`,`open`,`close`,`high`,`low`,`volume`,`amount`,`change`,`percent`,`amplitude`,`exchange`,`date`) values
             (#{code},#{open},#{close},#{high},#{low},#{volume},#{amount},#{change},#{percent},#{amplitude},#{exchange},#{date})
             """)
     void insert(StockPriceHistoryPage stockPriceHistoryPage);
