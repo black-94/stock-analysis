@@ -180,7 +180,7 @@ public class Crawler {
         List<IpoStockPage> ipoStockPages = finance163Repository.queryCodes(String.valueOf(curYear));
         List<String> existCodes = ipoStockPageRepository.queryByYear(String.valueOf(curYear));
         List<IpoStockPage> newStocks = ipoStockPages.stream().filter(e -> !existCodes.contains(e.getCode())).collect(Collectors.toList());
-        if(newStocks.isEmpty()){
+        if (newStocks.isEmpty()) {
             return;
         }
         ipoStockPageRepository.batchInsert(newStocks);
@@ -210,6 +210,7 @@ public class Crawler {
         codes.forEach(e -> submit(() -> queryStockNum(e)));
         codes.forEach(e -> submit(() -> queryCurStockPriceHistory(e)));
         codes.forEach(e -> submit(() -> queryStockPrice(e)));
+        codes.forEach(e -> submit(() -> queryStockFinance(e)));
     }
 
     @Autowired
