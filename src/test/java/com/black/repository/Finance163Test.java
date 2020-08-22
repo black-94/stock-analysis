@@ -16,7 +16,7 @@ public class Finance163Test {
 
     //    @Test
     public void fundTest() {
-        List<Finance163FundPricePO> funds = finance163Repository.fundList();
+        List<Finance163FundPricePO> funds = finance163Repository.fundPrice();
         System.out.println(funds);
         List<Finance163FundStockPO> stockPOS = finance163Repository.fundStockList("320007");
         System.out.println(stockPOS);
