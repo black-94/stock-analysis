@@ -32,8 +32,10 @@ public interface StockPriceHistoryPageRepository {
     @Select("select * from stock_price_history_page where code=#{code} and `date`=#{date}")
     StockPriceHistoryPage queryByCodeAndDate(String code, String date);
 
-    @Insert("""insert into stock_history_price(`code`,`open`,`close`,`high`,`low`,`volume`,`amount`,`change`,`percent`,`amplitude`,`exchange`,`date`) values
-            (#{code},#{open},#{close},#{high},#{low},#{volume},#{amount},#{change},#{percent},#{amplitude},#{exchange},#{date})""")
+    @Insert("""
+            insert into stock_history_price(`code`,`open`,`close`,`high`,`low`,`volume`,`amount`,`change`,`percent`,`amplitude`,`exchange`,`date`) values
+            (#{code},#{open},#{close},#{high},#{low},#{volume},#{amount},#{change},#{percent},#{amplitude},#{exchange},#{date})
+            """)
     void insert(StockPriceHistoryPage stockPriceHistoryPage);
 
 }
