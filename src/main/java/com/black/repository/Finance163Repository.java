@@ -282,7 +282,7 @@ public class Finance163Repository {
             return list;
         }
 
-        url = "http://quotes.money.163.com/service/jjcg.html?symbol=%s&date=";
+        url = "http://quotes.money.163.com/service/jjcg.html?symbol=%s&date=%s";
         list = Lists.newArrayList();
         for (String rd : reportDates) {
             String date = rd.substring(0, 10);
@@ -290,7 +290,7 @@ public class Finance163Repository {
                 rd = URLEncoder.encode(rd, "utf-8");
             } catch (UnsupportedEncodingException e) {
             }
-            String ret = NetUtil.get(r -> JSON.parseObject(r).getString("table"), String.format(url, code) + rd);
+            String ret = NetUtil.get(r -> JSON.parseObject(r).getString("table"), url, code, rd);
             elements = Jsoup.parse(ret).select(" tbody tr");
             for (Element element : elements) {
                 Elements tds = element.select("td");
