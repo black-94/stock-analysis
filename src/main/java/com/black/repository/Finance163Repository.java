@@ -10,6 +10,7 @@ import com.black.util.NetUtil;
 import com.google.common.collect.Lists;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.tuple.Pair;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -246,8 +247,10 @@ public class Finance163Repository {
     }
 
     public List<StockFundPage> queryStockFundPage(String code,boolean initHistory){
+        String exchanger = MarketParser.parse(code).getKey();
+        String key = (exchanger.contains("sz") ? 1 : 0) + code;
         String url = "http://quotes.money.163.com/fund/cgmx_%s.html";
-        String res = NetUtil.get(String.format(url, code));
+        String res = NetUtil.get(String.format(url, key));
         Elements elements = Jsoup.parse(res).select("#fundholdTable tbody tr");
         String reportDate = Jsoup.parse(res).selectFirst("#date option").text();
         List<String> reportDates = Jsoup.parse(res).select("#date option").stream().map(e -> e.val()).collect(Collectors.toList());
@@ -282,7 +285,7 @@ public class Finance163Repository {
         list = Lists.newArrayList();
 
         for (String rd : reportDates) {
-            String ret = NetUtil.get(String.format(url + "?reportDate=%s", code, rd));
+            String ret = NetUtil.get(String.format(url + "?reportDate=%s", key, rd));
             elements = Jsoup.parse(ret).select("#fn_fund_owner_01 .fn_cm_table.fn_fund_rank tbody tr");
             for (Element element : elements) {
                 Elements tds = element.select("td");
