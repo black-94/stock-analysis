@@ -17,9 +17,9 @@ public class Finance163Test {
     public void fundTest() {
         List<FundPricePage> funds = finance163Repository.fundPrice();
         System.out.println(funds);
-        List<FundStockPage> stockPOS = finance163Repository.fundStockList("320007",false);
+        List<FundStockPage> stockPOS = finance163Repository.fundStockList("320007", false);
         System.out.println(stockPOS);
-        List<FundStockPage> historyStocks = finance163Repository.fundStockList("320007",false);
+        List<FundStockPage> historyStocks = finance163Repository.fundStockList("320007", false);
         System.out.println(historyStocks);
         List<FundPriceHistoryPage> pricePOS = finance163Repository.fundHistoryPrice("320007", "2020-01-01");
         System.out.println(pricePOS);
@@ -28,6 +28,9 @@ public class Finance163Test {
     @Test
     public void stockTest() {
         List<IpoStockPage> ipoStockPages = finance163Repository.queryCodes("2020");
+        for (IpoStockPage ipoStockPage : ipoStockPages) {
+            finance163Repository.queryStockFundPage(ipoStockPage.getCode(), false);
+        }
         String code = ipoStockPages.get(RandomUtils.nextInt(0, ipoStockPages.size())).getCode();
         StockInfoPage stockInfoPage = finance163Repository.queryInfo(code);
         StockNumPage stockNumPage = finance163Repository.queryStockNum(code);
