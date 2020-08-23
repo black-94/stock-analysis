@@ -2,7 +2,6 @@ package com.black.repository;
 
 import com.black.po.*;
 import org.apache.commons.lang3.RandomUtils;
-import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
@@ -13,7 +12,7 @@ public class Finance163Test {
     @Autowired
     Finance163Repository finance163Repository;
 
-    //    @Test
+    //@Test
     public void fundTest() {
         List<FundPricePage> funds = finance163Repository.fundPrice();
         System.out.println(funds);
@@ -25,7 +24,7 @@ public class Finance163Test {
         System.out.println(pricePOS);
     }
 
-    @Test
+    //@Test
     public void stockTest() {
         List<IpoStockPage> ipoStockPages = finance163Repository.queryCodes("2020");
         String code = ipoStockPages.get(RandomUtils.nextInt(0, ipoStockPages.size())).getCode();
