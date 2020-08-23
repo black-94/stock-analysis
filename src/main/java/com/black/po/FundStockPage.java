@@ -4,17 +4,15 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 
-import java.math.BigDecimal;
-
 @Data
 @Builder
 @AllArgsConstructor
 public class FundStockPage {
     String fundCode;
     String stockCode;
-    BigDecimal stockNums;
-    BigDecimal stockAmount;
-    BigDecimal stockRatio;
+    String stockNums;
+    String stockAmount;
+    String stockRatio;
     String date;
 
     public FundStockPage() {

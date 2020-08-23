@@ -428,9 +428,9 @@ public class Finance163Repository {
             FundStockPage po = new FundStockPage();
             po.setFundCode(fundCode);
             po.setStockCode(code);
-            po.setStockNums(Helper.parseTextNumber(stockNums));
-            po.setStockAmount(Helper.parseTextNumber(stockAmount));
-            po.setStockRatio(Helper.parseTextNumber(stockRatio));
+            po.setStockNums(stockNums);
+            po.setStockAmount(stockAmount);
+            po.setStockRatio(stockRatio);
             po.setDate(reportDate);
             list.add(po);
         }
@@ -459,9 +459,9 @@ public class Finance163Repository {
                 FundStockPage po = new FundStockPage();
                 po.setFundCode(fundCode);
                 po.setStockCode(code);
-                po.setStockNums(Helper.parseTextNumber(stockNums));
-                po.setStockAmount(Helper.parseTextNumber(stockAmount));
-                po.setStockRatio(Helper.parseTextNumber(stockRatio));
+                po.setStockNums(stockNums);
+                po.setStockAmount(stockAmount);
+                po.setStockRatio(stockRatio);
                 po.setDate(reportDate);
                 list.add(po);
             }
