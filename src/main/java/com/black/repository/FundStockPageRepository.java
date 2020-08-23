@@ -29,11 +29,11 @@ public interface FundStockPageRepository {
     @Select("select * from ipo_stock_page where code=#{param1}")
     IpoStockPage queryByCode(String code);
 
-    @Insert("""
-            insert into ipo_stock_page(code,name,market_day,market_year)
-            values(#{code},#{name},#{marketDay},#{marketYear})
-            """)
-    void insert(IpoStockPage ipoStockPage);
+//    @Insert("""
+//            insert into ipo_stock_page(code,name,market_day,market_year)
+//            values(#{code},#{name},#{marketDay},#{marketYear})
+//            """)
+//    void insert(IpoStockPage ipoStockPage);
 
     @Select("select * from ipo_stock_page where market_year=#{param1}")
     List<String> queryByYear(String year);
