@@ -23,6 +23,7 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static com.black.util.Helper.decimalOf;
@@ -252,12 +253,16 @@ public class Finance163Repository {
         String res = NetUtil.get(String.format(url, code));
         Document document = Jsoup.parse(res);
         Elements elements = document.select("#fundholdTable tbody tr");
-        String reportDay = document.selectFirst("#fundholdInfo+div form select option").text();
+        String reportDay = Optional.ofNullable(document.selectFirst("#fundholdInfo+div form select option")).map(e -> e.text()).orElse("");
         List<String> reportDates = document.select("#fundholdInfo+div form select option").stream().map(e -> e.val()).collect(Collectors.toList());
 
         List<StockFundPage> list = Lists.newArrayList();
         for (Element element : elements) {
             Elements tds = element.select("td");
+            if (tds.size() <= 3) {
+                continue;
+            }
+
             String href = tds.get(0).select("a").attr("href");
             String fundCode = Helper.href2FundCode(href);
             if (StringUtils.isBlank(code)) {

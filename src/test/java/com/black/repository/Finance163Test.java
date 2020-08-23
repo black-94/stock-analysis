@@ -28,9 +28,6 @@ public class Finance163Test {
     @Test
     public void stockTest() {
         List<IpoStockPage> ipoStockPages = finance163Repository.queryCodes("2020");
-        for (IpoStockPage ipoStockPage : ipoStockPages) {
-            finance163Repository.queryStockFundPage(ipoStockPage.getCode(), false);
-        }
         String code = ipoStockPages.get(RandomUtils.nextInt(0, ipoStockPages.size())).getCode();
         StockInfoPage stockInfoPage = finance163Repository.queryInfo(code);
         StockNumPage stockNumPage = finance163Repository.queryStockNum(code);
