@@ -34,7 +34,7 @@ public class Finance163Test {
         List<StockFinancePage> stockFinancePages = finance163Repository.queryFinance(code);
         StockPricePage stockPricePage = finance163Repository.queryPrice(code);
         List<StockPriceHistoryPage> stockPriceHistoryPages = finance163Repository.queryHistoryPrice(code, "2020", "3");
-        List<StockFundPage> stockFundPages = finance163Repository.queryStockFundPage(code, true);
+        List<StockFundPage> stockFundPages = finance163Repository.queryStockFundPage("002475", true);
         System.out.println("success");
     }
 }
