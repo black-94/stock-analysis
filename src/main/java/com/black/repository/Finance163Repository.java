@@ -4,9 +4,6 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.black.po.*;
-import com.black.pojo.Finance163FundPriceHistoryPage;
-import com.black.pojo.Finance163FundPricePage;
-import com.black.pojo.Finance163FundStockPage;
 import com.black.util.Helper;
 import com.black.util.MarketParser;
 import com.black.util.NetUtil;
@@ -248,14 +245,14 @@ public class Finance163Repository {
         return !"下一页".equals(text);
     }
 
-    public List<Finance163FundPricePage> fundPrice() {
+    public List<FundPricePage> fundPrice() {
         //小于10亿或最后一页或小于size
         int pageNo = 0;
         int pageSize = 1000;
         BigDecimal billion = BigDecimal.valueOf(1000000000L);
         String url = "http://quotes.money.163.com/fn/service/netvalue.php?page=%s&sort=ZJZC&order=desc&count=%s";
 
-        List<Finance163FundPricePage> ret = new ArrayList<>();
+        List<FundPricePage> ret = new ArrayList<>();
         do {
             String res = NetUtil.get(String.format(url, pageNo, pageSize));
             JSONArray list = JSON.parseObject(res).getJSONArray("list");
@@ -263,7 +260,7 @@ public class Finance163Repository {
             for (Object o : list) {
                 JSONObject json = (JSONObject) o;
 
-                Finance163FundPricePage po = new Finance163FundPricePage();
+                FundPricePage po = new FundPricePage();
                 po.setFundCode(json.getString("SYMBOL"));
                 po.setFundName(json.getString("SNAME"));
                 po.setUnit(json.getString("NAV"));
@@ -295,12 +292,12 @@ public class Finance163Repository {
         return ret;
     }
 
-    public List<Finance163FundPriceHistoryPage> fundHistoryPrice(String fundCode, String beginDate) {
+    public List<FundPriceHistoryPage> fundHistoryPrice(String fundCode, String beginDate) {
         String today = LocalDate.now().toString();
         String url = "http://quotes.money.163.com/fund/jzzs_%s_%s.html?start=%s&end=%s&sort=TDATE&order=desc";
         int pageNo = 0;
 
-        List<Finance163FundPriceHistoryPage> pos = new ArrayList<>();
+        List<FundPriceHistoryPage> pos = new ArrayList<>();
         do {
             String res = NetUtil.get(String.format(url, fundCode, pageNo, beginDate, today));
             Elements elements = Jsoup.parse(res).select(".fn_cm_table tbody tr");
@@ -311,7 +308,7 @@ public class Finance163Repository {
                 String historyUnit = tds.get(2).text();
                 String ratio = tds.get(3).text();
 
-                Finance163FundPriceHistoryPage po = new Finance163FundPriceHistoryPage();
+                FundPriceHistoryPage po = new FundPriceHistoryPage();
                 po.setFundCode(fundCode);
                 po.setDate(date);
                 po.setRatio(StringUtils.remove(ratio, "%"));
@@ -330,14 +327,14 @@ public class Finance163Repository {
         return pos;
     }
 
-    public List<Finance163FundStockPage> fundStockList(String fundCode, boolean initHistory) {
+    public List<FundStockPage> fundStockList(String fundCode, boolean initHistory) {
         String url = "http://quotes.money.163.com/fund/cgmx_%s.html";
         String res = NetUtil.get(String.format(url, fundCode));
         Elements elements = Jsoup.parse(res).select("#fn_fund_owner_01 .fn_cm_table.fn_fund_rank tbody tr");
         String reportDate = Jsoup.parse(res).selectFirst(".fn_fund_selector option[selected]").text();
         List<String> reportDates = Jsoup.parse(res).select(".fn_fund_selector option").stream().map(e -> e.text()).collect(Collectors.toList());
 
-        List<Finance163FundStockPage> list = Lists.newArrayList();
+        List<FundStockPage> list = Lists.newArrayList();
         for (Element element : elements) {
             Elements tds = element.select("td");
             String href = tds.get(0).select("a").attr("href");
@@ -350,7 +347,7 @@ public class Finance163Repository {
             String stockAmount = tds.get(2).text();
             String stockRatio = tds.get(3).text();
 
-            Finance163FundStockPage po = new Finance163FundStockPage();
+            FundStockPage po = new FundStockPage();
             po.setFundCode(fundCode);
             po.setStockCode(code);
             po.setStockNums(Helper.parseTextNumber(stockNums));
@@ -381,7 +378,7 @@ public class Finance163Repository {
                 String stockAmount = tds.get(2).text();
                 String stockRatio = tds.get(3).text();
 
-                Finance163FundStockPage po = new Finance163FundStockPage();
+                FundStockPage po = new FundStockPage();
                 po.setFundCode(fundCode);
                 po.setStockCode(code);
                 po.setStockNums(Helper.parseTextNumber(stockNums));

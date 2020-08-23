@@ -1,4 +1,4 @@
-package com.black.pojo;
+package com.black.po;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -7,7 +7,7 @@ import lombok.Data;
 @Data
 @Builder
 @AllArgsConstructor
-public class Finance163FundPricePage {
+public class FundPricePage {
     String fundCode;
     String fundName;
     String unit;
@@ -21,6 +21,6 @@ public class Finance163FundPricePage {
     String m6ret;
     String m12ret;
 
-    public Finance163FundPricePage() {
+    public FundPricePage() {
     }
 }

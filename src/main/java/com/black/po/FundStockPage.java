@@ -1,4 +1,4 @@
-package com.black.pojo;
+package com.black.po;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -9,7 +9,7 @@ import java.math.BigDecimal;
 @Data
 @Builder
 @AllArgsConstructor
-public class Finance163FundStockPage {
+public class FundStockPage {
     String fundCode;
     String stockCode;
     BigDecimal stockNums;
@@ -17,6 +17,6 @@ public class Finance163FundStockPage {
     BigDecimal stockRatio;
     String date;
 
-    public Finance163FundStockPage() {
+    public FundStockPage() {
     }
 }

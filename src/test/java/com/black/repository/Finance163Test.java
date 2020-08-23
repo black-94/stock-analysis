@@ -1,8 +1,6 @@
 package com.black.repository;
 
 import com.black.po.*;
-import com.black.pojo.Finance163FundPricePage;
-import com.black.pojo.Finance163FundStockPage;
 import org.apache.commons.lang3.RandomUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -16,13 +14,13 @@ public class Finance163Test {
 
     //    @Test
     public void fundTest() {
-        List<Finance163FundPricePage> funds = finance163Repository.fundPrice();
+        List<IpoStockPage.FundPricePage> funds = finance163Repository.fundPrice();
         System.out.println(funds);
-        List<Finance163FundStockPage> stockPOS = finance163Repository.fundStockList("320007");
+        List<IpoStockPage.FundStockPage> stockPOS = finance163Repository.fundStockList("320007");
         System.out.println(stockPOS);
-        List<Finance163FundStockPage> historyStocks = finance163Repository.fundHistoryStock("320007");
+        List<IpoStockPage.FundStockPage> historyStocks = finance163Repository.fundHistoryStock("320007");
         System.out.println(historyStocks);
-        List<Finance163FundPricePage> pricePOS = finance163Repository.fundHistoryPrice("320007", "2020-01-01");
+        List<IpoStockPage.FundPricePage> pricePOS = finance163Repository.fundHistoryPrice("320007", "2020-01-01");
         System.out.println(pricePOS);
     }
 

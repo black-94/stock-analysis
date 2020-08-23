@@ -1,6 +1,7 @@
 package com.black.jobs;
 
 import com.black.enums.Constant;
+import com.black.po.FundPricePage;
 import com.black.po.IpoStockPage;
 import com.black.po.StockFinancePage;
 import com.black.po.StockInfoPage;
@@ -8,6 +9,9 @@ import com.black.po.StockNumPage;
 import com.black.po.StockPriceHistoryPage;
 import com.black.po.StockPricePage;
 import com.black.repository.Finance163Repository;
+import com.black.repository.FundPriceHistoryPageRepository;
+import com.black.repository.FundPricePageRepository;
+import com.black.repository.FundStockPageRepository;
 import com.black.repository.IpoStockPageRepository;
 import com.black.repository.StockFinancePageRepository;
 import com.black.repository.StockInfoPageRepository;
@@ -45,6 +49,12 @@ public class Crawler {
     StockPricePageRepository stockPricePageRepository;
     @Autowired
     StockPriceHistoryPageRepository stockPriceHistoryPageRepository;
+    @Autowired
+    FundPricePageRepository fundPricePageRepository;
+    @Autowired
+    FundPriceHistoryPageRepository fundPriceHistoryPageRepository;
+    @Autowired
+    FundStockPageRepository fundStockPageRepository;
 
     public void firstInit() {
         initCodes();
@@ -171,6 +181,51 @@ public class Crawler {
         }
     }
 
+    public List<String> queryFundPrice() {
+        List<FundPricePage> fundPrices = finance163Repository.fundPrice();
+        for (FundPricePage fundPrice : fundPrices) {
+            FundPricePage query = fundPricePageRepository.queryByCodeAndDate(fundPrice.getFundCode(), fundPrice.getDate());
+            if (query != null) {
+                continue;
+            }
+            fundPricePageRepository.insert(fundPrice);
+        }
+        return fundPrices.stream().map(e -> e.getFundCode()).collect(Collectors.toList());
+    }
+
+    public void queryFundPriceHistory(FundPricePage fundPricePage) {
+
+
+        fundPriceHistoryPageRepository.queryByCodeAndDate(fundPricePage.getFundCode(),fundPricePage.getDate());
+
+
+
+
+
+    }
+
+    public void queryFundStock(FundPricePage fundPricePage){
+
+
+        fundStockPageRepository.queryByCodeAndDate(fundPricePage.getFundCode(),fundPricePage.getDate());
+
+    }
+
+    public void initFundPriceHistorys() {
+        List<FundPricePage> fundPricePages = fundPricePageRepository.queryDateGroupByCode();
+        fundPricePages.forEach(e -> submit(() -> initFundPriceHistory(e)));
+    }
+
+    public void initFundPriceHistory(FundPricePage fundPricePage) {
+//        fundPriceHistoryPageRepository.queryByCodeAndDate()
+
+
+    }
+
+    public void initFundStock(){
+
+    }
+
     public void dayCrawler() {
         queryCurCodes();
         List<String> codes = ipoStockPageRepository.queryAllCodes();
@@ -182,7 +237,10 @@ public class Crawler {
         codes.forEach(e -> submit(() -> queryCurStockPriceHistory(e)));
         codes.forEach(e -> submit(() -> queryStockPrice(e)));
         codes.forEach(e -> submit(() -> queryStockFinance(e)));
+
+
     }
+
 
 //    @Autowired
 //    StockInfoRepository stockInfoRepository;
