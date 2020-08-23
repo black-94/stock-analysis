@@ -8,6 +8,7 @@ import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
 
+import java.util.Date;
 import java.util.List;
 
 @Mapper
@@ -44,4 +45,10 @@ public interface FundPricePageRepository {
     FundPricePage queryByCodeAndDate(String fundCode, String date);
 
     List<FundPricePage> queryDateGroupByCode();
+
+    @Select("select * from fund_code where `date`=#{date} and fundCode=#{fundCode}")
+    FundPricePage queryByDate(@Param("fundCode") String fundCode, @Param("date") Date date);
+
+//    @Insert("insert into fund_info(fundCode,unit,amount,ratio) values(#{fundCode},#{unit},#{amount},#{ratio})")
+//    void insert(FundPricePage fundPricePO);
 }

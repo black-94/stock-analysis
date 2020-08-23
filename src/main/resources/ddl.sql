@@ -44,6 +44,17 @@ CREATE TABLE `stock_finance_page` (
   KEY `ix_report_day` (`report_day`)
 ) ;
 
+CREATE TABLE `stock_fund_page` (
+  `code` varchar(20) NOT NULL,
+  `fund_code` varchar(20) NOT NULL,
+  `stock_nums` varchar(50) DEFAULT NULL COMMENT '持仓数目',
+  `stock_amount` varchar(50) DEFAULT NULL COMMENT '持仓金额',
+  `report_day` varchar(20) NOT NULL COMMENT '报告日期',
+  `create_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`code`,`fund_code`,`report_day`),
+  KEY `ix_report_day` (`report_day`)
+) ;
+
 CREATE TABLE `stock_price_page` (
   `code` varchar(20) NOT NULL COMMENT '股票代码',
   `last_close` varchar(50) DEFAULT NULL COMMENT '昨日收盘价',
