@@ -9,7 +9,7 @@ import java.math.BigDecimal;
 @Data
 @Builder
 @AllArgsConstructor
-public class Finance163FundStockPO {
+public class Finance163FundStockPage {
     String fundCode;
     String stockCode;
     BigDecimal stockNums;
@@ -17,6 +17,6 @@ public class Finance163FundStockPO {
     BigDecimal stockRatio;
     String date;
 
-    public Finance163FundStockPO() {
+    public Finance163FundStockPage() {
     }
 }

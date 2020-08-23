@@ -7,7 +7,7 @@ import lombok.Data;
 @Data
 @Builder
 @AllArgsConstructor
-public class Finance163FundPricePO {
+public class Finance163FundPricePage {
     String fundCode;
     String fundName;
     String unit;
@@ -21,6 +21,6 @@ public class Finance163FundPricePO {
     String m6ret;
     String m12ret;
 
-    public Finance163FundPricePO() {
+    public Finance163FundPricePage() {
     }
 }

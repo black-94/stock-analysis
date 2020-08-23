@@ -1,7 +1,7 @@
 package com.black.util;
 
-import com.black.pojo.Finance163FundPricePO;
-import com.black.pojo.Finance163FundStockPO;
+import com.black.pojo.Finance163FundPricePage;
+import com.black.pojo.Finance163FundStockPage;
 import com.black.pojo.Finance163StockHistoryFinancePO;
 import com.black.pojo.Finance163StockHistoryPricePO;
 import com.black.pojo.Finance163StockInfoPO;
@@ -91,7 +91,7 @@ public class PoBuildUtils {
         return po;
     }
 
-    public static FundPricePO buildFundPrice(Finance163FundPricePO pricePO) {
+    public static FundPricePO buildFundPrice(Finance163FundPricePage pricePO) {
         FundPricePO po=new FundPricePO();
 //        po.setFundCode(pricePO.getFundCode());
 //        po.setUnit(pricePO.getUnit());
@@ -105,7 +105,7 @@ public class PoBuildUtils {
         return po;
     }
 
-    public static FundStockPO buildFundStock(Finance163FundStockPO stockPO) {
+    public static FundStockPO buildFundStock(Finance163FundStockPage stockPO) {
 //        StockFinancePo po=new StockFinancePo();
 //        po.setCode(financePO.getCode());
 //        po.setIncome(decimalOf(financePO.getIncome()));

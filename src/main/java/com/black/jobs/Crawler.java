@@ -7,54 +7,26 @@ import com.black.po.StockInfoPage;
 import com.black.po.StockNumPage;
 import com.black.po.StockPriceHistoryPage;
 import com.black.po.StockPricePage;
-import com.black.pojo.Finance163FundPricePO;
-import com.black.pojo.Finance163FundStockPO;
-import com.black.pojo.Finance163StockHistoryFinancePO;
-import com.black.pojo.Finance163StockHistoryPricePO;
-import com.black.pojo.Finance163StockInfoPO;
-import com.black.pojo.Finance163StockPricePO;
-import com.black.pojo.FundInfoPO;
-import com.black.pojo.FundPricePO;
-import com.black.pojo.FundStockPO;
-import com.black.pojo.StockFinancePo;
-import com.black.pojo.StockHistoryPricePo;
-import com.black.pojo.StockInfoPo;
-import com.black.pojo.StockPricePo;
 import com.black.repository.Finance163Repository;
-import com.black.repository.FundInfoRepository;
-import com.black.repository.FundPriceRepository;
-import com.black.repository.FundStockRepository;
 import com.black.repository.IpoStockPageRepository;
 import com.black.repository.StockFinancePageRepository;
-import com.black.repository.StockHistoryFinanceRepository;
-import com.black.repository.StockHistoryPriceRepository;
 import com.black.repository.StockInfoPageRepository;
-import com.black.repository.StockInfoRepository;
 import com.black.repository.StockNumPageRepository;
 import com.black.repository.StockPriceHistoryPageRepository;
 import com.black.repository.StockPricePageRepository;
-import com.black.repository.StockPriceRepository;
-import com.black.util.ExecutorUtil;
-import com.black.util.FailContext;
 import com.black.util.Helper;
-import com.black.util.PoBuildUtils;
 import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.ZoneId;
-import java.time.temporal.ChronoUnit;
 import java.util.Collection;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
 import static com.black.util.ExecutorUtil.submit;
-import static com.black.util.ExecutorUtil.waitComplete;
 
 @Component
 public class Crawler {
