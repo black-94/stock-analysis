@@ -12,7 +12,6 @@ public class FundPriceHistoryPage {
     String unit;
     String historyUnit;
     String ratio;
-    String amount;
     String date;
 
     public FundPriceHistoryPage() {
