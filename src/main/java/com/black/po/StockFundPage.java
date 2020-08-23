@@ -13,6 +13,7 @@ public class StockFundPage {
 
     String code;
     String fundCode;
+    String fundName;
     String stockNums;
     String stockAmount;
     String reportDay;

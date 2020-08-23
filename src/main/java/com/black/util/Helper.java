@@ -63,6 +63,17 @@ public class Helper {
         }
     }
 
+    public static String href2FundCode(String href) {
+        try {
+            href = StringUtils.remove(href, "http://quotes.fund.163.com/html/");
+            href = StringUtils.remove(href, ".html");
+            return href;
+        } catch (Exception e) {
+            log.error("", e);
+            return "";
+        }
+    }
+
     public static BigDecimal parseTextNumber(String text) {
         if (StringUtils.isBlank(text)) {
             return BigDecimal.ZERO;

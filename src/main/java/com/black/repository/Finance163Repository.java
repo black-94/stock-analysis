@@ -10,14 +10,15 @@ import com.black.util.NetUtil;
 import com.google.common.collect.Lists;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.tuple.Pair;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import org.springframework.stereotype.Repository;
 
+import java.io.UnsupportedEncodingException;
 import java.math.BigDecimal;
+import java.net.URLEncoder;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Date;
@@ -246,67 +247,71 @@ public class Finance163Repository {
         return pos;
     }
 
-    public List<StockFundPage> queryStockFundPage(String code,boolean initHistory){
-        String exchanger = MarketParser.parse(code).getKey();
-        String key = (exchanger.contains("sz") ? 1 : 0) + code;
-        String url = "http://quotes.money.163.com/fund/cgmx_%s.html";
-        String res = NetUtil.get(String.format(url, key));
-        Elements elements = Jsoup.parse(res).select("#fundholdTable tbody tr");
-        String reportDate = Jsoup.parse(res).selectFirst("#date option").text();
-        List<String> reportDates = Jsoup.parse(res).select("#date option").stream().map(e -> e.val()).collect(Collectors.toList());
+    public List<StockFundPage> queryStockFundPage(String code, boolean initHistory) {
+        String url = "http://quotes.money.163.com/f10/jjcg_%s.html";
+        String res = NetUtil.get(String.format(url, code));
+        Document document = Jsoup.parse(res);
+        Elements elements = document.select("#fundholdTable tbody tr");
+        String reportDay = document.selectFirst("#fundholdInfo+div form select option").text();
+        List<String> reportDates = document.select("#fundholdInfo+div form select option").stream().map(e -> e.val()).collect(Collectors.toList());
 
         List<StockFundPage> list = Lists.newArrayList();
         for (Element element : elements) {
             Elements tds = element.select("td");
             String href = tds.get(0).select("a").attr("href");
-//            String code = Helper.href2Code(href);
-//            if (StringUtils.isBlank(code)) {
-//                continue;
-//            }
-//
-//            String stockNums = tds.get(1).text();
-//            String stockAmount = tds.get(2).text();
-//            String stockRatio = tds.get(3).text();
-//
-//            FundStockPage po = new FundStockPage();
-//            po.setFundCode(fundCode);
-//            po.setStockCode(code);
-//            po.setStockNums(Helper.parseTextNumber(stockNums));
-//            po.setStockAmount(Helper.parseTextNumber(stockAmount));
-//            po.setStockRatio(Helper.parseTextNumber(stockRatio));
-//            po.setDate(reportDate);
-//            list.add(po);
+            String fundCode = Helper.href2FundCode(href);
+            if (StringUtils.isBlank(code)) {
+                continue;
+            }
+
+            String fundName = tds.get(0).text();
+            String stockAmount = tds.get(1).text();
+            String stockNums = tds.get(2).text();
+
+            StockFundPage po = new StockFundPage();
+            po.setCode(code);
+            po.setFundCode(fundCode);
+            po.setFundName(fundName);
+            po.setStockNums(stockNums);
+            po.setStockAmount(stockAmount);
+            po.setReportDay(reportDay);
+            list.add(po);
         }
 
-        if (!initHistory) {
+        if (reportDates.size() <= 1 || !initHistory) {
             return list;
         }
 
+        url = "http://quotes.money.163.com/service/jjcg.html?date=%s&symbol=%s";
         list = Lists.newArrayList();
-
         for (String rd : reportDates) {
-            String ret = NetUtil.get(String.format(url + "?reportDate=%s", key, rd));
-            elements = Jsoup.parse(ret).select("#fn_fund_owner_01 .fn_cm_table.fn_fund_rank tbody tr");
+            String date = rd.substring(0, 10);
+            try {
+                rd = URLEncoder.encode(rd, "utf-8");
+            } catch (UnsupportedEncodingException e) {
+            }
+            String ret = NetUtil.get(r -> JSON.parseObject(r).getString("table"), String.format(url, rd, code));
+            elements = Jsoup.parse(ret).select(" tbody tr");
             for (Element element : elements) {
                 Elements tds = element.select("td");
                 String href = tds.get(0).select("a").attr("href");
-//                String code = Helper.href2Code(href);
-//                if (StringUtils.isBlank(code)) {
-//                    continue;
-//                }
-//
-//                String stockNums = tds.get(1).text();
-//                String stockAmount = tds.get(2).text();
-//                String stockRatio = tds.get(3).text();
-//
-//                FundStockPage po = new FundStockPage();
-//                po.setFundCode(fundCode);
-//                po.setStockCode(code);
-//                po.setStockNums(Helper.parseTextNumber(stockNums));
-//                po.setStockAmount(Helper.parseTextNumber(stockAmount));
-//                po.setStockRatio(Helper.parseTextNumber(stockRatio));
-//                po.setDate(reportDate);
-//                list.add(po);
+                String fundCode = Helper.href2FundCode(href);
+                if (StringUtils.isBlank(code)) {
+                    continue;
+                }
+
+                String fundName = tds.get(0).text();
+                String stockAmount = tds.get(1).text();
+                String stockNums = tds.get(2).text();
+
+                StockFundPage po = new StockFundPage();
+                po.setCode(code);
+                po.setFundCode(fundCode);
+                po.setFundName(fundName);
+                po.setStockNums(stockNums);
+                po.setStockAmount(stockAmount);
+                po.setReportDay(date);
+                list.add(po);
             }
         }
 
