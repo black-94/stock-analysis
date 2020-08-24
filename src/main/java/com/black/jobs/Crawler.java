@@ -1,7 +1,6 @@
 package com.black.jobs;
 
 import com.black.enums.Constant;
-import com.black.po.FundPricePage;
 import com.black.po.IpoStockPage;
 import com.black.po.StockFinancePage;
 import com.black.po.StockFundPage;
@@ -216,49 +215,49 @@ public class Crawler {
         stockFundPageRepository.batchInsert(insert);
     }
 
-    public List<String> queryFundPrice() {
-        List<FundPricePage> fundPrices = finance163Repository.fundPrice();
-        for (FundPricePage fundPrice : fundPrices) {
-            FundPricePage query = fundPricePageRepository.queryByCodeAndDate(fundPrice.getFundCode(), fundPrice.getDate());
-            if (query != null) {
-                continue;
-            }
-            fundPricePageRepository.insert(fundPrice);
-        }
-        return fundPrices.stream().map(e -> e.getFundCode()).collect(Collectors.toList());
-    }
-
-    public void queryFundPriceHistory(FundPricePage fundPricePage) {
-
-
-        fundPriceHistoryPageRepository.queryByCodeAndDate(fundPricePage.getFundCode(), fundPricePage.getDate());
-
-
-    }
-
-
-    //todo 补充股票的持股排名
-    public void queryFundStock(FundPricePage fundPricePage) {
-
-
-        fundStockPageRepository.queryByCodeAndDate(fundPricePage.getFundCode(), fundPricePage.getDate());
-
-    }
-
-    public void initFundPriceHistorys() {
-        List<FundPricePage> fundPricePages = fundPricePageRepository.queryDateGroupByCode();
-        fundPricePages.forEach(e -> submit(() -> initFundPriceHistory(e)));
-    }
-
-    public void initFundPriceHistory(FundPricePage fundPricePage) {
-//        fundPriceHistoryPageRepository.queryByCodeAndDate()
-
-
-    }
-
-    public void initFundStock() {
-
-    }
+//    public List<String> queryFundPrice() {
+//        List<FundPricePage> fundPrices = finance163Repository.fundPrice();
+//        for (FundPricePage fundPrice : fundPrices) {
+//            FundPricePage query = fundPricePageRepository.queryByCodeAndDate(fundPrice.getFundCode(), fundPrice.getDate());
+//            if (query != null) {
+//                continue;
+//            }
+//            fundPricePageRepository.insert(fundPrice);
+//        }
+//        return fundPrices.stream().map(e -> e.getFundCode()).collect(Collectors.toList());
+//    }
+//
+//    public void queryFundPriceHistory(FundPricePage fundPricePage) {
+//
+//
+//        fundPriceHistoryPageRepository.queryByCodeAndDate(fundPricePage.getFundCode(), fundPricePage.getDate());
+//        finance163Repository.fundHistoryPrice()
+//
+//
+//    }
+//
+//
+//    public void queryFundStock(FundPricePage fundPricePage) {
+//
+//
+//        fundStockPageRepository.queryByCodeAndDate(fundPricePage.getFundCode(), fundPricePage.getDate());
+//
+//    }
+//
+//    public void initFundPriceHistorys() {
+//        List<FundPricePage> fundPricePages = fundPricePageRepository.queryDateGroupByCode();
+//        fundPricePages.forEach(e -> submit(() -> initFundPriceHistory(e)));
+//    }
+//
+//    public void initFundPriceHistory(FundPricePage fundPricePage) {
+////        fundPriceHistoryPageRepository.queryByCodeAndDate()
+//
+//
+//    }
+//
+//    public void initFundStock() {
+//
+//    }
 
     public void dayCrawler() {
         queryCurCodes();
