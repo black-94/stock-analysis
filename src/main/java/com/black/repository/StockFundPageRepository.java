@@ -16,16 +16,16 @@ public interface StockFundPageRepository {
 
     @Insert("""
             insert into stock_fund_page(code,fund_code,fund_name,stock_nums,stock_amount,report_day)
-            values(#{code},#{lastClose},#{open},#{cur},#{high},#{low},#{volume},#{amount},#{percent},#{change},#{date})
+            values(#{code},#{fundCode},#{fundName},#{stockNums},#{stockAmount},#{reportDay})
             """)
     void insert(StockFundPage stockPricePage);
 
-    @Select("")
+    @Select("select * from stock_fund_page where code=#{param1} and report_day=#{param2}")
     List<StockFundPage> queryByCodeAndDate(String code, String reportDay);
 
     @Insert("")
     void batchInsert(List<StockFundPage> insert);
 
-    @Delete("")
+    @Delete("delete from stock_price_page where code=#{param1}")
     void deleteByCode(String code);
 }
