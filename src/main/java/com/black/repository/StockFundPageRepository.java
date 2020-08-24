@@ -4,6 +4,7 @@ import com.black.po.StockFundPage;
 import org.apache.ibatis.annotations.Delete;
 import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Select;
 
 import java.util.List;
 
@@ -13,18 +14,18 @@ public interface StockFundPageRepository {
     @Delete("truncate table stock_price_page")
     void deleteAll();
 
-    @Delete("delete from stock_price_page where code=#{param1} and `date`=#{param2}")
-    void deleteByCode(String code, String date);
-
     @Insert("""
-            insert into stock_price_page(code,last_close,open,cur,high,low,volume,amount,`percent`,`change`,`date`)
+            insert into stock_fund_page(code,fund_code,fund_name,stock_nums,stock_amount,report_day)
             values(#{code},#{lastClose},#{open},#{cur},#{high},#{low},#{volume},#{amount},#{percent},#{change},#{date})
             """)
     void insert(StockFundPage stockPricePage);
 
+    @Select("")
     List<StockFundPage> queryByCodeAndDate(String code, String reportDay);
 
+    @Insert("")
     void batchInsert(List<StockFundPage> insert);
 
+    @Delete("")
     void deleteByCode(String code);
 }
