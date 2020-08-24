@@ -1,8 +1,16 @@
 package com.black.repository;
 
-import com.black.po.*;
+import com.black.po.FundPriceHistoryPage;
+import com.black.po.FundPricePage;
+import com.black.po.FundStockPage;
+import com.black.po.IpoStockPage;
+import com.black.po.StockFinancePage;
+import com.black.po.StockFundPage;
+import com.black.po.StockInfoPage;
+import com.black.po.StockNumPage;
+import com.black.po.StockPriceHistoryPage;
+import com.black.po.StockPricePage;
 import org.apache.commons.lang3.RandomUtils;
-import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
@@ -13,7 +21,7 @@ public class Finance163Test {
     @Autowired
     Finance163Repository finance163Repository;
 
-    @Test
+    //@Test
     public void fundTest() {
         List<FundPricePage> funds = finance163Repository.fundPrice();
         System.out.println(funds);

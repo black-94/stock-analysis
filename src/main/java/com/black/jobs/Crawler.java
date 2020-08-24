@@ -4,6 +4,7 @@ import com.black.enums.Constant;
 import com.black.po.FundPricePage;
 import com.black.po.IpoStockPage;
 import com.black.po.StockFinancePage;
+import com.black.po.StockFundPage;
 import com.black.po.StockInfoPage;
 import com.black.po.StockNumPage;
 import com.black.po.StockPriceHistoryPage;
@@ -14,6 +15,7 @@ import com.black.repository.FundPricePageRepository;
 import com.black.repository.FundStockPageRepository;
 import com.black.repository.IpoStockPageRepository;
 import com.black.repository.StockFinancePageRepository;
+import com.black.repository.StockFundPageRepository;
 import com.black.repository.StockInfoPageRepository;
 import com.black.repository.StockNumPageRepository;
 import com.black.repository.StockPriceHistoryPageRepository;
@@ -50,6 +52,8 @@ public class Crawler {
     @Autowired
     StockPriceHistoryPageRepository stockPriceHistoryPageRepository;
     @Autowired
+    StockFundPageRepository stockFundPageRepository;
+    @Autowired
     FundPricePageRepository fundPricePageRepository;
     @Autowired
     FundPriceHistoryPageRepository fundPriceHistoryPageRepository;
@@ -63,6 +67,7 @@ public class Crawler {
         initStockFinances();
         initStockPrices();
         initStockPriceHistorys();
+        initStockFunds();
     }
 
     public void initCodes() {
@@ -181,6 +186,36 @@ public class Crawler {
         }
     }
 
+    public void initStockFunds() {
+        stockFundPageRepository.deleteAll();
+        List<String> codes = ipoStockPageRepository.queryAllCodes();
+        codes.forEach(e -> submit(() -> initStockFund(e)));
+    }
+
+    public void initStockFund(String code) {
+        stockFundPageRepository.deleteByCode(code);
+        List<StockFundPage> stockFundPages = finance163Repository.queryStockFundPage(code, true);
+        if (CollectionUtils.isEmpty(stockFundPages)) {
+            return;
+        }
+        stockFundPageRepository.batchInsert(stockFundPages);
+    }
+
+    public void queryCurStockFund(String code) {
+        List<StockFundPage> stockFundPages = finance163Repository.queryStockFundPage(code, false);
+        if (CollectionUtils.isEmpty(stockFundPages)) {
+            return;
+        }
+        String reportDay = stockFundPages.get(0).getReportDay();
+        List<StockFundPage> query = stockFundPageRepository.queryByCodeAndDate(code, reportDay);
+        List<String> fundCodes = query.stream().map(e -> e.getFundCode()).collect(Collectors.toList());
+        List<StockFundPage> insert = stockFundPages.stream().filter(e -> !fundCodes.contains(e.getFundCode())).collect(Collectors.toList());
+        if (CollectionUtils.isEmpty(insert)) {
+            return;
+        }
+        stockFundPageRepository.batchInsert(insert);
+    }
+
     public List<String> queryFundPrice() {
         List<FundPricePage> fundPrices = finance163Repository.fundPrice();
         for (FundPricePage fundPrice : fundPrices) {
@@ -196,21 +231,17 @@ public class Crawler {
     public void queryFundPriceHistory(FundPricePage fundPricePage) {
 
 
-        fundPriceHistoryPageRepository.queryByCodeAndDate(fundPricePage.getFundCode(),fundPricePage.getDate());
-
-
-
+        fundPriceHistoryPageRepository.queryByCodeAndDate(fundPricePage.getFundCode(), fundPricePage.getDate());
 
 
     }
 
 
-
     //todo 补充股票的持股排名
-    public void queryFundStock(FundPricePage fundPricePage){
+    public void queryFundStock(FundPricePage fundPricePage) {
 
 
-        fundStockPageRepository.queryByCodeAndDate(fundPricePage.getFundCode(),fundPricePage.getDate());
+        fundStockPageRepository.queryByCodeAndDate(fundPricePage.getFundCode(), fundPricePage.getDate());
 
     }
 
@@ -225,7 +256,7 @@ public class Crawler {
 
     }
 
-    public void initFundStock(){
+    public void initFundStock() {
 
     }
 
@@ -240,8 +271,7 @@ public class Crawler {
         codes.forEach(e -> submit(() -> queryCurStockPriceHistory(e)));
         codes.forEach(e -> submit(() -> queryStockPrice(e)));
         codes.forEach(e -> submit(() -> queryStockFinance(e)));
-
-
+        codes.forEach(e -> submit(() -> queryCurStockFund(e)));
     }
 
 
