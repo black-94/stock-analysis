@@ -22,6 +22,7 @@ import com.black.repository.StockPricePageRepository;
 import com.black.util.Helper;
 import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDate;
@@ -259,6 +260,7 @@ public class Crawler {
 //
 //    }
 
+    @Scheduled(cron = "0 0 5 * * *")
     public void dayCrawler() {
         queryCurCodes();
         List<String> codes = ipoStockPageRepository.queryAllCodes();
