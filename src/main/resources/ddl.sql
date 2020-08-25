@@ -129,7 +129,7 @@ CREATE TABLE `fund_stock_page` (
 	`stock_amount` varchar(50) COMMENT '股票金额',
 	`stock_ratio` varchar(50) COMMENT '股票占比',
 	`date` datetime NOT NULL COMMENT '拉取日期',
-	`create_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP
+	`create_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
 	PRIMARY KEY (`fund_code`,`stock_code`,`date`),
 	KEY `ix_stock_code`(`stock_code`) USING BTREE,
 	KEY `ix_fund_code`(`fund_code`) USING BTREE,
