@@ -47,6 +47,7 @@ CREATE TABLE `stock_finance_page` (
 CREATE TABLE `stock_fund_page` (
   `code` varchar(20) NOT NULL,
   `fund_code` varchar(20) NOT NULL,
+  `fund_name` varchar(100) DEFAULT NULL COMMENT '基金名称',
   `stock_nums` varchar(50) DEFAULT NULL COMMENT '持仓数目',
   `stock_amount` varchar(50) DEFAULT NULL COMMENT '持仓金额',
   `report_day` varchar(20) NOT NULL COMMENT '报告日期',
