@@ -119,6 +119,9 @@ public class Crawler {
         List<StockFinancePage> existFinances = stockFinancePageRepository.queryByCode(code);
         List<String> existReportDay = existFinances.stream().map(e -> e.getReportDay()).collect(Collectors.toList());
         List<StockFinancePage> newFinances = stockFinancePages.stream().filter(e -> !existReportDay.contains(e.getReportDay())).collect(Collectors.toList());
+        if(CollectionUtils.isEmpty(newFinances)){
+            return;
+        }
         stockFinancePageRepository.batchInsert(newFinances);
     }
 
@@ -157,6 +160,9 @@ public class Crawler {
                 i = year * 10;
             }
             List<StockPriceHistoryPage> stockPriceHistoryPages = finance163Repository.queryHistoryPrice(code, String.valueOf(year), String.valueOf(season));
+            if(CollectionUtils.isEmpty(stockPriceHistoryPages)){
+                continue;
+            }
             stockPriceHistoryPageRepository.batchInsert(stockPriceHistoryPages);
         }
     }
