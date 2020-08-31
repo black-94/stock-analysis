@@ -136,4 +136,11 @@ public class Helper {
             return Date.from(instant);
         }
     }
+
+    public static Date findRecentReportDay() {
+        LocalDate now = LocalDate.now();
+        int month = (now.getMonthValue() - 1) / 3 * 3 + 1;
+        Instant reportDay = LocalDate.of(now.getYear(), month, 1).atStartOfDay(ZoneId.systemDefault()).plusDays(-1).toInstant();
+        return Date.from(reportDay);
+    }
 }

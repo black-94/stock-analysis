@@ -7,6 +7,7 @@ import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
 
+import java.util.Date;
 import java.util.List;
 
 @Mapper
@@ -27,4 +28,8 @@ public interface StockFinancePageRepository {
 
     @Select("select * from stock_finance_page where code=#{param1}")
     List<StockFinancePage> queryByCode(String code);
+
+    StockFinancePage recentOne(String code);
+
+    List<StockFinancePageRepository> queryBetween(String code, Date beginDate, Date endDate);
 }

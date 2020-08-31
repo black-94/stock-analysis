@@ -1,6 +1,7 @@
 package com.black.repository;
 
 import com.black.po.IpoStockPage;
+import com.black.po.StockInfoPO;
 import org.apache.ibatis.annotations.Delete;
 import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Mapper;
@@ -28,15 +29,9 @@ public interface StockInfoRepository {
     @Select("select distinct(code) from ipo_stock_page")
     List<String> queryAllCodes();
 
-    @Select("select * from ipo_stock_page where code=#{param1}")
-    IpoStockPage queryByCode(String code);
-
     @Insert("""
             insert into ipo_stock_page(code,name,market_day,market_year)
             values(#{code},#{name},#{marketDay},#{marketYear})
             """)
-    void insert(IpoStockPage ipoStockPage);
-
-    @Select("select * from ipo_stock_page where market_year=#{param1}")
-    List<String> queryByYear(String year);
+    void insert(StockInfoPO ipoStockPage);
 }

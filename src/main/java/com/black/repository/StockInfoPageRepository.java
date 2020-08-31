@@ -25,4 +25,6 @@ public interface StockInfoPageRepository {
 
     @Select("select * from stock_info_page")
     List<StockInfoPage> queryAll();
+
+    StockInfoPage queryByCode(String code);
 }
