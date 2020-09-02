@@ -11,7 +11,7 @@ import java.util.List;
 
 @Mapper
 public interface StockQuartlyReportRepository {
-    @Select("")
+    @Select("select * from stock_quartly_report where code=#{param1} and report_day between #{param2} and #{param3}")
     List<StockQuartlyReportPO> queryBetween(String code, Date begin, Date end);
 
     @Select("")
