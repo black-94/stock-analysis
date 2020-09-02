@@ -143,4 +143,20 @@ public class Helper {
         Instant reportDay = LocalDate.of(now.getYear(), month, 1).atStartOfDay(ZoneId.systemDefault()).plusDays(-1).toInstant();
         return Date.from(reportDay);
     }
+
+    public static BigDecimal calculateIncrease(BigDecimal cur, BigDecimal pre) {
+        if (cur == null || pre == null) {
+            return null;
+        }
+        if (cur.compareTo(pre) >= 0) {
+            if (pre.compareTo(BigDecimal.ZERO) < 0) {
+                return Helper.safeDivide(cur, pre).abs().add(BigDecimal.ONE);
+            }
+            return Helper.safeDivide(cur, pre).abs().subtract(BigDecimal.ONE);
+        }
+        if (pre.compareTo(BigDecimal.ZERO) < 0) {
+            return Helper.safeDivide(cur, pre).abs().negate().add(BigDecimal.ONE);
+        }
+        return Helper.safeDivide(cur, pre).abs().negate().subtract(BigDecimal.ONE);
+    }
 }

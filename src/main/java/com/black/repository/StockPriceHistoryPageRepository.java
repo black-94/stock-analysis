@@ -7,6 +7,7 @@ import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
 
+import java.util.Date;
 import java.util.List;
 
 @Mapper
@@ -37,5 +38,7 @@ public interface StockPriceHistoryPageRepository {
             (#{code},#{open},#{close},#{high},#{low},#{volume},#{amount},#{change},#{percent},#{amplitude},#{exchange},#{date})
             """)
     void insert(StockPriceHistoryPage stockPriceHistoryPage);
+
+    List<StockPriceHistoryPage> queryRecent(String code,int size);
 
 }

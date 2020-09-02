@@ -34,4 +34,6 @@ public interface StockInfoRepository {
             values(#{code},#{name},#{marketDay},#{marketYear})
             """)
     void insert(StockInfoPO ipoStockPage);
+
+    StockInfoPO recentBefore(String code, String date, int size);
 }

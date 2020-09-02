@@ -5,6 +5,8 @@ import org.apache.ibatis.annotations.Delete;
 import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Mapper;
 
+import java.util.List;
+
 @Mapper
 public interface StockPricePageRepository {
 
@@ -19,4 +21,8 @@ public interface StockPricePageRepository {
             values(#{code},#{lastClose},#{open},#{cur},#{high},#{low},#{volume},#{amount},#{percent},#{change},#{date})
             """)
     void insert(StockPricePage stockPricePage);
+
+    List<StockPricePage> queryRecent(String code, int size);
+
+    StockPricePage queryByCodeAndDate(String code, String date);
 }

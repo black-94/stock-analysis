@@ -25,6 +25,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.Collection;
@@ -452,21 +453,7 @@ public class Crawler {
 //        }
 //    }
 //
-//    private BigDecimal calculate(BigDecimal cur, BigDecimal pre) {
-//        if (cur == null || pre == null) {
-//            return null;
-//        }
-//        if (cur.compareTo(pre) >= 0) {
-//            if (pre.compareTo(BigDecimal.ZERO) < 0) {
-//                return Helper.safeDivide(cur, pre).abs().add(BigDecimal.ONE);
-//            }
-//            return Helper.safeDivide(cur, pre).abs().subtract(BigDecimal.ONE);
-//        }
-//        if (pre.compareTo(BigDecimal.ZERO) < 0) {
-//            return Helper.safeDivide(cur, pre).abs().negate().add(BigDecimal.ONE);
-//        }
-//        return Helper.safeDivide(cur, pre).abs().negate().subtract(BigDecimal.ONE);
-//    }
+
 //
 ////    @Scheduled(cron = "0 0 23 * * ?")
 //    public void pullFundPrices() {

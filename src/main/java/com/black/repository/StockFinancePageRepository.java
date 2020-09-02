@@ -31,5 +31,7 @@ public interface StockFinancePageRepository {
 
     StockFinancePage recentOne(String code);
 
-    List<StockFinancePageRepository> queryBetween(String code, Date beginDate, Date endDate);
+    List<StockFinancePage> queryBetween(String code, Date beginDate, Date endDate);
+
+    List<StockFinancePage> queryRecent(String code, int size);
 }

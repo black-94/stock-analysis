@@ -5,7 +5,7 @@ import org.apache.ibatis.annotations.Delete;
 import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Mapper;
 
-import java.util.Date;
+import java.util.List;
 
 @Mapper
 public interface StockNumPageRepository {
@@ -22,7 +22,5 @@ public interface StockNumPageRepository {
             """)
     void insert(StockNumPage stockNumPage);
 
-    StockNumPage queryByCode(String code);
-
-    StockNumPage recentOneAfter(Date date);
+    List<StockNumPage> queryRecent(String code,int size);
 }
