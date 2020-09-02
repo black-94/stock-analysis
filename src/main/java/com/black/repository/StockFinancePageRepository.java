@@ -29,9 +29,6 @@ public interface StockFinancePageRepository {
     @Select("select * from stock_finance_page where code=#{param1}")
     List<StockFinancePage> queryByCode(String code);
 
-    StockFinancePage recentOne(String code);
-
-    List<StockFinancePage> queryBetween(String code, Date beginDate, Date endDate);
-
+    @Select("select * from stock_finance_page where code=#{param1} limit ${param2}")
     List<StockFinancePage> queryRecent(String code, int size);
 }

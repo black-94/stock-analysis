@@ -4,6 +4,7 @@ import com.black.po.StockPricePage;
 import org.apache.ibatis.annotations.Delete;
 import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Select;
 
 import java.util.List;
 
@@ -22,7 +23,6 @@ public interface StockPricePageRepository {
             """)
     void insert(StockPricePage stockPricePage);
 
-    List<StockPricePage> queryRecent(String code, int size);
-
+    @Select("select * from stock_price_page where code=#{param1} limit ${size}")
     StockPricePage queryByCodeAndDate(String code, String date);
 }

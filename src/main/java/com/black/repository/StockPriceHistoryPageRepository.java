@@ -39,6 +39,7 @@ public interface StockPriceHistoryPageRepository {
             """)
     void insert(StockPriceHistoryPage stockPriceHistoryPage);
 
+    @Select("select * from stock_price_history_page where code=#{param1} limit ${size}")
     List<StockPriceHistoryPage> queryRecent(String code,int size);
 
 }
