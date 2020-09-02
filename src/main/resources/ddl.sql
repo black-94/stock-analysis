@@ -136,3 +136,53 @@ CREATE TABLE `fund_stock_page` (
 	KEY `ix_fund_code`(`fund_code`) USING BTREE,
 	KEY `ix_date`(`date`) USING BTREE
 ) ;
+
+CREATE TABLE `stock_day_price` (
+  `code` varchar(20) NOT NULL COMMENT '股票代码',
+  `last_close` decimal(40,10) NOT NULL COMMENT '昨日收盘价',
+  `open` decimal(50,10) DEFAULT NULL COMMENT '开盘价',
+  `high` decimal(50,10) DEFAULT NULL COMMENT '最高价',
+  `low` decimal(50,10) DEFAULT NULL COMMENT '最低价',
+  `close` decimal(50,10) DEFAULT NULL COMMENT '收盘价',
+  `percent` decimal(50,10) DEFAULT NULL COMMENT '涨跌幅',
+  `change` decimal(50,10) DEFAULT NULL COMMENT '涨跌额',
+  `amplitude` decimal(50,10) DEFAULT NULL COMMENT '振幅',
+  `volume` decimal(50,10) DEFAULT NULL COMMENT '交易量',
+  `amount` decimal(29,10) DEFAULT NULL COMMENT '交易额',
+  `exchange` decimal(50,10) DEFAULT NULL COMMENT '换手率',
+  `total` decimal(50,10) DEFAULT NULL COMMENT '股本',
+  `capital` decimal(29,10) DEFAULT NULL COMMENT '市值',
+  `pe` decimal(50,10) DEFAULT NULL COMMENT '市盈率',
+  `date` varchar(20) NOT NULL COMMENT '报告日期',
+  `create_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`code`,`date`),
+  KEY `ix_date` (`date`)
+) ;
+
+CREATE TABLE `stock_info` (
+  `code` varchar(20) NOT NULL COMMENT '股票代码',
+  `name` varchar(50) DEFAULT NULL COMMENT '公司名称',
+  `biz` varchar(50) DEFAULT NULL COMMENT '营业范围',
+  `open_day` varchar(20) DEFAULT NULL COMMENT '成立日期',
+  `market_day` varchar(20) DEFAULT NULL COMMENT '上市日期',
+  `create_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`code`),
+  KEY `ix_market_day` (`market_day`)
+) ;
+
+CREATE TABLE `stock_quartly_report` (
+  `code` varchar(20) NOT NULL,
+  `income` decimal(50,10) DEFAULT NULL COMMENT '当期收入',
+  `profit` decimal(50,10) DEFAULT NULL COMMENT '当期利润',
+  `total_income` decimal(50,10) DEFAULT NULL COMMENT '收入',
+  `total_profit` decimal(50,10) DEFAULT NULL COMMENT '利润',
+  `fund_ratio` decimal(50,10) DEFAULT NULL COMMENT '基金持股占比',
+  `y2y_income` decimal(50,10) DEFAULT NULL COMMENT '收入同比',
+  `y2y_profit` decimal(50,10) DEFAULT NULL COMMENT '利润同比',
+  `m2m_income` decimal(50,10) DEFAULT NULL COMMENT '收入环比',
+  `m2m_profit` decimal(50,10) DEFAULT NULL COMMENT '利润环比',
+  `report_day` datetime NOT NULL COMMENT '财报日期',
+  `create_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`code`,`report_day`),
+  KEY `ix_report_day` (`report_day`)
+) ;
