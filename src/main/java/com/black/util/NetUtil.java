@@ -18,7 +18,7 @@ import java.util.function.Function;
 
 public class NetUtil {
     static {
-        RequestConfig requestConfig = RequestConfig.custom().setConnectionRequestTimeout(5).setConnectTimeout(5).setSocketTimeout(5).build();
+        RequestConfig requestConfig = RequestConfig.custom().setConnectionRequestTimeout(5000).setConnectTimeout(5000).setSocketTimeout(5000).build();
         httpClient = HttpClientBuilder.create().setMaxConnPerRoute(10).setDefaultRequestConfig(requestConfig).build();
         Runtime.getRuntime().addShutdownHook(new Thread() {
             @Override
