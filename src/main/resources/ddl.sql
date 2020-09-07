@@ -163,8 +163,8 @@ CREATE TABLE `stock_info` (
   `code` varchar(20) NOT NULL COMMENT '股票代码',
   `name` varchar(50) DEFAULT NULL COMMENT '公司名称',
   `biz` varchar(50) DEFAULT NULL COMMENT '营业范围',
-  `open_day` varchar(20) DEFAULT NULL COMMENT '成立日期',
-  `market_day` varchar(20) DEFAULT NULL COMMENT '上市日期',
+  `open_day` datetime DEFAULT NULL COMMENT '成立日期',
+  `market_day` datetime DEFAULT NULL COMMENT '上市日期',
   `create_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`code`),
   KEY `ix_market_day` (`market_day`)
