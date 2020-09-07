@@ -23,6 +23,6 @@ public interface StockPricePageRepository {
             """)
     void insert(StockPricePage stockPricePage);
 
-    @Select("select * from stock_price_page where code=#{param1} limit ${size}")
+    @Select("select * from stock_price_page where code=#{param1} and `date`=#{param2}")
     StockPricePage queryByCodeAndDate(String code, String date);
 }
