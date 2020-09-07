@@ -1,5 +1,6 @@
 package com.black.controller;
 
+import com.black.jobs.Calculator;
 import com.black.jobs.Crawler;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -8,9 +9,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.lang.reflect.Method;
-import java.util.Arrays;
-import java.util.List;
-import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/")
@@ -18,6 +16,8 @@ public class DataOutputController {
 
     @Autowired
     Crawler crawler;
+    @Autowired
+    Calculator calculator;
 
     @GetMapping("/test")
     public String test() {
@@ -36,11 +36,17 @@ public class DataOutputController {
         return "ok";
     }
 
-    @GetMapping("/job/{job}")
-    public String invokeJob(@PathVariable String job) throws Exception {
+    @GetMapping("/crawler/{job}")
+    public String crawlerJob(@PathVariable String job) throws Exception {
         Method method = crawler.getClass().getMethod(job);
         method.invoke(crawler);
         return "ok";
     }
 
+    @GetMapping("/calculator/{job}")
+    public String calculatorJob(@PathVariable String job) throws Exception {
+        Method method = calculator.getClass().getMethod(job);
+        method.invoke(calculator);
+        return "ok";
+    }
 }
