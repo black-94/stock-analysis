@@ -13,11 +13,12 @@ import org.slf4j.LoggerFactory;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.StringWriter;
+import java.net.URL;
 import java.util.function.Function;
 
 public class NetUtil {
     static {
-        RequestConfig requestConfig = RequestConfig.custom().setConnectionRequestTimeout(1).setConnectTimeout(1).setSocketTimeout(1).build();
+        RequestConfig requestConfig = RequestConfig.custom().setConnectionRequestTimeout(5).setConnectTimeout(5).setSocketTimeout(5).build();
         httpClient = HttpClientBuilder.create().setMaxConnPerRoute(10).setDefaultRequestConfig(requestConfig).build();
         Runtime.getRuntime().addShutdownHook(new Thread() {
             @Override
@@ -46,7 +47,8 @@ public class NetUtil {
         rateLimiter.acquire();
         for (int i = 0; i < 3; i++) {
             try {
-                HttpGet httpGet = new HttpGet(u);
+                URL url = new URL(u);
+                HttpGet httpGet = new HttpGet(url.toString());
                 httpGet.addHeader("Content-Type", "charset=UTF-8");
                 try (CloseableHttpResponse response = httpClient.execute(httpGet)) {
                     StringWriter writer = new StringWriter();
