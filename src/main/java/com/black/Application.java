@@ -12,8 +12,8 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 public class Application {
 
     public static void main(String[] args) {
-        SpringApplication.run(Application.class);
         Thread.setDefaultUncaughtExceptionHandler((thread, throwable) -> LoggerFactory.getLogger("root").error("thread-"+thread.getName(),throwable));
+        SpringApplication.run(Application.class);
     }
 
 }
