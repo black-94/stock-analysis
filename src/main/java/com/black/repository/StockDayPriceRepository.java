@@ -12,7 +12,7 @@ public interface StockDayPriceRepository {
     StockDayPricePO recentBefore(String code, String date, int size);
 
     @Insert("""
-            insert into stock_day_price(code,last_close,open,high,low,close,volume,amount,percent,change,amplitude,exchange,total,capital,pe,`date`)
+            insert into stock_day_price(code,last_close,open,high,low,close,volume,amount,percent,`change`,`amplitude`,`exchange`,`total`,`capital`,`pe`,`date`)
             values(#{code},#{lastClose},#{open},#{high},#{low},#{close},#{volume},#{amount},#{percent},#{change},#{amplitude},#{exchange},#{total},#{capital},#{pe},#{date})
             """)
     void insert(StockDayPricePO stockDayPricePO);
