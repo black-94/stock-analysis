@@ -29,6 +29,7 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.temporal.ChronoUnit;
 import java.util.Collection;
@@ -74,6 +75,19 @@ public class Calculator {
     public void quartlyJob() {
         List<String> codes = stockInfoRepository.queryAllCodes();
         codes.forEach(e -> submit(() -> curQuartlyInit(e, new Date())));
+    }
+
+    public void allInit() {
+        List<String> ipoCodes = ipoStockPageRepository.queryAllCodes();
+        List<String> codes = stockInfoRepository.queryAllCodes();
+        Collection<String> newCodes = CollectionUtils.removeAll(ipoCodes, codes);
+        newCodes.forEach(e -> submit(() -> infoInit(e)));
+        LocalDateTime now = LocalDateTime.now().plus(-705, ChronoUnit.DAYS);
+        for (int i = 0; i < 750; i++) {
+            Date datetime = Date.from(now.plus(i, ChronoUnit.DAYS).atZone(ZoneId.systemDefault()).toInstant());
+            ipoCodes.forEach(e -> submit(() -> dayPriceInit(e, datetime)));
+            ipoCodes.forEach(e -> submit(() -> curQuartlyInit(e, datetime)));
+        }
     }
 
     public void infoInit(String code) {
