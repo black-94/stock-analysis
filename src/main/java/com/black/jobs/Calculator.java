@@ -82,7 +82,7 @@ public class Calculator {
         List<String> codes = stockInfoRepository.queryAllCodes();
         Collection<String> newCodes = CollectionUtils.removeAll(ipoCodes, codes);
         newCodes.forEach(e -> submit(() -> infoInit(e)));
-        LocalDateTime now = LocalDateTime.now().plus(-705, ChronoUnit.DAYS);
+        LocalDateTime now = LocalDateTime.now().plus(-750, ChronoUnit.DAYS);
         for (int i = 0; i < 750; i++) {
             Date datetime = Date.from(now.plus(i, ChronoUnit.DAYS).atZone(ZoneId.systemDefault()).toInstant());
             ipoCodes.forEach(e -> submit(() -> dayPriceInit(e, datetime)));
