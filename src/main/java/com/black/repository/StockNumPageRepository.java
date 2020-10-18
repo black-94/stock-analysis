@@ -23,6 +23,9 @@ public interface StockNumPageRepository {
             """)
     void insert(StockNumPage stockNumPage);
 
+    @Select("select * from stock_num_page where code=#{param1} and `date` < ${param3} limit ${param2}")
+    List<StockNumPage> queryRecentBefore(String code, int size, String date);
+
     @Select("select * from stock_num_page where code=#{param1} limit ${param2}")
-    List<StockNumPage> queryRecent(String code,int size);
+    List<StockNumPage> queryRecent(String code, int size);
 }

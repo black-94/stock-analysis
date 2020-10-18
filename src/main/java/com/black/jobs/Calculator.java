@@ -25,10 +25,11 @@ import com.black.util.Helper;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
-import java.time.LocalDate;
+import java.time.ZoneId;
 import java.time.temporal.ChronoUnit;
 import java.util.Collection;
 import java.util.Date;
@@ -61,17 +62,18 @@ public class Calculator {
     @Autowired
     StockDayPriceRepository stockDayPriceRepository;
 
+    @Scheduled(cron = "0 0 18 * * ? ")
     public void dayJob() {
         List<String> ipoCodes = ipoStockPageRepository.queryAllCodes();
         List<String> codes = stockInfoRepository.queryAllCodes();
         Collection<String> newCodes = CollectionUtils.removeAll(ipoCodes, codes);
         newCodes.forEach(e -> submit(() -> infoInit(e)));
-        ipoCodes.forEach(e -> submit(() -> curDayPriceInit(e)));
+        ipoCodes.forEach(e -> submit(() -> dayPriceInit(e, new Date())));
     }
 
     public void quartlyJob() {
         List<String> codes = stockInfoRepository.queryAllCodes();
-        codes.forEach(e -> submit(() -> curQuartlyInit(e)));
+        codes.forEach(e -> submit(() -> curQuartlyInit(e, new Date())));
     }
 
     public void infoInit(String code) {
@@ -93,8 +95,8 @@ public class Calculator {
     }
 
 
-    public void curQuartlyInit(String code) {
-        String reportDay = Helper.formatDate(Helper.findRecentReportDay());
+    public void curQuartlyInit(String code, Date datetime) {
+        String reportDay = Helper.formatDate(Helper.findRecentReportDay(datetime));
         List<StockFinancePage> financePages = stockFinancePageRepository.queryRecent(code, 2);
         StockFinancePage curFinance = financePages.stream().filter(e -> e.getReportDay().equals(reportDay)).findFirst().orElse(null);
         if (curFinance == null) {
@@ -119,8 +121,8 @@ public class Calculator {
         }
 
         List<StockFundPage> stockFundPages = stockFundPageRepository.queryByCodeAndDate(code, reportDay);
-        StockNumPage stockNumPage = stockNumPageRepository.queryRecent(code, 1).stream().findFirst().orElse(null);
-        if(CollectionUtils.isNotEmpty(stockFundPages)&&stockNumPage!=null){
+        StockNumPage stockNumPage = stockNumPageRepository.queryRecentBefore(code, 1, reportDay).stream().findFirst().orElse(null);
+        if (CollectionUtils.isNotEmpty(stockFundPages) && stockNumPage != null) {
             BigDecimal fundStocks = stockFundPages.stream().map(e -> e.getStockNums()).map(Helper::decimalOf).reduce(BigDecimal::add).orElse(BigDecimal.ZERO);
             BigDecimal ratio = Helper.safeDivide(fundStocks, Helper.decimalOf(stockNumPage.getTotal()));
             reportPO.setFundRatio(ratio);
@@ -132,23 +134,23 @@ public class Calculator {
         StockQuartlyReportPO lastMonthReport = stockQuartlyReportRepository.queryByCodeAndDate(code, lastMonth);
         StockQuartlyReportPO lastYearReport = stockQuartlyReportRepository.queryByCodeAndDate(code, lastYear);
 
-        if(lastMonthReport!=null){
-            reportPO.setM2mIncome(Helper.calculateIncrease(reportPO.getIncome(),lastMonthReport.getIncome()));
-            reportPO.setM2mProfit(Helper.calculateIncrease(reportPO.getProfit(),lastMonthReport.getProfit()));
+        if (lastMonthReport != null) {
+            reportPO.setM2mIncome(Helper.calculateIncrease(reportPO.getIncome(), lastMonthReport.getIncome()));
+            reportPO.setM2mProfit(Helper.calculateIncrease(reportPO.getProfit(), lastMonthReport.getProfit()));
         }
-        if(lastYearReport!=null){
-            reportPO.setY2yIncome(Helper.calculateIncrease(reportPO.getIncome(),lastYearReport.getIncome()));
-            reportPO.setY2yProfit(Helper.calculateIncrease(reportPO.getProfit(),lastYearReport.getProfit()));
+        if (lastYearReport != null) {
+            reportPO.setY2yIncome(Helper.calculateIncrease(reportPO.getIncome(), lastYearReport.getIncome()));
+            reportPO.setY2yProfit(Helper.calculateIncrease(reportPO.getProfit(), lastYearReport.getProfit()));
         }
 
         stockQuartlyReportRepository.insert(reportPO);
     }
 
-    public void curDayPriceInit(String code) {
-        String now = LocalDate.now().toString();
+    public void dayPriceInit(String code, Date datetime) {
+        String now = datetime.toInstant().atZone(ZoneId.systemDefault()).toLocalDate().toString();
         StockPricePage curPrice = stockPricePageRepository.queryByCodeAndDate(code, now);
         StockPriceHistoryPage curHistoryPrice = stockPriceHistoryPageRepository.queryByCodeAndDate(code, now);
-        StockNumPage stockNumPage = stockNumPageRepository.queryRecent(code, 1).stream().findFirst().orElse(null);
+        StockNumPage stockNumPage = stockNumPageRepository.queryRecentBefore(code, 1, now).stream().findFirst().orElse(null);
         Date end = new Date();
         Date begin = Helper.datePlus(end, -1, ChronoUnit.YEARS);
         List<StockQuartlyReportPO> stockQuartlyReportPOS = stockQuartlyReportRepository.queryBetween(code, begin, end);
@@ -254,4 +256,6 @@ public class Calculator {
 
         stockDayPriceRepository.insert(stockDayPricePO);
     }
+
+
 }

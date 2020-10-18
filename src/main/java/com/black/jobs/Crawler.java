@@ -222,6 +222,9 @@ public class Crawler {
         stockFundPageRepository.batchInsert(insert);
     }
 
+    //最大的担心是因为失败导致数据遗漏，发现遗漏数据
+    //其次是数据错误，发现错误数据
+
 //    public List<String> queryFundPrice() {
 //        List<FundPricePage> fundPrices = finance163Repository.fundPrice();
 //        for (FundPricePage fundPrice : fundPrices) {
