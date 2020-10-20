@@ -4,13 +4,6 @@ spring:
     driverClassName: com.mysql.jdbc.Driver
     username: root
     password: 243211
-logging:
-  file: ./logs/info.log
-  pattern:
-    console: "%d %-5level %logger : %msg%n"
-    file: "%d %-5level %logger : %msg%n"
-  level:
-    root: INFO
 mybatis:
   configuration:
     map-underscore-to-camel-case: true
