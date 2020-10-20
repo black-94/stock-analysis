@@ -9,7 +9,7 @@ import java.util.Date;
 
 @Component
 public class Validator {
-    static Logger validateLogger = LogManager.getLogger("validate");
+    static Logger validateLogger = LogManager.getLogger("root.validate");
 
     static {
         validateLogger.info("validate begin ---- ");
