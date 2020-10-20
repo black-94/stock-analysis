@@ -8,7 +8,6 @@ import org.springframework.stereotype.Component;
 import java.util.Date;
 
 @Component
-
 public class Validator {
     static Logger validateLogger= LoggerFactory.getLogger("validate");
     static {

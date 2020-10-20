@@ -12,7 +12,7 @@
         </console>
         <!-- ${sys:user.home} :项目路径 -->
         <RollingFile name="logFile" fileName="./logs/log"
-                     filePattern="${sys:user.home}/logs/log-%d{yyyy-MM-dd}-%i.log">
+                     filePattern="./logs/log-%d{yyyy-MM-dd}-%i.log">
             <!--ThresholdFilter :日志输出过滤-->
             <!--level="info" :日志级别,onMatch="ACCEPT" :级别在info之上则接受,onMismatch="DENY" :级别在info之下则拒绝-->
             <ThresholdFilter level="info" onMatch="ACCEPT" onMismatch="DENY"/>
@@ -28,7 +28,7 @@
             <DefaultRolloverStrategy max="20"/>
         </RollingFile>
         <RollingFile name="validateFile" fileName="./logs/validate"
-                     filePattern="${sys:user.home}/logs/validate-%d{yyyy-MM-dd}-%i.log">
+                     filePattern="./logs/validate-%d{yyyy-MM-dd}-%i.log">
             <!--ThresholdFilter :日志输出过滤-->
             <!--level="info" :日志级别,onMatch="ACCEPT" :级别在info之上则接受,onMismatch="DENY" :级别在info之下则拒绝-->
             <ThresholdFilter level="info" onMatch="ACCEPT" onMismatch="DENY"/>
