@@ -11,7 +11,7 @@
             <PatternLayout pattern="[%d{HH:mm:ss:SSS}] [%p] - %l - %m%n"/>
         </console>
         <!-- ${sys:user.home} :项目路径 -->
-        <RollingFile name="logFile" fileName="${sys:user.home}/logs/log"
+        <RollingFile name="logFile" fileName="./logs/log"
                      filePattern="${sys:user.home}/logs/log-%d{yyyy-MM-dd}-%i.log">
             <!--ThresholdFilter :日志输出过滤-->
             <!--level="info" :日志级别,onMatch="ACCEPT" :级别在info之上则接受,onMismatch="DENY" :级别在info之下则拒绝-->
@@ -27,7 +27,7 @@
             <!-- DefaultRolloverStrategy属性如不设置，则默认为最多同一文件夹下7个文件，这里设置了20 -->
             <DefaultRolloverStrategy max="20"/>
         </RollingFile>
-        <RollingFile name="validateFile" fileName="${sys:user.home}/logs/validate"
+        <RollingFile name="validateFile" fileName="./logs/validate"
                      filePattern="${sys:user.home}/logs/validate-%d{yyyy-MM-dd}-%i.log">
             <!--ThresholdFilter :日志输出过滤-->
             <!--level="info" :日志级别,onMatch="ACCEPT" :级别在info之上则接受,onMismatch="DENY" :级别在info之下则拒绝-->
