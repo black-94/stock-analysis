@@ -186,3 +186,8 @@ CREATE TABLE `stock_quartly_report` (
   PRIMARY KEY (`code`,`report_day`),
   KEY `ix_report_day` (`report_day`)
 ) ;
+
+CREATE TABLE `stock_price_break` (
+  `market` varchar(20) NOT NULL COMMENT '市场',
+  `break_date` datetime DEFAULT NULL COMMENT '休息日'
+) ;
