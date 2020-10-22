@@ -2,6 +2,7 @@ package com.black.controller;
 
 import com.black.jobs.Calculator;
 import com.black.jobs.Crawler;
+import com.black.jobs.Validator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -18,6 +19,8 @@ public class DataOutputController {
     Crawler crawler;
     @Autowired
     Calculator calculator;
+    @Autowired
+    Validator validator;
 
     @GetMapping("/test")
     public String test() {
@@ -47,6 +50,13 @@ public class DataOutputController {
     public String calculatorJob(@PathVariable String job) throws Exception {
         Method method = calculator.getClass().getMethod(job);
         method.invoke(calculator);
+        return "ok";
+    }
+
+    @GetMapping("/validator/{job}")
+    public String validatorJob(@PathVariable String job) throws Exception {
+        Method method = validator.getClass().getMethod(job);
+        method.invoke(validator);
         return "ok";
     }
 }
