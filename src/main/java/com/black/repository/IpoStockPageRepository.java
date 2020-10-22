@@ -40,6 +40,7 @@ public interface IpoStockPageRepository {
     @Select("select * from ipo_stock_page where market_year=#{param1}")
     List<String> queryByYear(String year);
 
+    @Select("select * from ipo_stock_page")
     List<IpoStockPage> queryAll();
 
 }

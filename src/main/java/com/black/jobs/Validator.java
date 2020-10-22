@@ -45,7 +45,7 @@ public class Validator {
     @Autowired
     IpoStockPageRepository ipoStockPageRepository;
 
-    public void validateAllPrice() {
+    public void validateAll() {
         validateIpoStockPage();
         validateStockInfoPage();
         validateStockInfo();
