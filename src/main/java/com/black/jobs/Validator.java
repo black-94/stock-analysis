@@ -1,10 +1,12 @@
 package com.black.jobs;
 
+import com.black.po.IpoStockPage;
 import com.black.po.MarketBreakPO;
 import com.black.po.StockDayPricePO;
 import com.black.po.StockInfoPO;
 import com.black.po.StockInfoPage;
 import com.black.po.StockPricePage;
+import com.black.repository.IpoStockPageRepository;
 import com.black.repository.MarketBreakRepository;
 import com.black.repository.StockDayPriceRepository;
 import com.black.repository.StockInfoPageRepository;
@@ -40,6 +42,8 @@ public class Validator {
     StockInfoPageRepository stockInfoPageRepository;
     @Autowired
     StockInfoRepository stockInfoRepository;
+    @Autowired
+    IpoStockPageRepository ipoStockPageRepository;
 
     public void validateAllPrice() {
         Instant begin = LocalDate.of(1990, 1, 1).atStartOfDay(ZoneId.systemDefault()).toInstant();
@@ -95,6 +99,28 @@ public class Validator {
             return true;
         }
         if (stockDayPricePO.getPe() == null || stockDayPricePO.getPe().compareTo(BigDecimal.ZERO) == 0) {
+            return true;
+        }
+        return false;
+    }
+
+    public void validateIpoStockPage(Date date) {
+        List<IpoStockPage> ipoStockPages = ipoStockPageRepository.queryAll();
+        List<String> codes = ipoStockPages.stream().filter(this::validateIpoStockPage).map(IpoStockPage::getCode).collect(Collectors.toList());
+        validateLogger.info(String.format(" ipo stock page codes : %s ", codes));
+    }
+
+    private boolean validateIpoStockPage(IpoStockPage ipoStockPage) {
+        if (StringUtils.isBlank(ipoStockPage.getCode())) {
+            return true;
+        }
+        if (StringUtils.isBlank(ipoStockPage.getName())) {
+            return true;
+        }
+        if (StringUtils.isBlank(ipoStockPage.getMarketYear())) {
+            return true;
+        }
+        if (StringUtils.isBlank(ipoStockPage.getMarketDay())) {
             return true;
         }
         return false;
