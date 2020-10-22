@@ -112,10 +112,10 @@ CREATE TABLE `fund_price_page` (
 
 CREATE TABLE `fund_price_history_page` (
 	`fund_code` varchar(20) NOT NULL COMMENT '基金编码',
-	`unit` varchar(50)  NOT NULL COMMENT '当日单位净值',
-	`history_unit` varchar(50)  NOT NULL COMMENT '当日单位净值',
-	`amount` varchar(50)  NOT NULL COMMENT '当日基金总额',
-	`ratio` varchar(50)  NOT NULL COMMENT '涨跌幅度',
+	`unit` varchar(50)  DEFAULT NULL COMMENT '当日单位净值',
+	`history_unit` varchar(50)  DEFAULT NULL COMMENT '当日单位净值',
+	`amount` varchar(50)  DEFAULT NULL COMMENT '当日基金总额',
+	`ratio` varchar(50)  DEFAULT NULL COMMENT '涨跌幅度',
 	`date` datetime NOT NULL COMMENT '统计日期',
 	`create_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
 	PRIMARY KEY (`fund_code`,`date`),
