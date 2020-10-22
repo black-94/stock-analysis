@@ -58,7 +58,8 @@ public class Validator {
         List<MarketBreakPO> marketBreakPOS = marketBreakRepository.queryByTimezone("Asia/Shanghai", begin, end);
         List<Date> breakDates = marketBreakPOS.stream().map(MarketBreakPO::getBreakDate).collect(Collectors.toList());
         for (Date tmp = begin; tmp.before(end); tmp = Helper.datePlus(tmp, 1, ChronoUnit.DAYS)) {
-            if (breakDates.contains(tmp)) {
+            int weekday = tmp.toInstant().atZone(ZoneId.systemDefault()).getDayOfWeek().getValue();
+            if (weekday == 6 || weekday == 7 || breakDates.contains(tmp)) {
                 continue;
             }
             validatePricePage(tmp);
