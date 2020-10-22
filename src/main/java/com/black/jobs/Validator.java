@@ -46,6 +46,9 @@ public class Validator {
     IpoStockPageRepository ipoStockPageRepository;
 
     public void validateAllPrice() {
+        validateIpoStockPage();
+        validateStockInfoPage();
+        validateStockInfo();
         Instant begin = LocalDate.of(1990, 1, 1).atStartOfDay(ZoneId.systemDefault()).toInstant();
         Instant end = LocalDate.now().plus(1, ChronoUnit.DAYS).atStartOfDay(ZoneId.systemDefault()).toInstant();
         validatePriceIn(Date.from(begin), Date.from(end));
@@ -104,7 +107,7 @@ public class Validator {
         return false;
     }
 
-    public void validateIpoStockPage(Date date) {
+    public void validateIpoStockPage() {
         List<IpoStockPage> ipoStockPages = ipoStockPageRepository.queryAll();
         List<String> codes = ipoStockPages.stream().filter(this::validateIpoStockPage).map(IpoStockPage::getCode).collect(Collectors.toList());
         validateLogger.info(String.format(" ipo stock page codes : %s ", codes));
@@ -126,7 +129,7 @@ public class Validator {
         return false;
     }
 
-    public void validateStockInfoPage(Date date) {
+    public void validateStockInfoPage() {
         List<StockInfoPage> stockInfoPages = stockInfoPageRepository.queryAll();
         List<String> codes = stockInfoPages.stream().filter(this::validateStockInfoPage).map(StockInfoPage::getCode).collect(Collectors.toList());
         validateLogger.info(String.format(" stock info page codes : %s ", codes));
@@ -151,7 +154,7 @@ public class Validator {
         return false;
     }
 
-    public void validateStockInfo(Date date) {
+    public void validateStockInfo() {
         List<StockInfoPO> stockInfoPOS = stockInfoRepository.queryAll();
         List<String> codes = stockInfoPOS.stream().filter(this::validateStockInfo).map(StockInfoPO::getCode).collect(Collectors.toList());
         validateLogger.info(String.format(" stock info codes : %s ", codes));
