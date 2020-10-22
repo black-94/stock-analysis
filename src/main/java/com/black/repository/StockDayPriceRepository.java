@@ -5,7 +5,6 @@ import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Select;
 
-import java.util.Date;
 import java.util.List;
 
 @Mapper
@@ -21,5 +20,5 @@ public interface StockDayPriceRepository {
     void insert(StockDayPricePO stockDayPricePO);
 
     @Select("select * from stock_day_price where `date`=#{param1} ")
-    List<StockDayPricePO> queryByDate(Date date);
+    List<StockDayPricePO> queryByDate(String date);
 }

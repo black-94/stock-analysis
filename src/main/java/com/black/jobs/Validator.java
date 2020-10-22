@@ -69,7 +69,7 @@ public class Validator {
     }
 
     public void validatePricePage(Date date) {
-        List<StockPricePage> stockPricePages = stockPricePageRepository.queryByDate(date);
+        List<StockPricePage> stockPricePages = stockPricePageRepository.queryByDate(Helper.formatDate(date));
         List<String> incorrectCodes = stockPricePages.stream().filter(this::validatePricePage).map(StockPricePage::getCode).collect(Collectors.toList());
         if (CollectionUtils.isEmpty(incorrectCodes)) {
             return;
@@ -91,7 +91,7 @@ public class Validator {
     }
 
     public void validatePrice(Date date) {
-        List<StockDayPricePO> stockDayPricePOS = stockDayPriceRepository.queryByDate(date);
+        List<StockDayPricePO> stockDayPricePOS = stockDayPriceRepository.queryByDate(Helper.formatDate(date));
         List<String> incorrectCodes = stockDayPricePOS.stream().filter(this::validatePrice).map(StockDayPricePO::getCode).collect(Collectors.toList());
         if (CollectionUtils.isEmpty(incorrectCodes)) {
             return;

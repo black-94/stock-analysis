@@ -6,7 +6,6 @@ import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Select;
 
-import java.util.Date;
 import java.util.List;
 
 @Mapper
@@ -28,5 +27,5 @@ public interface StockPricePageRepository {
     StockPricePage queryByCodeAndDate(String code, String date);
 
     @Select("select * from stock_price_page where `date`= #{param1}")
-    List<StockPricePage> queryByDate(Date date);
+    List<StockPricePage> queryByDate(String date);
 }
