@@ -18,4 +18,7 @@ public interface StockInfoRepository {
             values(#{code},#{name},#{biz},#{openDay},#{marketDay})
             """)
     void insert(StockInfoPO ipoStockPage);
+
+    @Select("select * from stock_info")
+    List<StockInfoPO> queryAll();
 }
