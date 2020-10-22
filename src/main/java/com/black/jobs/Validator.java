@@ -13,6 +13,7 @@ import com.black.repository.StockInfoPageRepository;
 import com.black.repository.StockInfoRepository;
 import com.black.repository.StockPricePageRepository;
 import com.black.util.Helper;
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -70,6 +71,9 @@ public class Validator {
     public void validatePricePage(Date date) {
         List<StockPricePage> stockPricePages = stockPricePageRepository.queryByDate(date);
         List<String> incorrectCodes = stockPricePages.stream().filter(this::validatePricePage).map(StockPricePage::getCode).collect(Collectors.toList());
+        if (CollectionUtils.isEmpty(incorrectCodes)) {
+            return;
+        }
         validateLogger.info(String.format("price pages: %s , date : %s", incorrectCodes, Helper.formatDate(date)));
     }
 
@@ -89,6 +93,9 @@ public class Validator {
     public void validatePrice(Date date) {
         List<StockDayPricePO> stockDayPricePOS = stockDayPriceRepository.queryByDate(date);
         List<String> incorrectCodes = stockDayPricePOS.stream().filter(this::validatePrice).map(StockDayPricePO::getCode).collect(Collectors.toList());
+        if (CollectionUtils.isEmpty(incorrectCodes)) {
+            return;
+        }
         validateLogger.info(String.format("day price : %s , date : %s", incorrectCodes, Helper.formatDate(date)));
     }
 
@@ -111,6 +118,9 @@ public class Validator {
     public void validateIpoStockPage() {
         List<IpoStockPage> ipoStockPages = ipoStockPageRepository.queryAll();
         List<String> codes = ipoStockPages.stream().filter(this::validateIpoStockPage).map(IpoStockPage::getCode).collect(Collectors.toList());
+        if (CollectionUtils.isEmpty(codes)) {
+            return;
+        }
         validateLogger.info(String.format(" ipo stock page codes : %s ", codes));
     }
 
@@ -133,6 +143,9 @@ public class Validator {
     public void validateStockInfoPage() {
         List<StockInfoPage> stockInfoPages = stockInfoPageRepository.queryAll();
         List<String> codes = stockInfoPages.stream().filter(this::validateStockInfoPage).map(StockInfoPage::getCode).collect(Collectors.toList());
+        if (CollectionUtils.isEmpty(codes)) {
+            return;
+        }
         validateLogger.info(String.format(" stock info page codes : %s ", codes));
     }
 
@@ -158,6 +171,9 @@ public class Validator {
     public void validateStockInfo() {
         List<StockInfoPO> stockInfoPOS = stockInfoRepository.queryAll();
         List<String> codes = stockInfoPOS.stream().filter(this::validateStockInfo).map(StockInfoPO::getCode).collect(Collectors.toList());
+        if (CollectionUtils.isEmpty(codes)) {
+            return;
+        }
         validateLogger.info(String.format(" stock info codes : %s ", codes));
     }
 
