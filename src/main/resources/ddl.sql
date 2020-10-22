@@ -139,7 +139,7 @@ CREATE TABLE `fund_stock_page` (
 
 CREATE TABLE `stock_day_price` (
   `code` varchar(20) NOT NULL COMMENT '股票代码',
-  `last_close` decimal(40,10) NOT NULL COMMENT '昨日收盘价',
+  `last_close` decimal(40,10) DEFAULT NULL COMMENT '昨日收盘价',
   `open` decimal(50,10) DEFAULT NULL COMMENT '开盘价',
   `high` decimal(50,10) DEFAULT NULL COMMENT '最高价',
   `low` decimal(50,10) DEFAULT NULL COMMENT '最低价',
