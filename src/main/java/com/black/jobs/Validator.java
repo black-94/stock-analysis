@@ -5,12 +5,16 @@ import com.black.po.MarketBreakPO;
 import com.black.po.StockDayPricePO;
 import com.black.po.StockInfoPO;
 import com.black.po.StockInfoPage;
+import com.black.po.StockNumPage;
+import com.black.po.StockPriceHistoryPage;
 import com.black.po.StockPricePage;
 import com.black.repository.IpoStockPageRepository;
 import com.black.repository.MarketBreakRepository;
 import com.black.repository.StockDayPriceRepository;
 import com.black.repository.StockInfoPageRepository;
 import com.black.repository.StockInfoRepository;
+import com.black.repository.StockNumPageRepository;
+import com.black.repository.StockPriceHistoryPageRepository;
 import com.black.repository.StockPricePageRepository;
 import com.black.util.Helper;
 import org.apache.commons.collections.CollectionUtils;
@@ -45,6 +49,10 @@ public class Validator {
     StockInfoRepository stockInfoRepository;
     @Autowired
     IpoStockPageRepository ipoStockPageRepository;
+    @Autowired
+    StockNumPageRepository stockNumPageRepository;
+    @Autowired
+    StockPriceHistoryPageRepository stockPriceHistoryPageRepository;
 
     public void validateAll() {
         validateIpoStockPage();
@@ -197,6 +205,85 @@ public class Validator {
             return true;
         }
         if (stockInfoPO.getOpenDay() == null) {
+            return true;
+        }
+        return false;
+    }
+
+    public void validateStockNumPage(Date date) {
+        List<StockNumPage> stockNumPages = stockNumPageRepository.queryByDate(date);
+        if (CollectionUtils.isEmpty(stockNumPages)) {
+            validateLogger.info(String.format("stock num page empty , date : %s", Helper.formatDate(date)));
+            return;
+        }
+        List<String> codes = stockNumPages.stream().filter(this::validateStockNumPage).map(StockNumPage::getCode).collect(Collectors.toList());
+        validateLogger.info(String.format("stock num page : %s , date : %s", codes, Helper.formatDate(date)));
+    }
+
+    private boolean validateStockNumPage(StockNumPage stockNumPage) {
+        if (StringUtils.isBlank(stockNumPage.getCode())) {
+            return true;
+        }
+        if (StringUtils.isBlank(stockNumPage.getName())) {
+            return true;
+        }
+        if (StringUtils.isBlank(stockNumPage.getBiz())) {
+            return true;
+        }
+        if (StringUtils.isBlank(stockNumPage.getTotal())) {
+            return true;
+        }
+        if (StringUtils.isBlank(stockNumPage.getCycle())) {
+            return true;
+        }
+        if (StringUtils.isBlank(stockNumPage.getMarketDay())) {
+            return true;
+        }
+        return false;
+    }
+
+    public void validateStockPriceHistoryPage(Date date){
+        List<StockPriceHistoryPage> stockPriceHistoryPages = stockPriceHistoryPageRepository.queryByDate(date);
+        if (CollectionUtils.isEmpty(stockPriceHistoryPages)) {
+            validateLogger.info(String.format("stock price history page empty , date : %s", Helper.formatDate(date)));
+            return;
+        }
+        List<String> codes = stockPriceHistoryPages.stream().filter(this::validateStockPriceHistoryPage).map(StockPriceHistoryPage::getCode).collect(Collectors.toList());
+        validateLogger.info(String.format("stock price history page : %s , date : %s", codes, Helper.formatDate(date)));
+    }
+
+    private boolean validateStockPriceHistoryPage(StockPriceHistoryPage stockPriceHistoryPage){
+        if (StringUtils.isBlank(stockPriceHistoryPage.getCode())) {
+            return true;
+        }
+        if (StringUtils.isBlank(stockPriceHistoryPage.getOpen())) {
+            return true;
+        }
+        if (StringUtils.isBlank(stockPriceHistoryPage.getHigh())) {
+            return true;
+        }
+        if (StringUtils.isBlank(stockPriceHistoryPage.getLow())) {
+            return true;
+        }
+        if (StringUtils.isBlank(stockPriceHistoryPage.getClose())) {
+            return true;
+        }
+        if (StringUtils.isBlank(stockPriceHistoryPage.getPercent())) {
+            return true;
+        }
+        if (StringUtils.isBlank(stockPriceHistoryPage.getChange())) {
+            return true;
+        }
+        if (StringUtils.isBlank(stockPriceHistoryPage.getAmplitude())) {
+            return true;
+        }
+        if (StringUtils.isBlank(stockPriceHistoryPage.getVolume())) {
+            return true;
+        }
+        if (StringUtils.isBlank(stockPriceHistoryPage.getAmount())) {
+            return true;
+        }
+        if (StringUtils.isBlank(stockPriceHistoryPage.getExchange())) {
             return true;
         }
         return false;

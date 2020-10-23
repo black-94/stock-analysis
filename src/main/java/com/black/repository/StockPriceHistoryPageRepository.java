@@ -42,4 +42,6 @@ public interface StockPriceHistoryPageRepository {
     @Select("select * from stock_price_history_page where code=#{param1} limit ${size}")
     List<StockPriceHistoryPage> queryRecent(String code,int size);
 
+    @Select("select * from stock_price_history_page where `date`=#{param1}")
+    List<StockPriceHistoryPage> queryByDate(Date date);
 }

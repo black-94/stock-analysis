@@ -3,15 +3,13 @@ package com.black.po;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
 @Builder
 @AllArgsConstructor
+@NoArgsConstructor
 public class StockPriceHistoryPage {
-
-    public StockPriceHistoryPage() {
-    }
-
     String code;
     String open;
     String high;

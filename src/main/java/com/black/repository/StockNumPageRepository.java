@@ -6,6 +6,7 @@ import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Select;
 
+import java.util.Date;
 import java.util.List;
 
 @Mapper
@@ -28,4 +29,7 @@ public interface StockNumPageRepository {
 
     @Select("select * from stock_num_page where code=#{param1} limit ${param2}")
     List<StockNumPage> queryRecent(String code, int size);
+
+    @Select("select * from stock_num_page where `date`=#{param1}")
+    List<StockNumPage> queryByDate(Date date);
 }
