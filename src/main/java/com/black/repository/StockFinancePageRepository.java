@@ -31,4 +31,7 @@ public interface StockFinancePageRepository {
 
     @Select("select * from stock_finance_page where code=#{param1} limit ${param2}")
     List<StockFinancePage> queryRecent(String code, int size);
+
+    @Select("select * from stock_finance_page where `report_day`>#{param1}")
+    List<StockFinancePage> queryAfterDate(Date date);
 }

@@ -3,6 +3,7 @@ package com.black.jobs;
 import com.black.po.IpoStockPage;
 import com.black.po.MarketBreakPO;
 import com.black.po.StockDayPricePO;
+import com.black.po.StockFinancePage;
 import com.black.po.StockInfoPO;
 import com.black.po.StockInfoPage;
 import com.black.po.StockNumPage;
@@ -11,6 +12,7 @@ import com.black.po.StockPricePage;
 import com.black.repository.IpoStockPageRepository;
 import com.black.repository.MarketBreakRepository;
 import com.black.repository.StockDayPriceRepository;
+import com.black.repository.StockFinancePageRepository;
 import com.black.repository.StockInfoPageRepository;
 import com.black.repository.StockInfoRepository;
 import com.black.repository.StockNumPageRepository;
@@ -53,6 +55,8 @@ public class Validator {
     StockNumPageRepository stockNumPageRepository;
     @Autowired
     StockPriceHistoryPageRepository stockPriceHistoryPageRepository;
+    @Autowired
+    StockFinancePageRepository stockFinancePageRepository;
 
     public void validateAll() {
         validateIpoStockPage();
@@ -72,7 +76,12 @@ public class Validator {
                 continue;
             }
             validatePricePage(tmp);
+            validateStockPriceHistoryPage(tmp);
+            validateStockNumPage(tmp);
             validatePrice(tmp);
+        }
+        for (Date tmp = end; tmp.after(begin); tmp = Helper.datePlus(tmp, -3, ChronoUnit.MONTHS)) {
+            validateStockFinancePage(tmp);
         }
     }
 
@@ -242,7 +251,7 @@ public class Validator {
         return false;
     }
 
-    public void validateStockPriceHistoryPage(Date date){
+    public void validateStockPriceHistoryPage(Date date) {
         List<StockPriceHistoryPage> stockPriceHistoryPages = stockPriceHistoryPageRepository.queryByDate(date);
         if (CollectionUtils.isEmpty(stockPriceHistoryPages)) {
             validateLogger.info(String.format("stock price history page empty , date : %s", Helper.formatDate(date)));
@@ -252,7 +261,7 @@ public class Validator {
         validateLogger.info(String.format("stock price history page : %s , date : %s", codes, Helper.formatDate(date)));
     }
 
-    private boolean validateStockPriceHistoryPage(StockPriceHistoryPage stockPriceHistoryPage){
+    private boolean validateStockPriceHistoryPage(StockPriceHistoryPage stockPriceHistoryPage) {
         if (StringUtils.isBlank(stockPriceHistoryPage.getCode())) {
             return true;
         }
@@ -284,6 +293,33 @@ public class Validator {
             return true;
         }
         if (StringUtils.isBlank(stockPriceHistoryPage.getExchange())) {
+            return true;
+        }
+        return false;
+    }
+
+    public void validateStockFinancePage(Date date) {
+        date = Helper.datePlus(date, -3, ChronoUnit.MONTHS);
+        List<StockFinancePage> stockFinancePages = stockFinancePageRepository.queryAfterDate(date);
+        if (CollectionUtils.isEmpty(stockFinancePages)) {
+            validateLogger.info(String.format("stock finance page empty , date : %s", Helper.formatDate(date)));
+            return;
+        }
+        List<String> codes = stockFinancePages.stream().filter(this::validateStockFinancePage).map(StockFinancePage::getCode).collect(Collectors.toList());
+        validateLogger.info(String.format("stock finance page : %s , date : %s", codes, Helper.formatDate(date)));
+    }
+
+    private boolean validateStockFinancePage(StockFinancePage stockFinancePage) {
+        if (StringUtils.isBlank(stockFinancePage.getCode())) {
+            return true;
+        }
+        if (StringUtils.isBlank(stockFinancePage.getIncome())) {
+            return true;
+        }
+        if (StringUtils.isBlank(stockFinancePage.getProfit())) {
+            return true;
+        }
+        if (StringUtils.isBlank(stockFinancePage.getReportDay())) {
             return true;
         }
         return false;
