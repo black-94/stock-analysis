@@ -226,6 +226,9 @@ public class Validator {
             return;
         }
         List<String> codes = stockNumPages.stream().filter(this::validateStockNumPage).map(StockNumPage::getCode).collect(Collectors.toList());
+        if (CollectionUtils.isEmpty(codes)) {
+            return;
+        }
         validateLogger.info(String.format("stock num page : %s , date : %s", codes, Helper.formatDate(date)));
     }
 
@@ -258,6 +261,9 @@ public class Validator {
             return;
         }
         List<String> codes = stockPriceHistoryPages.stream().filter(this::validateStockPriceHistoryPage).map(StockPriceHistoryPage::getCode).collect(Collectors.toList());
+        if (CollectionUtils.isEmpty(codes)) {
+            return;
+        }
         validateLogger.info(String.format("stock price history page : %s , date : %s", codes, Helper.formatDate(date)));
     }
 
@@ -306,6 +312,9 @@ public class Validator {
             return;
         }
         List<String> codes = stockFinancePages.stream().filter(this::validateStockFinancePage).map(StockFinancePage::getCode).collect(Collectors.toList());
+        if (CollectionUtils.isEmpty(codes)) {
+            return;
+        }
         validateLogger.info(String.format("stock finance page : %s , date : %s", codes, Helper.formatDate(date)));
     }
 
