@@ -88,13 +88,13 @@ public class Validator {
     public void validatePricePage(Date date) {
         List<StockPricePage> stockPricePages = stockPricePageRepository.queryByDate(Helper.formatDate(date));
         if (CollectionUtils.isEmpty(stockPricePages)) {
-            validateLogger.info(String.format("price pages empty , date : %s", Helper.formatDate(date)));
+            validateLogger.info(String.format("validatePricePage empty , date : %s", Helper.formatDate(date)));
         }
         List<String> incorrectCodes = stockPricePages.stream().filter(this::validatePricePage).map(StockPricePage::getCode).collect(Collectors.toList());
         if (CollectionUtils.isEmpty(incorrectCodes)) {
             return;
         }
-        validateLogger.info(String.format("price pages: %s , date : %s", incorrectCodes, Helper.formatDate(date)));
+        validateLogger.info(String.format("validatePricePage illegal : %s , date : %s", incorrectCodes, Helper.formatDate(date)));
     }
 
     private boolean validatePricePage(StockPricePage stockPricePage) {
@@ -113,13 +113,13 @@ public class Validator {
     public void validatePrice(Date date) {
         List<StockDayPricePO> stockDayPricePOS = stockDayPriceRepository.queryByDate(Helper.formatDate(date));
         if (CollectionUtils.isEmpty(stockDayPricePOS)) {
-            validateLogger.info(String.format("day price empty , date : %s", Helper.formatDate(date)));
+            validateLogger.info(String.format("validatePrice empty , date : %s", Helper.formatDate(date)));
         }
         List<String> incorrectCodes = stockDayPricePOS.stream().filter(this::validatePrice).map(StockDayPricePO::getCode).collect(Collectors.toList());
         if (CollectionUtils.isEmpty(incorrectCodes)) {
             return;
         }
-        validateLogger.info(String.format("day price : %s , date : %s", incorrectCodes, Helper.formatDate(date)));
+        validateLogger.info(String.format("validatePrice illegal : %s , date : %s", incorrectCodes, Helper.formatDate(date)));
     }
 
     private boolean validatePrice(StockDayPricePO stockDayPricePO) {
@@ -222,14 +222,14 @@ public class Validator {
     public void validateStockNumPage(Date date) {
         List<StockNumPage> stockNumPages = stockNumPageRepository.queryByDate(Helper.formatDate(date));
         if (CollectionUtils.isEmpty(stockNumPages)) {
-            validateLogger.info(String.format("stock num page empty , date : %s", Helper.formatDate(date)));
+            validateLogger.info(String.format("validateStockNumPage empty , date : %s", Helper.formatDate(date)));
             return;
         }
         List<String> codes = stockNumPages.stream().filter(this::validateStockNumPage).map(StockNumPage::getCode).collect(Collectors.toList());
         if (CollectionUtils.isEmpty(codes)) {
             return;
         }
-        validateLogger.info(String.format("stock num page : %s , date : %s", codes, Helper.formatDate(date)));
+        validateLogger.info(String.format("validateStockNumPage illegal : %s , date : %s", codes, Helper.formatDate(date)));
     }
 
     private boolean validateStockNumPage(StockNumPage stockNumPage) {
@@ -257,14 +257,14 @@ public class Validator {
     public void validateStockPriceHistoryPage(Date date) {
         List<StockPriceHistoryPage> stockPriceHistoryPages = stockPriceHistoryPageRepository.queryByDate(Helper.formatDate(date));
         if (CollectionUtils.isEmpty(stockPriceHistoryPages)) {
-            validateLogger.info(String.format("stock price history page empty , date : %s", Helper.formatDate(date)));
+            validateLogger.info(String.format("validateStockPriceHistoryPage empty , date : %s", Helper.formatDate(date)));
             return;
         }
         List<String> codes = stockPriceHistoryPages.stream().filter(this::validateStockPriceHistoryPage).map(StockPriceHistoryPage::getCode).collect(Collectors.toList());
         if (CollectionUtils.isEmpty(codes)) {
             return;
         }
-        validateLogger.info(String.format("stock price history page : %s , date : %s", codes, Helper.formatDate(date)));
+        validateLogger.info(String.format("validateStockPriceHistoryPage illegal : %s , date : %s", codes, Helper.formatDate(date)));
     }
 
     private boolean validateStockPriceHistoryPage(StockPriceHistoryPage stockPriceHistoryPage) {
@@ -308,14 +308,14 @@ public class Validator {
         date = Helper.datePlus(date, -3, ChronoUnit.MONTHS);
         List<StockFinancePage> stockFinancePages = stockFinancePageRepository.queryAfterDate(date);
         if (CollectionUtils.isEmpty(stockFinancePages)) {
-            validateLogger.info(String.format("stock finance page empty , date : %s", Helper.formatDate(date)));
+            validateLogger.info(String.format("validateStockFinancePage empty , date : %s", Helper.formatDate(date)));
             return;
         }
         List<String> codes = stockFinancePages.stream().filter(this::validateStockFinancePage).map(StockFinancePage::getCode).collect(Collectors.toList());
         if (CollectionUtils.isEmpty(codes)) {
             return;
         }
-        validateLogger.info(String.format("stock finance page : %s , date : %s", codes, Helper.formatDate(date)));
+        validateLogger.info(String.format("validateStockFinancePage illegal : %s , date : %s", codes, Helper.formatDate(date)));
     }
 
     private boolean validateStockFinancePage(StockFinancePage stockFinancePage) {
