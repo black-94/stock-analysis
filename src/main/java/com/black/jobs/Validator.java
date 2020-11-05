@@ -24,6 +24,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
@@ -69,6 +70,16 @@ public class Validator {
         validatePriceIn(Date.from(begin), Date.from(end));
     }
 
+    @Scheduled(cron = "0 0 19 * * ?")
+    public void validateDay() {
+        validateIpoStockPage();
+        validateStockInfoPage();
+        validateStockInfo();
+        Instant begin = LocalDate.now().plus(-1, ChronoUnit.DAYS).atStartOfDay(ZoneId.systemDefault()).toInstant();
+        Instant end = LocalDate.now().atStartOfDay(ZoneId.systemDefault()).toInstant();
+        validatePriceIn(Date.from(begin), Date.from(end));
+    }
+
     public void validatePriceIn(Date begin, Date end) {
         List<MarketBreakPO> marketBreakPOS = marketBreakRepository.queryByTimezone("Asia/Shanghai", begin, end);
         List<Date> breakDates = marketBreakPOS.stream().map(MarketBreakPO::getBreakDate).collect(Collectors.toList());
@@ -85,7 +96,7 @@ public class Validator {
         }
         for (Date tmp = end; tmp.after(begin); tmp = Helper.datePlus(tmp, -3, ChronoUnit.MONTHS)) {
             final Date date = tmp;
-            submit(()->validateStockFinancePage(date));
+            submit(() -> validateStockFinancePage(date));
         }
     }
 
