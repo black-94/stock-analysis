@@ -35,6 +35,8 @@ import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static com.black.util.ExecutorUtil.submit;
+
 @Component
 public class Validator {
     static Logger validateLogger = LogManager.getLogger("root.validate.log");
@@ -75,13 +77,15 @@ public class Validator {
             if (weekday == 6 || weekday == 7 || breakDates.contains(tmp)) {
                 continue;
             }
-            validatePricePage(tmp);
-            validateStockPriceHistoryPage(tmp);
-            validateStockNumPage(tmp);
-            validatePrice(tmp);
+            final Date date = tmp;
+            submit(() -> validatePricePage(date));
+            submit(() -> validateStockPriceHistoryPage(date));
+            submit(() -> validateStockNumPage(date));
+            submit(() -> validatePrice(date));
         }
         for (Date tmp = end; tmp.after(begin); tmp = Helper.datePlus(tmp, -3, ChronoUnit.MONTHS)) {
-            validateStockFinancePage(tmp);
+            final Date date = tmp;
+            submit(()->validateStockFinancePage(date));
         }
     }
 
