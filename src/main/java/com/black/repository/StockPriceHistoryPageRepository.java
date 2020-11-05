@@ -7,7 +7,6 @@ import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
 
-import java.util.Date;
 import java.util.List;
 
 @Mapper
@@ -43,5 +42,5 @@ public interface StockPriceHistoryPageRepository {
     List<StockPriceHistoryPage> queryRecent(String code,int size);
 
     @Select("select * from stock_price_history_page where `date`=#{param1}")
-    List<StockPriceHistoryPage> queryByDate(Date date);
+    List<StockPriceHistoryPage> queryByDate(String date);
 }

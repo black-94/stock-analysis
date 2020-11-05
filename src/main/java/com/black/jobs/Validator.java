@@ -220,7 +220,7 @@ public class Validator {
     }
 
     public void validateStockNumPage(Date date) {
-        List<StockNumPage> stockNumPages = stockNumPageRepository.queryByDate(date);
+        List<StockNumPage> stockNumPages = stockNumPageRepository.queryByDate(Helper.formatDate(date));
         if (CollectionUtils.isEmpty(stockNumPages)) {
             validateLogger.info(String.format("stock num page empty , date : %s", Helper.formatDate(date)));
             return;
@@ -255,7 +255,7 @@ public class Validator {
     }
 
     public void validateStockPriceHistoryPage(Date date) {
-        List<StockPriceHistoryPage> stockPriceHistoryPages = stockPriceHistoryPageRepository.queryByDate(date);
+        List<StockPriceHistoryPage> stockPriceHistoryPages = stockPriceHistoryPageRepository.queryByDate(Helper.formatDate(date));
         if (CollectionUtils.isEmpty(stockPriceHistoryPages)) {
             validateLogger.info(String.format("stock price history page empty , date : %s", Helper.formatDate(date)));
             return;
