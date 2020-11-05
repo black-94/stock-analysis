@@ -62,7 +62,7 @@ public class Validator {
         validateIpoStockPage();
         validateStockInfoPage();
         validateStockInfo();
-        Instant begin = LocalDate.of(1990, 1, 1).atStartOfDay(ZoneId.systemDefault()).toInstant();
+        Instant begin = LocalDate.of(2010, 1, 1).atStartOfDay(ZoneId.systemDefault()).toInstant();
         Instant end = LocalDate.now().plus(1, ChronoUnit.DAYS).atStartOfDay(ZoneId.systemDefault()).toInstant();
         validatePriceIn(Date.from(begin), Date.from(end));
     }
