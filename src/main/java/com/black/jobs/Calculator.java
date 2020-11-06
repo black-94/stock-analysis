@@ -161,7 +161,7 @@ public class Calculator {
     }
 
     public void dayPriceInit(String code, Date datetime) {
-        String now = datetime.toInstant().atZone(ZoneId.systemDefault()).toLocalDate().toString();
+        String now = Helper.formatDate(datetime);
         StockPricePage curPrice = stockPricePageRepository.queryByCodeAndDate(code, now);
         StockPriceHistoryPage curHistoryPrice = stockPriceHistoryPageRepository.queryByCodeAndDate(code, now);
         StockNumPage stockNumPage = stockNumPageRepository.queryRecentBefore(code, 1, now).stream().findFirst().orElse(null);
@@ -188,7 +188,7 @@ public class Calculator {
         BigDecimal total = null;
         BigDecimal capital = null;
         BigDecimal pe = null;
-        Date date = null;
+        Date date = Helper.parseDate(now);
 
         if (curPrice != null) {
             lastClose = Helper.decimalOf(curPrice.getLastClose());
@@ -200,7 +200,6 @@ public class Calculator {
             amount = Helper.decimalOf(curPrice.getAmount());
             percent = Helper.decimalOf(curPrice.getPercent());
             change = Helper.decimalOf(curPrice.getChange());
-            date = Helper.parseDate(curPrice.getDate());
         }
         if (lastClose == null && lastStockDayPrice != null) {
             lastClose = lastStockDayPrice.getClose();
