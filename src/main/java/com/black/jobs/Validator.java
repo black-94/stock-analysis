@@ -92,7 +92,6 @@ public class Validator {
             submit(() -> validatePricePage(date));
             submit(() -> validateStockPriceHistoryPage(date));
             submit(() -> validateStockNumPage(date));
-            submit(() -> validatePrice(date));
         }
         for (Date tmp = end; tmp.after(begin); tmp = Helper.datePlus(tmp, -3, ChronoUnit.MONTHS)) {
             final Date date = tmp;
