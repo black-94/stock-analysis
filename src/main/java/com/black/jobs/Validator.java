@@ -34,6 +34,7 @@ import java.time.ZoneId;
 import java.time.temporal.ChronoUnit;
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import static com.black.util.ExecutorUtil.submit;
@@ -325,6 +326,10 @@ public class Validator {
             validateLogger.info(String.format("validateStockFinancePage empty , date : %s", Helper.formatDate(date)));
             return;
         }
+        Set<String> codeSet = stockFinancePages.stream().map(StockFinancePage::getCode).collect(Collectors.toSet());
+        List<String> allCodes = ipoStockPageRepository.queryAllCodes();
+        Set<String> notInCodes = allCodes.stream().filter(code -> !codeSet.contains(code)).collect(Collectors.toSet());
+        validateLogger.info(String.format("validateStockFinancePage lack finance , codes : %s , date : %s", notInCodes, Helper.formatDate(date)));
         List<String> codes = stockFinancePages.stream().filter(this::validateStockFinancePage).map(StockFinancePage::getCode).collect(Collectors.toList());
         if (CollectionUtils.isEmpty(codes)) {
             return;
