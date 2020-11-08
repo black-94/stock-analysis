@@ -141,7 +141,7 @@ public class Calculator {
             reportPO.setReportDay(Helper.parseDate(stockFinancePage.getReportDay()));
             reportPO.setTotalIncome(Helper.decimalOf(stockFinancePage.getIncome()));
             reportPO.setTotalProfit(Helper.decimalOf(stockFinancePage.getProfit()));
-            if (yearBegin) {
+            if (!yearBegin) {
                 BigDecimal lastProfit = Helper.decimalOf(lastFinance.getProfit());
                 BigDecimal lastIncome = Helper.decimalOf(lastFinance.getIncome());
                 if (!BigDecimal.ZERO.equals(lastIncome) && !BigDecimal.ZERO.equals(lastProfit)
