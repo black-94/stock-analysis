@@ -30,7 +30,7 @@ public interface StockQuartlyReportRepository {
                 <script>
                 insert into stock_quartly_report(`code`,`income`,`profit`,`total_income`,`total_profit`,`fund_ratio`,`m2m_income`,`m2m_profit`,`y2y_income`,`y2y_profit`,`report_day`)
                 values
-                <foreach item="item" index="index" collection="param1" open="" separator="," close="">
+                <foreach item="item" index="index" collection="list" open="" separator="," close="">
                     (#{item.code},#{item.income},#{item.profit},#{item.totalIncome},#{item.totalProfit},#{item.fundRatio},#{item.m2mIncome},#{item.m2mProfit},#{item.y2yIncome},#{item.y2yProfit},#{item.reportDay})
                 </foreach>
                 </script>            
