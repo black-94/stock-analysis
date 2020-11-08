@@ -194,6 +194,8 @@ public class Calculator {
         stockQuartlyReportRepository.deleteByCode(code);
         stockQuartlyReportRepository.batchInsert(list);
 
+        //todo 拉取的数据就有问题，002459
+
     }
 
 
