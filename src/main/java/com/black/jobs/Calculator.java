@@ -116,6 +116,11 @@ public class Calculator {
         stockInfoRepository.insert(stockInfoPO);
     }
 
+    public void quartlyAllInit(){
+        List<String> codes = ipoStockPageRepository.queryAllCodes();
+        codes.forEach(e->submit(()->quartlyInit(e)));
+    }
+
     public void quartlyInit(String code) {
         List<StockFinancePage> stockFinancePages = stockFinancePageRepository.queryByCode(code);
         if (CollectionUtils.isEmpty(stockFinancePages)) {
