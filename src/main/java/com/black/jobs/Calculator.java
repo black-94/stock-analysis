@@ -186,8 +186,8 @@ public class Calculator {
             if (lastYear != null && lastYear.getIncome() != null && lastYear.getProfit() != null) {
                 BigDecimal y2yIncome = Helper.calculateIncrease(reportPO.getIncome(), lastYear.getIncome());
                 BigDecimal y2yProfit = Helper.calculateIncrease(reportPO.getProfit(), lastYear.getProfit());
-                reportPO.setM2mIncome(y2yIncome);
-                reportPO.setM2mProfit(y2yProfit);
+                reportPO.setY2yIncome(y2yIncome);
+                reportPO.setY2yProfit(y2yProfit);
             }
         }
 
