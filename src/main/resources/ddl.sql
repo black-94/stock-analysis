@@ -153,7 +153,7 @@ CREATE TABLE `stock_day_price` (
   `total` decimal(50,10) DEFAULT NULL COMMENT '股本',
   `capital` decimal(29,10) DEFAULT NULL COMMENT '市值',
   `pe` decimal(50,10) DEFAULT NULL COMMENT '市盈率',
-  `date` varchar(20) NOT NULL COMMENT '报告日期',
+  `date` datetime NOT NULL COMMENT '报告日期',
   `create_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`code`,`date`),
   KEY `ix_date` (`date`)
