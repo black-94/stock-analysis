@@ -18,24 +18,20 @@ public interface StockPriceHistoryPageRepository {
     @Delete("delete from stock_price_history_page where code=#{param1}")
     void deleteByCode(String code);
 
-    @Insert("""
-                <script>
-                insert into stock_price_history_page(`code`,`open`,`close`,`high`,`low`,`volume`,`amount`,`change`,`percent`,`amplitude`,`exchange`,`date`) values
-                <foreach item="item" index="index" collection="list" open="" separator="," close="">
-                    (#{item.code},#{item.open},#{item.close},#{item.high},#{item.low},#{item.volume},#{item.amount},#{item.change},
-                    #{item.percent},#{item.amplitude},#{item.exchange},#{item.date})
-                </foreach>
-                </script>
-            """)
+    @Insert("                <script>\n" +
+            "                insert into stock_price_history_page(`code`,`open`,`close`,`high`,`low`,`volume`,`amount`,`change`,`percent`,`amplitude`,`exchange`,`date`) values\n" +
+            "                <foreach item=\"item\" index=\"index\" collection=\"list\" open=\"\" separator=\",\" close=\"\">\n" +
+            "                    (#{item.code},#{item.open},#{item.close},#{item.high},#{item.low},#{item.volume},#{item.amount},#{item.change},\n" +
+            "                    #{item.percent},#{item.amplitude},#{item.exchange},#{item.date})\n" +
+            "                </foreach>\n" +
+            "                </script>")
     void batchInsert(@Param("list")List<StockPriceHistoryPage> stockPriceHistoryPages);
 
     @Select("select * from stock_price_history_page where code=#{param1} and `date`=#{param2}")
     StockPriceHistoryPage queryByCodeAndDate(String code, String date);
 
-    @Insert("""
-            insert into stock_price_history_page(`code`,`open`,`close`,`high`,`low`,`volume`,`amount`,`change`,`percent`,`amplitude`,`exchange`,`date`) values
-            (#{code},#{open},#{close},#{high},#{low},#{volume},#{amount},#{change},#{percent},#{amplitude},#{exchange},#{date})
-            """)
+    @Insert("            insert into stock_price_history_page(`code`,`open`,`close`,`high`,`low`,`volume`,`amount`,`change`,`percent`,`amplitude`,`exchange`,`date`) values\n" +
+            "            (#{code},#{open},#{close},#{high},#{low},#{volume},#{amount},#{change},#{percent},#{amplitude},#{exchange},#{date})")
     void insert(StockPriceHistoryPage stockPriceHistoryPage);
 
     @Select("select * from stock_price_history_page where code=#{param1} limit ${size}")

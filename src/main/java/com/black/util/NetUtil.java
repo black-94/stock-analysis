@@ -7,12 +7,13 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.util.EntityUtils;
+import org.apache.tomcat.util.http.fileupload.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.StringWriter;
+import java.io.InputStream;
 import java.net.URL;
 import java.util.function.Function;
 
@@ -51,12 +52,11 @@ public class NetUtil {
                 HttpGet httpGet = new HttpGet(url.toString());
                 httpGet.addHeader("Content-Type", "charset=UTF-8");
                 try (CloseableHttpResponse response = httpClient.execute(httpGet)) {
-                    StringWriter writer = new StringWriter();
-                    try (InputStreamReader reader = new InputStreamReader(response.getEntity().getContent(), "UTF-8")) {
-                        reader.transferTo(writer);
-                    }
+                    InputStream in = response.getEntity().getContent();
+                    ByteArrayOutputStream out = new ByteArrayOutputStream(in.available());
+                    IOUtils.copy(in, out);
                     EntityUtils.consume(response.getEntity());
-                    String res = writer.toString();
+                    String res = out.toString("utf-8");
                     if (response.getStatusLine().getStatusCode() == 200) {
                         return fun.apply(res);
                     } else {

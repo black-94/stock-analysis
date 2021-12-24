@@ -11,6 +11,7 @@ import com.black.po.StockNumPage;
 import com.black.po.StockPriceHistoryPage;
 import com.black.po.StockPricePage;
 import org.apache.commons.lang3.RandomUtils;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
@@ -33,7 +34,7 @@ public class Finance163Test {
         System.out.println(pricePOS);
     }
 
-    //@Test
+    @Test
     public void stockTest() {
         List<IpoStockPage> ipoStockPages = finance163Repository.queryCodes("2020");
         String code = ipoStockPages.get(RandomUtils.nextInt(0, ipoStockPages.size())).getCode();

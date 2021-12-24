@@ -17,10 +17,8 @@ public interface StockPricePageRepository {
     @Delete("delete from stock_price_page where code=#{param1} and `date`=#{param2}")
     void deleteByCode(String code, String date);
 
-    @Insert("""
-            insert into stock_price_page(code,last_close,open,cur,high,low,volume,amount,`percent`,`change`,`date`)
-            values(#{code},#{lastClose},#{open},#{cur},#{high},#{low},#{volume},#{amount},#{percent},#{change},#{date})
-            """)
+    @Insert("            insert into stock_price_page(code,last_close,open,cur,high,low,volume,amount,`percent`,`change`,`date`)\n" +
+            "            values(#{code},#{lastClose},#{open},#{cur},#{high},#{low},#{volume},#{amount},#{percent},#{change},#{date})")
     void insert(StockPricePage stockPricePage);
 
     @Select("select * from stock_price_page where code=#{param1} and `date`=#{param2}")

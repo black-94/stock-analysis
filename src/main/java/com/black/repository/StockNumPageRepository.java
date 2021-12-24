@@ -17,10 +17,8 @@ public interface StockNumPageRepository {
     @Delete("delete from stock_num_page where code=#{param1} and `date`=#{param2}")
     void deleteByCode(String code, String date);
 
-    @Insert("""
-            insert into stock_num_page(code,name,biz,market_day,total,cycle,`date`) values
-            (#{code},#{name},#{biz},#{marketDay},#{total},#{cycle},#{date})
-            """)
+    @Insert("            insert into stock_num_page(code,name,biz,market_day,total,cycle,`date`) values\n" +
+            "            (#{code},#{name},#{biz},#{marketDay},#{total},#{cycle},#{date})")
     void insert(StockNumPage stockNumPage);
 
     @Select("select * from stock_num_page where code=#{param1} and `date` < ${param3} limit ${param2}")

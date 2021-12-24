@@ -17,14 +17,12 @@ public interface FundPricePageRepository {
     @Delete("truncate table ipo_stock_page")
     void deleteAll();
 
-    @Insert("""
-                <script>
-                insert into ipo_stock_page(code,name,market_day,market_year) values
-                <foreach item="item" index="index" collection="list" open="" separator="," close="">
-                    (#{item.code},#{item.name},#{item.marketDay},#{item.marketYear})
-                </foreach>
-                </script>
-            """)
+    @Insert("                <script>\n" +
+            "                insert into ipo_stock_page(code,name,market_day,market_year) values\n" +
+            "                <foreach item=\"item\" index=\"index\" collection=\"list\" open=\"\" separator=\",\" close=\"\">\n" +
+            "                    (#{item.code},#{item.name},#{item.marketDay},#{item.marketYear})\n" +
+            "                </foreach>\n" +
+            "                </script>")
     void batchInsert(@Param("list") List<IpoStockPage> ipoStockPages);
 
     @Select("select distinct(code) from ipo_stock_page")
@@ -33,10 +31,8 @@ public interface FundPricePageRepository {
     @Select("select * from ipo_stock_page where code=#{param1}")
     IpoStockPage queryByCode(String code);
 
-    @Insert("""
-            insert into ipo_stock_page(code,name,market_day,market_year)
-            values(#{code},#{name},#{marketDay},#{marketYear})
-            """)
+    @Insert("            insert into ipo_stock_page(code,name,market_day,market_year)\n" +
+            "            values(#{code},#{name},#{marketDay},#{marketYear})")
     void insert(FundPricePage ipoStockPage);
 
     @Select("select * from ipo_stock_page where market_year=#{param1}")

@@ -17,10 +17,8 @@ public interface StockInfoPageRepository {
     @Delete("delete from stock_info_page where code=#{param1}")
     void deleteByCode(String code);
 
-    @Insert("""
-            insert into stock_info_page(code,name,biz,open_day,market_day) values
-            (#{code},#{name},#{biz},#{openDay},#{marketDay})
-            """)
+    @Insert("            insert into stock_info_page(code,name,biz,open_day,market_day) values\n" +
+            "            (#{code},#{name},#{biz},#{openDay},#{marketDay})")
     void insert(StockInfoPage stockInfoPage);
 
     @Select("select * from stock_info_page")

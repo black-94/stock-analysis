@@ -16,14 +16,12 @@ public interface StockFinancePageRepository {
     @Delete("truncate table stock_finance_page")
     void deleteAll();
 
-    @Insert("""
-                <script>
-                insert into stock_finance_page(`code`,`report_day`,`income`,`profit`) values
-                <foreach item="item" index="index" collection="list" open="" separator="," close="">
-                    (#{item.code},#{item.reportDay},#{item.income},#{item.profit})
-                </foreach>
-                </script>
-            """)
+    @Insert("                <script>\n" +
+            "                insert into stock_finance_page(`code`,`report_day`,`income`,`profit`) values\n" +
+            "                <foreach item=\"item\" index=\"index\" collection=\"list\" open=\"\" separator=\",\" close=\"\">\n" +
+            "                    (#{item.code},#{item.reportDay},#{item.income},#{item.profit})\n" +
+            "                </foreach>\n" +
+            "                </script>")
     void batchInsert(@Param("list")List<StockFinancePage> stockFinancePages);
 
     @Select("select * from stock_finance_page where code=#{param1}")
